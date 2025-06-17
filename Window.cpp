@@ -101,6 +101,20 @@ bool Window::broadcast()
 	}
 	Sleep(1);
 	EngineTime::LogFrameEnd();
+
+
+	/*	double elapsedMs = EngineTime::getDeltaTime();
+	if (elapsedMs < 1000.f/60.f) {
+		// Sleep for the remaining time
+		DWORD sleepTime = static_cast<DWORD>(1000.f / 60.f - elapsedMs);
+		if (sleepTime > 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+		}
+	}*/
+	
+
+
+
 	return true;
 }
 bool Window::release()

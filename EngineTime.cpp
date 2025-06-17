@@ -28,6 +28,7 @@ EngineTime::~EngineTime()
 void EngineTime::LogFrameStart()
 {
 	sharedInstance->start = std::chrono::system_clock::now();
+	//std::chrono::high_resolution_clock
 }
 
 void EngineTime::LogFrameEnd()

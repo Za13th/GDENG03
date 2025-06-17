@@ -41,7 +41,7 @@ private:
 	VertexBuffer* m_vbuffer = nullptr;
 	IndexBuffer* m_ibuffer = nullptr;
 	ConstantBuffer* m_cbuffer = nullptr;
-	vertex vertexes[8];
+	vertex vertexes[32];
 	UINT size_vertexes;
 	float deltaPos = 0.0f;
 	float m_angle = 0.0f;

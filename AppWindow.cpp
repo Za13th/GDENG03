@@ -128,9 +128,8 @@ void AppWindow::update()
 void AppWindow::createGraphicsWindow()
 {
 
-
 	//InputSystem::get()->addListener(this);
-	InputSystem::get()->showCursor(false);
+	InputSystem::get()->showCursor(true);
 
 	GraphicsEngine::initialize();
 
@@ -221,7 +220,7 @@ void AppWindow::createGraphicsWindow()
 		templateParticle.setColor1(Vector3D(0.95f), 0);
 
 		ParticleSystem::getInstance()->interval = 0.1f;
-		ParticleSystem::getInstance()->max_size = 100;
+		ParticleSystem::getInstance()->max_size = 5;
 		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.9f,0.0f };
 		ParticleSystem::getInstance()->spawnAreaWidth = 2.30f;
 		ParticleSystem::getInstance()->spawnAreaHeight = 0.10f;
@@ -263,6 +262,8 @@ void AppWindow::createGraphicsWindow()
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(this->m_hwnd);
+	ImGui_ImplDX11_Init(GraphicsEngine::getInstance()->getDevice(), GraphicsEngine::getInstance()->getDeviceContext()->getDeviceContext());
 
 }
 
@@ -273,17 +274,46 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
-	/*	ImGui_ImplDX11_NewFrame();
+
+	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	static bool show_demo_window = true;
+	static bool show_another_window = false;
+
+	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Test Window");
-	ImGui::Text("Hello, world!");
+	static float f = 0.0f;
+	static int counter = 0;
 
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+	ImGui::Checkbox("Another Window", &show_another_window);
+
+	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+		counter++;
+	ImGui::SameLine();
+	ImGui::Text("counter = %d", counter);
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);*/
-
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
 
 
 
@@ -329,17 +359,20 @@ void AppWindow::onUpdate()
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
 	
 	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	//if(InputSystem::get()->isKeyDown('P'))
+	if(InputSystem::get()->isKeyDown('P'))
 	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	m_swap_chain->present(true);
 }
 
 void AppWindow::onDestroy()
 {
-	//ImGui_ImplDX11_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 
 	Window::onDestroy();
 
@@ -397,11 +430,22 @@ void AppWindow::onKeyDown(int key)
 		m_rightward = 1.0f;
 		//m_rot_y += 3.14f * EngineTime::getDeltaTime();
 
+	
+
 }
 void AppWindow::onKeyUp(int key)
 {
 	m_forward = 0.0f;
 	m_rightward = 0.0f;
+
+	if (key == 'X')
+	{
+		if (!this->m_camera_rotation)
+			this->m_camera_rotation = true;
+		else this->m_camera_rotation = false;
+
+		InputSystem::get()->showCursor(!this->m_camera_rotation);
+	}
 }
 
 void AppWindow::onMouseMove(const Point& mouse_pos)
@@ -410,16 +454,20 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 	int width = rc.right - rc.left;
 	int height = rc.bottom - rc.top;
 
-	m_rot_x += (mouse_pos.y - (height / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
-	m_rot_y += (mouse_pos.x - (width / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+	if (this->m_camera_rotation)
+	{
+		m_rot_x += (mouse_pos.y - (height / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+		m_rot_y += (mouse_pos.x - (width / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+		InputSystem::get()->setCursorPositon(Point(width / 2.0f, height / 2.0f)); // Reset cursor position to center of the window
+	}
 
-
-	InputSystem::get()->setCursorPositon(Point(width / 2.0f, height / 2.0f)); // Reset cursor position to center of the window
+	
 }
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)
 {
 	m_scale_cube = 0.5f;
+
 }
 
 void AppWindow::onLeftMouseUp(const Point& mouse_pos)

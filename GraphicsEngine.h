@@ -28,6 +28,7 @@ class GraphicsEngine
 
 		SwapChain* createSwapChain();
 		DeviceContext* getDeviceContext();
+		ID3D11Device* getDevice();
 		VertexBuffer* createVertexBuffer();
 		IndexBuffer* createIndexBuffer();
 		ConstantBuffer* createConstantBuffer();

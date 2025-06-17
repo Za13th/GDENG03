@@ -69,6 +69,7 @@ class AppWindow : public Window, public InputListener
 		float m_scale_cube = 1.0f;
 		float m_forward = 0.0f;
 		float m_rightward = 0.0f;
+		bool m_camera_rotation = false;
 		Matrix4x4 m_world_cam;
 
 		std::vector<Quad> quads;
