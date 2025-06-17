@@ -64,6 +64,9 @@
     <Filter Include="GameEngine\Camera">
       <UniqueIdentifier>{275893ff-9733-4366-abfe-bfe2525f39cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui-stable">
+      <UniqueIdentifier>{ab119ab1-fb7c-4f40-8120-be62bb955435}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -125,6 +128,24 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>GameEngine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_win32.cpp">
+      <Filter>imgui-stable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>imgui-stable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>imgui-stable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>imgui-stable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>imgui-stable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_dx11.cpp">
+      <Filter>imgui-stable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +233,30 @@
     <ClInclude Include="Camera.h">
       <Filter>GameEngine\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="imgui_impl_win32.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_dx11.h">
+      <Filter>imgui-stable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -220,5 +265,10 @@
     <FxCompile Include="PixelShader.hlsl">
       <Filter>App</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="imgui.ini">
+      <Filter>imgui-stable</Filter>
+    </None>
   </ItemGroup>
 </Project>

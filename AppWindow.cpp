@@ -8,6 +8,10 @@
 #include "InputSystem.h"
 #include "ParticleSystem.h"
 
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
+
 #include <cstdlib>
 #include <ctime>
 
@@ -124,6 +128,7 @@ void AppWindow::update()
 void AppWindow::createGraphicsWindow()
 {
 
+
 	//InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
@@ -191,8 +196,6 @@ void AppWindow::createGraphicsWindow()
 	this->m_ib->load(index_list, size_index_list);
 	this->m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 	this->m_cb->load(&cc, sizeof(constant));
-
-
 	
 	/*Cube cube("Test", shader_byte_code, size_shader);
 		this->cubes.push_back(cube);
@@ -202,6 +205,9 @@ void AppWindow::createGraphicsWindow()
 		plane.setScale(Vector3D(2.0f, 1.0f, 1.0f));
 		plane.setRotation(Vector3D(85.f,0.0f,0.0f));
 		this->planes.push_back(plane);*/
+
+
+
 
 	srand(time(0));
 	int preset = 0;
@@ -251,6 +257,13 @@ void AppWindow::createGraphicsWindow()
 	this->m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->releaseCompiledShader();
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
 }
 
 void AppWindow::onCreate()
@@ -260,11 +273,23 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
+	/*	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Test Window");
+	ImGui::Text("Hello, world!");
+
+	ImGui::End();
+
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);*/
+
+
+
+
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
 	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
-
-
 
 
 	RECT rc = this->getClientWindowRect();
@@ -288,6 +313,12 @@ void AppWindow::onUpdate()
 	//Cube:
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
 
+	/*	ImGui::Render();
+	g_pd3dDeviceContext->OMSetRenderTargets(1, &this->, NULL);
+	g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());*/
+
+
 	for (int i = 0; i < quads.size(); i++)
 		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
 
@@ -298,7 +329,7 @@ void AppWindow::onUpdate()
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
 	
 	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	if(InputSystem::get()->isKeyDown('P'))
+	//if(InputSystem::get()->isKeyDown('P'))
 	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
 	m_swap_chain->present(true);
@@ -306,6 +337,10 @@ void AppWindow::onUpdate()
 
 void AppWindow::onDestroy()
 {
+	//ImGui_ImplDX11_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
+
 	Window::onDestroy();
 
 	if (this->m_vb != nullptr) //vertex buffers are part of the quad class instead

@@ -1,5 +1,8 @@
 #include "Window.h"
 #include "EngineTime.h"
+#include "imgui.h"
+
+extern IMGUI_IMPL_API LRESULT CALLBACK ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM uparam, LPARAM lparam);
 
 Window::Window()
 {
@@ -8,6 +11,10 @@ Window::Window()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM uparam, LPARAM lparam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, uparam, lparam))
+		return true; // If ImGui is handling the message, return true to prevent further processing
+
+
 	switch (msg)
 	{
 		case WM_CREATE:

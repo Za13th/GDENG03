@@ -49,7 +49,7 @@ void ParticleSystem::Create(Particle templateParticle, void** shader_byte_code, 
 
 	this->templateParticle.Create(shader_byte_code, size_shader);
 
-	this->templateParticle.setScale(Vector3D(0.04f, 0.04f, 1.f));
+	this->templateParticle.setScale(Vector3D(0.1f, 0.1f, 1.f));
 
 	srand(time(0));
 }
