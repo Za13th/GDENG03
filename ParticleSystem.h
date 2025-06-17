@@ -14,7 +14,10 @@ class ParticleSystem
 
 		void Create(Particle templateParticle, void** shader_byte_code, size_t* size_shader);
 		void Update(float deltaTime);
+		void UpdateDVD(float deltaTime);
 		void Draw(int width, int height, VertexShader* vs, PixelShader* ps);
+
+		int getParticleAmount();
 
 		float interval = 0.01f;// interval between particle spawning
 		int max_size = 1000; // Maximum number of particles

@@ -27,13 +27,13 @@ EngineTime::~EngineTime()
 
 void EngineTime::LogFrameStart()
 {
-	sharedInstance->start = std::chrono::system_clock::now();
+	sharedInstance->start = std::chrono::high_resolution_clock::now();
 	//std::chrono::high_resolution_clock
 }
 
 void EngineTime::LogFrameEnd()
 {
-	sharedInstance->end = std::chrono::system_clock::now();
+	sharedInstance->end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed_seconds = sharedInstance->end - sharedInstance->start;
 
 	sharedInstance->deltaTime = elapsed_seconds.count();

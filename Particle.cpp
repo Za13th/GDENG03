@@ -151,6 +151,15 @@ void Particle::update(float deltaTime)
 
 	if(!constantVelocity)
 	this->particleVelocity = this->particleVelocity + (this->particleAcceleration * deltaTime);
+	else
+	{
+		if (this->getLocalPosition().x + 0.08 >= 1.28f || this->getLocalPosition().x - 0.08 <= -1.28f)
+			this->particleVelocity.x *= -1.0f;
+		if (this->getLocalPosition().y + 0.1 >= 0.96f || this->getLocalPosition().y - 0.1 <= -0.96f)
+			this->particleVelocity.y *= -1.0f;
+	}
+
+
 
 }
 

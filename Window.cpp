@@ -76,7 +76,9 @@ bool Window::init()
 	if (!::RegisterClassEx(&wc)) //if class registration fails, return false
 		return false;
 	//create window here
-	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1024, 768,
+	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"DirectX Application", 
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 
+		CW_USEDEFAULT, 1024, 768,
 		NULL, NULL, NULL, this);
 
 	if (!this->m_hwnd) //if window creation failed, return false
@@ -91,7 +93,9 @@ bool Window::init()
 
 bool Window::broadcast()
 {
+
 	EngineTime::LogFrameStart();
+
 	this->onUpdate();
 	MSG msg;
 	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0)
@@ -99,21 +103,8 @@ bool Window::broadcast()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	Sleep(1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	EngineTime::LogFrameEnd();
-
-
-	/*	double elapsedMs = EngineTime::getDeltaTime();
-	if (elapsedMs < 1000.f/60.f) {
-		// Sleep for the remaining time
-		DWORD sleepTime = static_cast<DWORD>(1000.f / 60.f - elapsedMs);
-		if (sleepTime > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-		}
-	}*/
-	
-
-
 
 	return true;
 }

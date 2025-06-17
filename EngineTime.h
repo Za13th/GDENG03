@@ -20,8 +20,8 @@ private:
 
 	static EngineTime* sharedInstance;
 
-	std::chrono::system_clock::time_point start;
-	std::chrono::system_clock::time_point end;
+	std::chrono::high_resolution_clock::time_point start;
+	std::chrono::high_resolution_clock::time_point end;
 
 	double deltaTime = 0.0;
 

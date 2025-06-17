@@ -209,7 +209,7 @@ void AppWindow::createGraphicsWindow()
 
 
 	srand(time(0));
-	int preset = 0;
+	int preset = 3;
 	ParticleSystem::initialize();
 	Particle templateParticle = Particle();
 	if (preset == 0)
@@ -238,12 +238,17 @@ void AppWindow::createGraphicsWindow()
 		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,-0.13f,0.0f };
 		ParticleSystem::getInstance()->particleMovementRandomUp = true;
 	}
-	else 
+	else if (preset == 2)
 	{
 		ParticleSystem::getInstance()->interval= 0.001f;
 		ParticleSystem::getInstance()->max_size = 2000;
 		ParticleSystem::getInstance()->spawnAreaWidth = 1.80f;
 		ParticleSystem::getInstance()->spawnAreaHeight = 1.80f;
+		ParticleSystem::getInstance()->particleMovementRandom = true;
+	}
+	else
+	{
+		ParticleSystem::getInstance()->max_size = 100;
 		ParticleSystem::getInstance()->particleMovementRandom = true;
 	}
 
@@ -275,51 +280,24 @@ void AppWindow::onCreate()
 void AppWindow::onUpdate()
 {
 
-	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	static bool show_demo_window = true;
-	static bool show_another_window = false;
-
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	static float f = 0.0f;
-	static int counter = 0;
 
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-	ImGui::Checkbox("Another Window", &show_another_window);
-
-	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-		counter++;
-	ImGui::SameLine();
-	ImGui::Text("counter = %d", counter);
-
+	ImGui::Begin("Information");    
+	ImGui::Text("Number of Particles: %d", ParticleSystem::getInstance()->getParticleAmount());
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
+
 
 
 
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
-	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0 / 255.f), (float)(0/ 255.f), (float)(0 / 255.f), 1);
 
 
 	RECT rc = this->getClientWindowRect();
@@ -341,13 +319,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_vb);
 	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_ib); 
 	//Cube:
-	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
-
-	/*	ImGui::Render();
-	g_pd3dDeviceContext->OMSetRenderTargets(1, &this->, NULL);
-	g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());*/
-
+	//GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
 
 	for (int i = 0; i < quads.size(); i++)
 		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
@@ -358,14 +330,21 @@ void AppWindow::onUpdate()
 	for (int i = 0; i < planes.size(); i++)
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
 	
-	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	if(InputSystem::get()->isKeyDown('P'))
+	//ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
+	ParticleSystem::getInstance()->UpdateDVD(EngineTime::getDeltaTime());
+	//if(InputSystem::get()->isKeyDown('P'))
 	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	
+	m_swap_chain->present(false);
 
-	m_swap_chain->present(true);
+	if (InputSystem::get()->isKeyDown(VK_ESCAPE))
+	{
+		this->onDestroy();
+		exit(0);
+	}
 }
 
 void AppWindow::onDestroy()
