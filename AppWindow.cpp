@@ -6,6 +6,7 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
+#include "SceneCameraHolder.h"
 #include "ParticleSystem.h"
 
 #include "imgui.h"
@@ -14,6 +15,7 @@
 
 #include <cstdlib>
 #include <ctime>
+
 
 __declspec(align(16))
 struct constant
@@ -84,7 +86,9 @@ void AppWindow::update()
 			temp.setRotationX(m_rot_x);
 			cc.m_world *= temp;
 	*/		
-			cc.m_world.setIdentity();
+
+	cc.m_world.setIdentity();
+	/*
 			Matrix4x4 world_cam;
 			world_cam.setIdentity();
 
@@ -100,11 +104,9 @@ void AppWindow::update()
 			m_world_cam = world_cam;
 
 			world_cam.inverse();
-
-
-
-
-
+*/
+			auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+			world_cam.inverse();
 			cc.m_view = world_cam;
 			//cc.m_view.setIdentity();
 
@@ -127,7 +129,7 @@ void AppWindow::update()
 
 void AppWindow::createGraphicsWindow()
 {
-
+	SceneCameraHolder::initialize();
 	//InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(true);
 
@@ -140,6 +142,9 @@ void AppWindow::createGraphicsWindow()
 	std::cout << "Window rect width: " << width << std::endl;
 	std::cout << "Window rect height: " << height << std::endl;
 
+	SceneCameraHolder::getInstance()->getCamera()->height = height;
+	SceneCameraHolder::getInstance()->getCamera()->width = width;
+
 	this->m_swap_chain->init(this->m_hwnd, width, height);
 
 	m_world_cam.setTranslation(Vector3D(0.0f, 0.0f, -2.0f), false);
@@ -150,7 +155,7 @@ void AppWindow::createGraphicsWindow()
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 	this->m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 
-	vertex vertex_list[] =
+	/*	vertex vertex_list[] =
 	{//    X     Y     Z
 		//Rainbow
 		{ Vector3D(-0.5f, -0.5f, -0.5f) , Vector3D(1,0,0),  Vector3D(1,0,0)},
@@ -194,21 +199,139 @@ void AppWindow::createGraphicsWindow()
 
 	this->m_ib->load(index_list, size_index_list);
 	this->m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
-	this->m_cb->load(&cc, sizeof(constant));
-	
-	/*Cube cube("Test", shader_byte_code, size_shader);
-		this->cubes.push_back(cube);
-
-
-		Plane plane("Test", shader_byte_code, size_shader);
-		plane.setScale(Vector3D(2.0f, 1.0f, 1.0f));
-		plane.setRotation(Vector3D(85.f,0.0f,0.0f));
-		this->planes.push_back(plane);*/
-
-
-
+	this->m_cb->load(&cc, sizeof(constant));*/
 
 	srand(time(0));
+
+	//For #4, Spawning 50 different cubes.
+	/*	for (int i = 0; i < 50; i++)
+	{
+		Cube cube("Test", shader_byte_code, size_shader);
+		cube.setScale(Vector3D(0.4f));
+		cube.setPosition(Vector3D((rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
+			(rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
+			(rand() % (int)(151 * 5.0f) - (int)(1 * 5.0f)) * 0.01f));
+		this->cubes.push_back(cube);
+	}*/
+
+	//For #6, Scene Replication
+	/*	Cube cube("Test", Vector3D(0.95f), shader_byte_code, size_shader);
+	cube.setPosition(Vector3D(0.0f, 0.9f, 0.0f));
+	this->cubes.push_back(cube);
+	Cube cube1("Test2", Vector3D(0.95f), shader_byte_code, size_shader);
+	cube1.setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
+	this->cubes.push_back(cube1);
+	Cube cube2("Test3", Vector3D(0.95f), shader_byte_code, size_shader);
+	cube2.setPosition(Vector3D(-1.5f, 3.0f, -2.0f));
+	this->cubes.push_back(cube2);
+
+
+
+
+	Plane plane("Test", shader_byte_code, size_shader);
+	plane.setScale(Vector3D(8.0f, 8.0f, 10.0f));
+	plane.setPosition(Vector3D(0.0f, -0.5f, 0.0f));
+	plane.setRotation(Vector3D(0.f,0.0f,0.0f));
+	this->planes.push_back(plane);
+	*/
+
+	//For #7, Cards
+	Plane plane("Test", shader_byte_code, size_shader);
+	plane.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane.setPosition(Vector3D(0.0f, 1.07f, 2.35f));
+	plane.setRotation(Vector3D(0.f, 0.0f, 0.0f));
+	this->planes.push_back(plane);
+
+	Plane planea("Test", shader_byte_code, size_shader);
+	planea.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	planea.setPosition(Vector3D(0.0f, 1.07f, 5.8f));
+	planea.setRotation(Vector3D(0.f, 0.0f, 0.0f));
+	this->planes.push_back(planea);
+
+	Plane planeb("Test", shader_byte_code, size_shader);
+	planeb.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	planeb.setPosition(Vector3D(0.0f, 4.215f, 4.05f));
+	planeb.setRotation(Vector3D(0.f, 0.0f, 0.0f));
+	this->planes.push_back(planeb);
+
+	Plane plane1("Test", shader_byte_code, size_shader);
+	plane1.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane1.setPosition(Vector3D(0.f, -0.5f, 0.0f));
+	plane1.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane1);
+
+	Plane plane2("Test", shader_byte_code, size_shader);
+	plane2.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane2.setPosition(Vector3D(0.f, -0.5f, 1.57f));
+	plane2.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane2);
+
+	Plane plane3("Test", shader_byte_code, size_shader);
+	plane3.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane3.setPosition(Vector3D(0.f, -0.5f, 3.15f));
+	plane3.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane3);
+
+	Plane plane4("Test", shader_byte_code, size_shader);
+	plane4.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane4.setPosition(Vector3D(0.f, -0.5f, 4.72f));
+	plane4.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane4);
+
+	Plane plane3c("Test", shader_byte_code, size_shader);
+	plane3c.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane3c.setPosition(Vector3D(0.f, 5.78f, 3.25f));
+	plane3c.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane3c);
+
+	Plane plane4c("Test", shader_byte_code, size_shader);
+	plane4c.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane4c.setPosition(Vector3D(0.f, 5.78f, 4.82f));
+	plane4c.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane4c);
+
+
+	Plane plane3a("Test", shader_byte_code, size_shader);
+	plane3a.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane3a.setPosition(Vector3D(0.f, 2.65f, 1.65f));
+	plane3a.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane3a);
+
+	Plane plane4a("Test", shader_byte_code, size_shader);
+	plane4a.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane4a.setPosition(Vector3D(0.f, 2.65f, 3.22f));
+	plane4a.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane4a);
+
+	Plane plane3b("Test", shader_byte_code, size_shader);
+	plane3b.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane3b.setPosition(Vector3D(0.f, 2.65f, 4.8f));
+	plane3b.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane3b);
+
+	Plane plane4b("Test", shader_byte_code, size_shader);
+	plane4b.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane4b.setPosition(Vector3D(0.f, 2.65f, 6.37f));
+	plane4b.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane4b);
+
+	Plane plane5("Test", shader_byte_code, size_shader);
+	plane5.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane5.setPosition(Vector3D(0.f, -0.5f, 6.30f));
+	plane5.setRotation(Vector3D(90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane5);
+
+	Plane plane6("Test", shader_byte_code, size_shader);
+	plane6.setScale(Vector3D(2.0f, 1.0f, 3.5f));
+	plane6.setPosition(Vector3D(0.f, -0.5f, 7.87f));
+	plane6.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
+	this->planes.push_back(plane6);
+
+
+
+
+
+
 	int preset = 3;
 	ParticleSystem::initialize();
 	Particle templateParticle = Particle();
@@ -286,7 +409,6 @@ void AppWindow::onUpdate()
 
 
 	ImGui::Begin("Information");    
-	ImGui::Text("Number of Particles: %d", ParticleSystem::getInstance()->getParticleAmount());
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 
@@ -296,8 +418,8 @@ void AppWindow::onUpdate()
 
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
-	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
-	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0 / 255.f), (float)(0/ 255.f), (float)(0 / 255.f), 1);
+	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0 / 255.f), (float)(0/ 255.f), (float)(0 / 255.f), 1);
 
 
 	RECT rc = this->getClientWindowRect();
@@ -305,11 +427,11 @@ void AppWindow::onUpdate()
 	int height = rc.bottom - rc.top;
 	GraphicsEngine::get()->getDeviceContext()->setViewportSize(width, height);
 
+	SceneCameraHolder::getInstance()->getCamera()->update(EngineTime::getDeltaTime());
 
-	this->update();
+	//this->update();
 
-	
-	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
+	/*	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_ps, this->m_cb);
 
 	GraphicsEngine::get()->getDeviceContext()->setVertexShader(this->m_vs);
@@ -319,7 +441,8 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_vb);
 	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_ib); 
 	//Cube:
-	//GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);*/
+
 
 	for (int i = 0; i < quads.size(); i++)
 		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
@@ -331,9 +454,9 @@ void AppWindow::onUpdate()
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
 	
 	//ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	ParticleSystem::getInstance()->UpdateDVD(EngineTime::getDeltaTime());
+	//ParticleSystem::getInstance()->UpdateDVD(EngineTime::getDeltaTime());
 	//if(InputSystem::get()->isKeyDown('P'))
-	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
+	//ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -355,12 +478,14 @@ void AppWindow::onDestroy()
 
 	Window::onDestroy();
 
-	if (this->m_vb != nullptr) //vertex buffers are part of the quad class instead
+
+	/*	if (this->m_vb != nullptr) //vertex buffers are part of the quad class instead
 		this->m_vb->release();
 	if (this->m_ib != nullptr);
 		this->m_ib->release();
 	if (this->m_cb != nullptr);
-		this->m_cb->release();
+		this->m_cb->release();*/
+
 	this->m_swap_chain->release();
 	if (this->m_vs != nullptr)
 		this->m_vs->release();
@@ -416,15 +541,6 @@ void AppWindow::onKeyUp(int key)
 {
 	m_forward = 0.0f;
 	m_rightward = 0.0f;
-
-	if (key == 'X')
-	{
-		if (!this->m_camera_rotation)
-			this->m_camera_rotation = true;
-		else this->m_camera_rotation = false;
-
-		InputSystem::get()->showCursor(!this->m_camera_rotation);
-	}
 }
 
 void AppWindow::onMouseMove(const Point& mouse_pos)

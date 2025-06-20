@@ -3,11 +3,13 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
+#include "Vector3D.h"
 
 class Cube : public GameObject
 {
 	public:
 		Cube(std::string name, void* shaderByteCode, size_t sizeShader);
+		Cube(std::string name, Vector3D Color ,void* shaderByteCode, size_t sizeShader);
 		~Cube();
 
 		void update(float deltaTime) override;

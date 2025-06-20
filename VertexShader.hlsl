@@ -25,6 +25,16 @@ VS_OUTPUT vsmain(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
+
+    //For Scaling #3
+    //float scale = lerp(1.0f, 0.25f, (sin(m_angle) + 1.0f) / 2.0f);
+    //row_major float4x4 scaleMatrix = (row_major float4x4)0;
+    //scaleMatrix._11 = scale;
+    //scaleMatrix._22 = scale;
+    //scaleMatrix._33 = scale;
+    //scaleMatrix._44 = 1.0f;
+    //input.position = mul(input.position, scaleMatrix);
+
     output.position = mul(input.position,m_world);
     output.position = mul(output.position,m_view);
     output.position = mul(output.position,m_proj);
@@ -32,7 +42,15 @@ VS_OUTPUT vsmain(VS_INPUT input)
     output.color = input.color;
     output.color1 = input.color1;
 
-    //output.position = lerp(input.position, input.position1, (sin(m_angle) + 1.0f) / 2.0f);
+
+
+    // For moving the cube #3
+    //Cube Position is at (-1.0f, -1.0f, 0.0f)
+    //float4 position1 = mul(input.position + float4(2.5,2.5,0,0),m_world);
+    //position1 = mul(position1,m_view);
+    //position1 = mul(position1,m_proj);
+
+    //output.position = lerp(output.position, position1, (sin(m_angle) + 1.0f) / 2.0f);
 
     
     return output;

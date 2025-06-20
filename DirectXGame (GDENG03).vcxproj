@@ -151,6 +151,7 @@
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="SceneCameraHolder.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="SceneCameraHolder.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="SwapChain.h" />

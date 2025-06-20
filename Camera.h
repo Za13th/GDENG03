@@ -28,12 +28,18 @@ class Camera : public GameObject, public InputListener
 
 		void draw(int width, int height, VertexShader* vs, PixelShader* ps) override {};
 
+		int height = 0;
+		int width = 0;
+
 	private:
 		bool cameraRotation = false;
 		float m_rot_x = 0.0f;
 		float m_rot_y = 0.0f;
+		float m_forward = 0.0f;
+		float m_rightward = 0.0f;
+		float m_upward = 0.0f;
 
 		Matrix4x4 localMatrix;
-		float movement_speed = 10.0f; // Movement speed
+		float movement_speed = 2.0f; // Movement speed
 };
 

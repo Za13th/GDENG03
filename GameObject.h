@@ -28,9 +28,9 @@ class GameObject
 
 		std::string name;
 	private:
-		Vector3D localPosition;
-		Vector3D localScale;
-		Vector3D localRotation;
+		Vector3D localPosition = Vector3D(0.f,0.f,0.f);
+		Vector3D localScale = Vector3D(1.f, 1.f, 1.f);
+		Vector3D localRotation = Vector3D(0.f, 0.f, 0.f);;
 
 
 };

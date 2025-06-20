@@ -147,6 +147,9 @@
     <ClCompile Include="imgui_impl_dx11.cpp">
       <Filter>imgui-stable</Filter>
     </ClCompile>
+    <ClCompile Include="SceneCameraHolder.cpp">
+      <Filter>GameEngine\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -256,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="imgui_impl_dx11.h">
       <Filter>imgui-stable</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneCameraHolder.h">
+      <Filter>GameEngine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

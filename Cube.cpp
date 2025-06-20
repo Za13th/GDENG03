@@ -5,6 +5,7 @@
 #include "EngineTime.h"
 #include "SwapChain.h"
 #include "Matrix4x4.h"
+#include "SceneCameraHolder.h"
 #include <iostream>
 
 #include <cstdlib>
@@ -27,13 +28,61 @@ Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObje
 		//Rainbow
 		{ Vector3D(-0.5f, -0.5f, -0.5f) , Vector3D(1,0,0),  Vector3D(1,0,0)},
 		{ Vector3D(-0.5f, 0.5f, -0.5f) ,   Vector3D(1,1,0),   Vector3D(1,1,0) },
-		{ Vector3D(0.5f, 0.5f, -0.5f) ,  Vector3D(1,1,0), Vector3D(1,1,0) },
-		{ Vector3D(0.5f, -0.5f, -0.5f),  Vector3D(1,0,0),    Vector3D(1,0,0)},
+		{ Vector3D(0.5f, 0.5f, -0.5f) ,  Vector3D(1,0,1), Vector3D(1,0,1) },
+		{ Vector3D(0.5f, -0.5f, -0.5f),  Vector3D(0,1,0),    Vector3D(0,1,0)},
 
-		{ Vector3D(0.5f, -0.5f, 0.5f) ,   Vector3D(0,1,0), Vector3D(0,1,0)},
-		{ Vector3D(0.5f, 0.5f, 0.5f) ,   Vector3D(0,1,0),  Vector3D(0,1,0) },
+		{ Vector3D(0.5f, -0.5f, 0.5f) ,   Vector3D(1,1,1), Vector3D(1,1,1)},
+		{ Vector3D(0.5f, 0.5f, 0.5f) ,   Vector3D(0,0,1),  Vector3D(0,0,1) },
 		{ Vector3D(-0.5f, 0.5f, 0.5f) , Vector3D(0,1,1),   Vector3D(0,1,1) },
-		{ Vector3D(-0.5f, -0.5f, 0.5f),  Vector3D(0,1,0),   Vector3D(0,1,0)}
+		{ Vector3D(-0.5f, -0.5f, 0.5f),  Vector3D(0.1,0.1,0.1),   Vector3D(0.1,0.1,0.1)}
+	};
+
+	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
+	UINT size_list = ARRAYSIZE(vertex_list);
+
+	unsigned int index_list[] =
+	{
+		0, 1, 2,
+		2, 3, 0,
+		4, 5, 6,
+		6, 7, 4,
+		1, 6, 5,
+		5, 2, 1,
+		7, 0, 3,
+		3, 4, 7,
+		3, 2, 5,
+		5, 4, 3,
+		7, 6, 1,
+		1, 0, 7
+	};
+
+	this->indexBuffer = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);
+
+	constant cc;
+	cc.m_angle = 0;
+	this->constantBuffer = GraphicsEngine::get()->createConstantBuffer();
+
+	this->indexBuffer->load(index_list, size_index_list);
+	this->vertexBuffer->load(vertex_list, sizeof(vertex), size_list, shaderByteCode, sizeShader);
+	this->constantBuffer->load(&cc, sizeof(constant));
+}
+
+Cube::Cube(std::string name,Vector3D Color ,void* shaderByteCode, size_t sizeShader) : GameObject(name)
+{
+
+	vertex vertex_list[] =
+	{//    X     Y     Z
+		//Rainbow
+		{ Vector3D(-0.5f, -0.5f, -0.5f) , Color,  Color},
+		{ Vector3D(-0.5f, 0.5f, -0.5f) ,   Color,   Color },
+		{ Vector3D(0.5f, 0.5f, -0.5f) ,  Color, Color },
+		{ Vector3D(0.5f, -0.5f, -0.5f),  Color,    Color},
+
+		{ Vector3D(0.5f, -0.5f, 0.5f) ,   Color, Color},
+		{ Vector3D(0.5f, 0.5f, 0.5f) ,   Color,  Color},
+		{ Vector3D(-0.5f, 0.5f, 0.5f) , Color,   Color },
+		{ Vector3D(-0.5f, -0.5f, 0.5f),  Color,  Color}
 	};
 
 	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
@@ -98,6 +147,41 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5, -1.5, 0), Vector3D(1.5, 1.5, 0), this->deltaPos));
 	//cc.m_world *= temp;
 
+	//for continuous rotation :
+	/*	this->setRotation(this->getLocalRotation().x + EngineTime::getDeltaTime() * 2.0f,
+		this->getLocalRotation().y + EngineTime::getDeltaTime() * 2.0f, 
+		this->getLocalRotation().z + EngineTime::getDeltaTime() * 2.0f);*/
+
+	//for Test Case #5:
+	/*	static bool reverse = false;
+	float deltaSize = 0.5f;
+
+	if (!reverse)
+	{
+		float changeinSize = deltaSize * EngineTime::getDeltaTime();
+		this->setScale(this->getLocalScale() + Vector3D(changeinSize, -changeinSize, changeinSize));
+
+		if (getLocalScale().y <= 0.1f)
+		{
+			this->setScale(Vector3D(this->getLocalScale().x, 0.1f, this->getLocalScale().z));
+			reverse = true;
+		}
+	}
+	else if (reverse)
+	{
+		float changeinSize = deltaSize * EngineTime::getDeltaTime();
+		this->setScale(this->getLocalScale() - Vector3D(changeinSize, -changeinSize, changeinSize));
+
+		if (getLocalScale().y >= 1.0f)
+		{
+			this->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+			reverse = false;
+		}
+	}*/
+
+
+
+
 
 	cc.m_world.setScale(this->getLocalScale());
 	temp.setRotationZ(this->getLocalRotation().z);
@@ -111,10 +195,17 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	cc.m_world *= temp;
 
 
+	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+	world_cam.inverse();
+	cc.m_view = world_cam;
 
 
-	cc.m_view.setIdentity();
-	cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
+
+
+
+	//cc.m_view.setIdentity();
+	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
 
 

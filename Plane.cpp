@@ -5,6 +5,7 @@
 #include "EngineTime.h"
 #include "SwapChain.h"
 #include "Matrix4x4.h"
+#include "SceneCameraHolder.h"
 #include <iostream>
 
 #include <cstdlib>
@@ -112,12 +113,19 @@ void Plane::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	temp.setTranslation(this->getLocalPosition());
 	cc.m_world *= temp;
 
+	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+	world_cam.inverse();
+	cc.m_view = world_cam;
 
 
 
-	cc.m_view.setIdentity();
-	cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+
+
+	//cc.m_view.setIdentity();
+	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
+
 
 
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);
