@@ -35,15 +35,13 @@ float4 psmain(PS_INPUT input) : SV_Target
         
         float distance = length(cameraPosition - input.worldPos);
 
-
-        
         float fogFactor = (fogEnd - distance) / (fogEnd - fogStart);
 
-        //for exponential lighting
+        //for exponential fog
         //float fogFactor = exp(-distance * fogDensity);
         
-        // for exponential squared lighting
-        // float fogFactor = exp(-pow(fogDensity * distance, 2.0));
+        // for exponential squared fog
+        //float fogFactor = exp(-pow(fogDensity * distance, 2.0));
 
         fogFactor = saturate(fogFactor); // Clamp between 0 and 1
 

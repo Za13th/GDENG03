@@ -251,7 +251,7 @@ void AppWindow::createGraphicsWindow()
 		templateParticle.setColor(Vector3D(0.8f));
 
 		ParticleSystem::getInstance()->particleMovementRandomDown = true;
-		ParticleSystem::getInstance()->interval = 0.001f;
+		ParticleSystem::getInstance()->interval = 0.005f;
 		ParticleSystem::getInstance()->max_size = 100;
 		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.88f,0.0f };
 		ParticleSystem::getInstance()->spawnAreaWidth = 2.20f;
@@ -311,9 +311,9 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
-	static float fog_start = 1.5f;
-	static float fog_end = 5.0f; 
-	static float fog_density = 3.5f; 
+	static float fog_start = 2.f;
+	static float fog_end = 10.0f;
+	static float fog_density = 0.1f;
 
 	// Fog start distance controls
 	if (InputSystem::get()->isKeyDown('Z'))
@@ -339,11 +339,11 @@ void AppWindow::onUpdate()
 	// Fog density controls
 	if (InputSystem::get()->isKeyDown('N'))
 	{
-		fog_density = max(0.001f, fog_density - 0.01f);
+		fog_density = max(0.001f, fog_density - 0.001f);
 	}
 	if (InputSystem::get()->isKeyDown('M'))
 	{
-		fog_density += 0.01f;
+		fog_density += 0.001f;
 	}
 
 	ImGui_ImplDX11_NewFrame();
@@ -354,7 +354,7 @@ void AppWindow::onUpdate()
 	ImGui::Begin("Information");    
 	ImGui::Text("Fog Start: %.2f", fog_start);
 	ImGui::Text("Fog End: %.2f", fog_end);
-	ImGui::Text("Fog Density: %.2f", fog_density);
+	ImGui::Text("Fog Density: %.3f", fog_density);
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 
@@ -365,7 +365,11 @@ void AppWindow::onUpdate()
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
 	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	
+	//For Fog
 	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
+	//Toggle this to make it possible to see the objects obscured by the fog
+	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
 
 
 	RECT rc = this->getClientWindowRect();

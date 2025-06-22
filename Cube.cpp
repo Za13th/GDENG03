@@ -222,9 +222,9 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	cc.m_view = world_cam;
 
 
-	static float fog_start = 1.5f;
-	static float fog_end = 5.0f; 
-	static float fog_density = 3.5f; 
+	static float fog_start = 2.f;
+	static float fog_end = 10.0f;
+	static float fog_density = 0.1f; 
 
 	// Fog start distance controls
 	if (InputSystem::get()->isKeyDown('Z'))
@@ -250,11 +250,11 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	// Fog density controls
 	if (InputSystem::get()->isKeyDown('N'))
 	{
-		fog_density = max(0.001f, fog_density - 0.01f);
+		fog_density = max(0.001f, fog_density - 0.001f);
 	}
 	if (InputSystem::get()->isKeyDown('M'))
 	{
-		fog_density += 0.01f;
+		fog_density += 0.001f;
 	}
 
 
@@ -268,8 +268,11 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 
 	//cc.m_view.setIdentity();
 	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
-	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
-	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
+	//For Fog
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
+
+	//For Culling
+	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
 
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);

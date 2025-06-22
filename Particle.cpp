@@ -215,6 +215,7 @@ void Particle::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 
 	cc.fogStart = 1.0f; 
 	cc.fogEnd = 10.0f; 
+	cc.fogDensity = 0.0f; // No fog density for this particle
 	cc.fogColor = Vector3D(0.5f, 0.6f, 0.7f); 
 
 	cc.cameraPos = this->getLocalPosition();
