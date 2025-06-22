@@ -204,148 +204,57 @@ void AppWindow::createGraphicsWindow()
 	srand(time(0));
 
 	//For #4, Spawning 50 different cubes.
-	/*	for (int i = 0; i < 50; i++)
+	
+		for (int i = 0; i < 50; i++)
 	{
 		Cube cube("Test", shader_byte_code, size_shader);
 		cube.setScale(Vector3D(0.4f));
 		cube.setPosition(Vector3D((rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
 			(rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
-			(rand() % (int)(151 * 5.0f) - (int)(1 * 5.0f)) * 0.01f));
+			5 + (rand() % (int)(151 * 5.0f) - (int)(1 * 5.0f)) * 0.01f));
 		this->cubes.push_back(cube);
-	}*/
+	}
+	
+
 
 	//For #6, Scene Replication
-	/*	Cube cube("Test", Vector3D(0.95f), shader_byte_code, size_shader);
+	
+	Cube cube("Test", Vector3D(1,0,0), shader_byte_code, size_shader);
 	cube.setPosition(Vector3D(0.0f, 0.9f, 0.0f));
 	this->cubes.push_back(cube);
-	Cube cube1("Test2", Vector3D(0.95f), shader_byte_code, size_shader);
+	Cube cube1("Test2", Vector3D(0,1,0), shader_byte_code, size_shader);
 	cube1.setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
 	this->cubes.push_back(cube1);
-	Cube cube2("Test3", Vector3D(0.95f), shader_byte_code, size_shader);
+	Cube cube2("Test3", Vector3D(0,0,1), shader_byte_code, size_shader);
 	cube2.setPosition(Vector3D(-1.5f, 3.0f, -2.0f));
 	this->cubes.push_back(cube2);
 
 
 
 
-	Plane plane("Test", shader_byte_code, size_shader);
-	plane.setScale(Vector3D(8.0f, 8.0f, 10.0f));
-	plane.setPosition(Vector3D(0.0f, -0.5f, 0.0f));
+	Plane plane("Test4", shader_byte_code, size_shader);
+	plane.setScale(Vector3D(7.5f, 1.0f, 7.5f));
+	plane.setPosition(Vector3D(0.0f, -1.f, 0.0f));
 	plane.setRotation(Vector3D(0.f,0.0f,0.0f));
 	this->planes.push_back(plane);
-	*/
+	
 
-	//For #7, Cards
-	Plane plane("Test", shader_byte_code, size_shader);
-	plane.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane.setPosition(Vector3D(0.0f, 1.07f, 2.35f));
-	plane.setRotation(Vector3D(0.f, 0.0f, 0.0f));
-	this->planes.push_back(plane);
-
-	Plane planea("Test", shader_byte_code, size_shader);
-	planea.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	planea.setPosition(Vector3D(0.0f, 1.07f, 5.8f));
-	planea.setRotation(Vector3D(0.f, 0.0f, 0.0f));
-	this->planes.push_back(planea);
-
-	Plane planeb("Test", shader_byte_code, size_shader);
-	planeb.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	planeb.setPosition(Vector3D(0.0f, 4.215f, 4.05f));
-	planeb.setRotation(Vector3D(0.f, 0.0f, 0.0f));
-	this->planes.push_back(planeb);
-
-	Plane plane1("Test", shader_byte_code, size_shader);
-	plane1.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane1.setPosition(Vector3D(0.f, -0.5f, 0.0f));
-	plane1.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane1);
-
-	Plane plane2("Test", shader_byte_code, size_shader);
-	plane2.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane2.setPosition(Vector3D(0.f, -0.5f, 1.57f));
-	plane2.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane2);
-
-	Plane plane3("Test", shader_byte_code, size_shader);
-	plane3.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane3.setPosition(Vector3D(0.f, -0.5f, 3.15f));
-	plane3.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane3);
-
-	Plane plane4("Test", shader_byte_code, size_shader);
-	plane4.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane4.setPosition(Vector3D(0.f, -0.5f, 4.72f));
-	plane4.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane4);
-
-	Plane plane3c("Test", shader_byte_code, size_shader);
-	plane3c.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane3c.setPosition(Vector3D(0.f, 5.78f, 3.25f));
-	plane3c.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane3c);
-
-	Plane plane4c("Test", shader_byte_code, size_shader);
-	plane4c.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane4c.setPosition(Vector3D(0.f, 5.78f, 4.82f));
-	plane4c.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane4c);
-
-
-	Plane plane3a("Test", shader_byte_code, size_shader);
-	plane3a.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane3a.setPosition(Vector3D(0.f, 2.65f, 1.65f));
-	plane3a.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane3a);
-
-	Plane plane4a("Test", shader_byte_code, size_shader);
-	plane4a.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane4a.setPosition(Vector3D(0.f, 2.65f, 3.22f));
-	plane4a.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane4a);
-
-	Plane plane3b("Test", shader_byte_code, size_shader);
-	plane3b.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane3b.setPosition(Vector3D(0.f, 2.65f, 4.8f));
-	plane3b.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane3b);
-
-	Plane plane4b("Test", shader_byte_code, size_shader);
-	plane4b.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane4b.setPosition(Vector3D(0.f, 2.65f, 6.37f));
-	plane4b.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane4b);
-
-	Plane plane5("Test", shader_byte_code, size_shader);
-	plane5.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane5.setPosition(Vector3D(0.f, -0.5f, 6.30f));
-	plane5.setRotation(Vector3D(90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane5);
-
-	Plane plane6("Test", shader_byte_code, size_shader);
-	plane6.setScale(Vector3D(2.0f, 1.0f, 3.5f));
-	plane6.setPosition(Vector3D(0.f, -0.5f, 7.87f));
-	plane6.setRotation(Vector3D(-90.f, 0.0f, 0.0f));
-	this->planes.push_back(plane6);
+	
 
 
 
-
-
-
-	int preset = 3;
+	int preset = 0; // 0 for fog
 	ParticleSystem::initialize();
 	Particle templateParticle = Particle();
 	if (preset == 0)
 	{
-		templateParticle.setColor(Vector3D(1));
-		templateParticle.setColor(Vector3D(0.6f, 1, 1), 7);
-		templateParticle.setColor1(Vector3D(0.5f, 1, 1));
-		templateParticle.setColor1(Vector3D(0.95f), 0);
+		templateParticle.setColor(Vector3D(0.8f));
 
-		ParticleSystem::getInstance()->interval = 0.1f;
-		ParticleSystem::getInstance()->max_size = 5;
-		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.9f,0.0f };
-		ParticleSystem::getInstance()->spawnAreaWidth = 2.30f;
+		ParticleSystem::getInstance()->particleMovementRandomDown = true;
+		ParticleSystem::getInstance()->interval = 0.001f;
+		ParticleSystem::getInstance()->max_size = 100;
+		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.88f,0.0f };
+		ParticleSystem::getInstance()->spawnAreaWidth = 2.20f;
 		ParticleSystem::getInstance()->spawnAreaHeight = 0.10f;
 	}
 	else if (preset == 1)
@@ -402,6 +311,40 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
+	static float fog_start = 1.5f;
+	static float fog_end = 5.0f; 
+	static float fog_density = 3.5f; 
+
+	// Fog start distance controls
+	if (InputSystem::get()->isKeyDown('Z'))
+	{
+		fog_start = max(0.0f, fog_start - 0.1f);
+	}
+	if (InputSystem::get()->isKeyDown('C'))
+	{
+		fog_start += 0.1f;
+		fog_start = min(fog_start, fog_end - 0.1f); // Ensure fog start is less than fog end)
+	}
+
+	// Fog end distance controls
+	if (InputSystem::get()->isKeyDown('V'))
+	{
+		fog_end = max(fog_start + 0.1f, fog_end - 0.1f);
+	}
+	if (InputSystem::get()->isKeyDown('B'))
+	{
+		fog_end += 0.1f;
+	}
+
+	// Fog density controls
+	if (InputSystem::get()->isKeyDown('N'))
+	{
+		fog_density = max(0.001f, fog_density - 0.01f);
+	}
+	if (InputSystem::get()->isKeyDown('M'))
+	{
+		fog_density += 0.01f;
+	}
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -409,6 +352,9 @@ void AppWindow::onUpdate()
 
 
 	ImGui::Begin("Information");    
+	ImGui::Text("Fog Start: %.2f", fog_start);
+	ImGui::Text("Fog End: %.2f", fog_end);
+	ImGui::Text("Fog Density: %.2f", fog_density);
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 
@@ -418,8 +364,8 @@ void AppWindow::onUpdate()
 
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
-	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
-	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0 / 255.f), (float)(0/ 255.f), (float)(0 / 255.f), 1);
+	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
 
 
 	RECT rc = this->getClientWindowRect();
@@ -453,10 +399,15 @@ void AppWindow::onUpdate()
 	for (int i = 0; i < planes.size(); i++)
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
 	
-	//ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	//ParticleSystem::getInstance()->UpdateDVD(EngineTime::getDeltaTime());
-	//if(InputSystem::get()->isKeyDown('P'))
-	//ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
+	//Makes it so the particles are drawn on top of everything else.
+	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->
+		ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	ID3D11RenderTargetView* render_target_view = this->m_swap_chain->getRenderTargetView();
+	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->OMSetRenderTargets
+	(1, &render_target_view, nullptr);
+
+	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
+	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

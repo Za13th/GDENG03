@@ -50,7 +50,7 @@ void ParticleSystem::Create(Particle templateParticle, void** shader_byte_code, 
 
 	this->templateParticle.Create(shader_byte_code, size_shader);
 
-	this->templateParticle.setScale(Vector3D(0.1f, 0.1f, 1.f));
+	this->templateParticle.setScale(Vector3D(0.02f, 0.02f, 1.0f));
 
 	srand(time(0));
 }
@@ -120,6 +120,8 @@ void ParticleSystem::Update(float deltaTime)
 
 			}
 
+		float randomSize = ((rand() % 16) + 1) * 0.001f; // Random size between 0.005 and 0.015
+		this->templateParticle.setScale(Vector3D(randomSize, randomSize, 1.0f));
 		particles.push_back(newParticle);
 		timePassed = 0.0f; // Reset the timer
 		//std::cout << "Particle was Created\n";

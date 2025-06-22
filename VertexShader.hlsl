@@ -10,15 +10,25 @@ struct VS_OUTPUT
     float4 position : SV_POSITION;
     float3 color : COLOR;
     float3 color1 : COLOR1;
+    float3 worldPos : TEXCOORD0;
 };
 
-cbuffer constant: register(b0)
+cbuffer constant : register(b0)
 {
-    row_major float4x4 m_world;
-    row_major float4x4 m_view;
-    row_major float4x4 m_proj;
-    
-    float m_angle;
+    row_major float4x4 m_world;        
+    row_major float4x4 m_view;        
+    row_major float4x4 m_proj;         
+
+    float m_angle;                     
+    float3 padding;                   
+
+    float fogStart;                   
+    float fogEnd;                     
+    float2 padding2;                 
+
+    float3 fogColor; 
+    float fogDensity; 
+    float3 cameraPosition;
 };
 
 VS_OUTPUT vsmain(VS_INPUT input)
@@ -42,7 +52,7 @@ VS_OUTPUT vsmain(VS_INPUT input)
     output.color = input.color;
     output.color1 = input.color1;
 
-
+    output.worldPos = mul(input.position,m_world).xyz;
 
     // For moving the cube #3
     //Cube Position is at (-1.0f, -1.0f, 0.0f)

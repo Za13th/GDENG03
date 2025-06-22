@@ -5,19 +5,41 @@
 #include "EngineTime.h"
 #include "SwapChain.h"
 #include "Matrix4x4.h"
+#include "InputSystem.h"
 #include "SceneCameraHolder.h"
 #include <iostream>
 
 #include <cstdlib>
 #include <ctime>
 
-__declspec(align(16))
+/*__declspec(align(16))
 struct constant
 {
 	Matrix4x4 m_world;
 	Matrix4x4 m_view;
 	Matrix4x4 m_proj;
 	float m_angle;
+};*/
+
+
+__declspec(align(16))
+struct constant
+{
+	Matrix4x4 m_world;    
+	Matrix4x4 m_view;     
+	Matrix4x4 m_proj;     
+	float m_angle;        
+	float padding[3];     
+
+	float fogStart = 5.0f;      
+	float fogEnd = 20.0f;       
+	float padding2[2];          
+
+	Vector3D fogColor = { 0.5f, 0.6f, 0.7f };  
+	float fogDensity = 0.0f;                    
+
+	Vector3D cameraPos = { 0.0f, 0.0f, 0.0f }; 
+	float padding4 = 0.0f;                    
 };
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
@@ -148,9 +170,9 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	//cc.m_world *= temp;
 
 	//for continuous rotation :
-	/*	this->setRotation(this->getLocalRotation().x + EngineTime::getDeltaTime() * 2.0f,
-		this->getLocalRotation().y + EngineTime::getDeltaTime() * 2.0f, 
-		this->getLocalRotation().z + EngineTime::getDeltaTime() * 2.0f);*/
+		//this->setRotation(this->getLocalRotation().x + EngineTime::getDeltaTime() * 2.0f,
+		//this->getLocalRotation().y + EngineTime::getDeltaTime() * 2.0f, 
+		//this->getLocalRotation().z + EngineTime::getDeltaTime() * 2.0f);
 
 	//for Test Case #5:
 	/*	static bool reverse = false;
@@ -200,14 +222,55 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	cc.m_view = world_cam;
 
 
+	static float fog_start = 1.5f;
+	static float fog_end = 5.0f; 
+	static float fog_density = 3.5f; 
 
+	// Fog start distance controls
+	if (InputSystem::get()->isKeyDown('Z'))
+	{
+		fog_start = max(0.0f, fog_start - 0.1f);
+	}
+	if (InputSystem::get()->isKeyDown('C'))
+	{
+		fog_start += 0.1f;
+		fog_start = min(fog_start, fog_end - 0.1f); // Ensure fog start is less than fog end)
+	}
+
+	// Fog end distance controls
+	if (InputSystem::get()->isKeyDown('V'))
+	{
+		fog_end = max(fog_start + 0.1f, fog_end - 0.1f);
+	}
+	if (InputSystem::get()->isKeyDown('B'))
+	{
+		fog_end += 0.1f;
+	}
+
+	// Fog density controls
+	if (InputSystem::get()->isKeyDown('N'))
+	{
+		fog_density = max(0.001f, fog_density - 0.01f);
+	}
+	if (InputSystem::get()->isKeyDown('M'))
+	{
+		fog_density += 0.01f;
+	}
+
+
+	cc.fogStart = fog_start; 
+	cc.fogEnd = fog_end; 
+	cc.fogDensity = fog_density; 
+	cc.fogColor = { 0.6f, 0.6f, 0.6f }; 
+
+	cc.cameraPos = SceneCameraHolder::getInstance()->getCamera()->getLocalPosition();
 
 
 	//cc.m_view.setIdentity();
 	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
-	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
+	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
-
 
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(ps, this->constantBuffer);

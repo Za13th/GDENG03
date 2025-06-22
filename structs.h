@@ -4,7 +4,7 @@
 
 struct vertex
 {
-	Vector3D position;
-	Vector3D color;
-	Vector3D color1;
+    Vector3D position;
+    Vector3D color;
+    Vector3D color1;
 };

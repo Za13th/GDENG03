@@ -46,7 +46,7 @@ void Camera::updateViewMatrix()
 	new_pos = new_pos 
 		+ localMatrix.getXDirection() * (m_rightward * movement_speed * EngineTime::getDeltaTime());
 	new_pos = new_pos 
-		+ localMatrix.getYDirection() * (m_upward * movement_speed * EngineTime::getDeltaTime());
+		+ Vector3D(0,1,0) * (m_upward * movement_speed * EngineTime::getDeltaTime());
 	worldCam.setTranslation(new_pos, false);
 
 	this->localMatrix = worldCam;

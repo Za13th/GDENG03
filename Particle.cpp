@@ -7,12 +7,24 @@
 #include <cmath>
 
 __declspec(align(16))
+__declspec(align(16))
 struct constant
 {
-	Matrix4x4 m_world;
-	Matrix4x4 m_view;
-	Matrix4x4 m_proj;
-	float m_angle;
+	Matrix4x4 m_world;    // 64 bytes
+	Matrix4x4 m_view;     // 64 bytes
+	Matrix4x4 m_proj;     // 64 bytes
+	float m_angle;        // 4 bytes
+	float padding[3];     // 12 bytes to align next float4
+
+	float fogStart = 5.0f;       // 4 bytes
+	float fogEnd = 20.0f;        // 4 bytes
+	float padding2[2];           // 8 bytes
+
+	Vector3D fogColor = { 0.5f, 0.6f, 0.7f };  // 12 bytes
+	float fogDensity = 0.0f;                    // 4 bytes to align
+
+	Vector3D cameraPos = { 0.0f, 0.0f, 0.0f }; // 12 bytes
+	float padding4 = 0.0f;                    // 4 bytes to align
 };
 
 Particle::Particle() : GameObject("Particle")
@@ -201,6 +213,11 @@ void Particle::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	temp.setTranslation(this->getLocalPosition());
 	cc.m_world *= temp;
 
+	cc.fogStart = 1.0f; 
+	cc.fogEnd = 10.0f; 
+	cc.fogColor = Vector3D(0.5f, 0.6f, 0.7f); 
+
+	cc.cameraPos = this->getLocalPosition();
 
 	cc.m_view.setIdentity();
 	cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);

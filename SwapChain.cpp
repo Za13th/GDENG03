@@ -73,7 +73,6 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 		return false;
 	}
 
-	//Just to show that it works, let's disable the depth stencil to show what heppens without it.
 	//When disabled, the plane is completely visible because depth is not properly rendered.
 	hr = device->CreateDepthStencilView(buffer, NULL, &this->m_depth_stencil_view);
 
