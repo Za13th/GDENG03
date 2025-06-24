@@ -135,6 +135,7 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
+    <ClCompile Include="FogSystem.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="EngineTime.h" />
+    <ClInclude Include="FogSystem.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="imconfig.h" />

@@ -8,6 +8,7 @@
 #include "InputSystem.h"
 #include "SceneCameraHolder.h"
 #include "ParticleSystem.h"
+#include "FogSystem.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -285,6 +286,7 @@ void AppWindow::createGraphicsWindow()
 	}
 
 	ParticleSystem::getInstance()->Create(templateParticle,&shader_byte_code, &size_shader);
+	FogSystem::initialize();
 
 
 	GraphicsEngine::get()->releaseCompiledShader();
@@ -311,51 +313,94 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
-	static float fog_start = 2.f;
-	static float fog_end = 10.0f;
-	static float fog_density = 0.1f;
-
-	// Fog start distance controls
-	if (InputSystem::get()->isKeyDown('Z'))
-	{
-		fog_start = max(0.0f, fog_start - 0.1f);
-	}
-	if (InputSystem::get()->isKeyDown('C'))
-	{
-		fog_start += 0.1f;
-		fog_start = min(fog_start, fog_end - 0.1f); // Ensure fog start is less than fog end)
-	}
-
-	// Fog end distance controls
-	if (InputSystem::get()->isKeyDown('V'))
-	{
-		fog_end = max(fog_start + 0.1f, fog_end - 0.1f);
-	}
-	if (InputSystem::get()->isKeyDown('B'))
-	{
-		fog_end += 0.1f;
-	}
-
-	// Fog density controls
-	if (InputSystem::get()->isKeyDown('N'))
-	{
-		fog_density = max(0.001f, fog_density - 0.001f);
-	}
-	if (InputSystem::get()->isKeyDown('M'))
-	{
-		fog_density += 0.001f;
-	}
+	FogSystem::getInstance()->update();
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	static bool totalFog = true;
+	static bool visibleParticles = true;
 
 	ImGui::Begin("Information");    
-	ImGui::Text("Fog Start: %.2f", fog_start);
-	ImGui::Text("Fog End: %.2f", fog_end);
-	ImGui::Text("Fog Density: %.3f", fog_density);
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	if (FogSystem::getInstance()->getFogState() == 1)
+	{
+		ImGui::Text("Fog Start: %.2f (Z/C)", FogSystem::getInstance()->getFogStart());
+		ImGui::Text("Fog End: %.2f (V/B)", FogSystem::getInstance()->getFogEnd());
+	}
+	else if (FogSystem::getInstance()->getFogState() != 0)
+	{
+		ImGui::Text("Fog Density: %.3f (N/M)", FogSystem::getInstance()->getFogDensity());
+		ImGui::NewLine();
+	}
+	else
+	{
+		ImGui::Text("Fog Disabled");
+		ImGui::NewLine();
+	}
+
+	static bool twoorthree = false;
+	if (ImGui::Button("No Fog"))
+	{
+		twoorthree = false;
+		FogSystem::getInstance()->setFogState(0);
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Linear Fog\n"))
+	{
+		twoorthree = false;
+		if (FogSystem::getInstance()->getFogState() != 1)
+		{
+			FogSystem::getInstance()->setFogStart(2.0f);
+			FogSystem::getInstance()->setFogEnd(10.0f);
+		}
+		FogSystem::getInstance()->setFogState(1);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Exponential Fog"))
+	{
+		if (!twoorthree)
+		FogSystem::getInstance()->setFogDensity(0.1f);
+		twoorthree = true;
+		FogSystem::getInstance()->setFogState(2);
+
+	}
+	if (ImGui::Button("Exponential Squared Fog"))
+	{
+		if(!twoorthree)
+		FogSystem::getInstance()->setFogDensity(0.1f);
+		twoorthree = true;
+		FogSystem::getInstance()->setFogState(3);
+	}
+	ImGui::Spacing();
+	if (ImGui::Button("Toggle Object Culling"))
+		FogSystem::getInstance()->toggleCullingEnabled();
+	ImGui::SameLine();
+	if (FogSystem::getInstance()->isCullingEnabled())
+		ImGui::Text("Culling: Enabled");
+	else
+		ImGui::Text("Culling: Disabled");
+	ImGui::Spacing();
+	if (ImGui::Button("Toggle Fog Visibility"))
+	{
+		if (totalFog) totalFog = false;
+		else totalFog = true;
+	}
+	ImGui::SameLine();
+	if (totalFog) ImGui::Text("Fog Visibility: Disabled");
+	else ImGui::Text("Fog Visibility: Enabled");
+	ImGui::Spacing();
+	if (ImGui::Button("Toggle Particle Visibility"))
+	{
+		if (visibleParticles) visibleParticles = false;
+		else visibleParticles = true;
+	}
+	ImGui::SameLine();
+	if (visibleParticles) ImGui::Text("Particles: Enabled");
+	else ImGui::Text("Particles: Disabled");
+	ImGui::Spacing();
+	
 	ImGui::End();
 
 
@@ -364,11 +409,13 @@ void AppWindow::onUpdate()
 
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
-	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	//if(FogSystem::getInstance()->getFogState() == 0)
+		//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	if (totalFog)
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
+	else
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
 	
-	//For Fog
-	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
-	//Toggle this to make it possible to see the objects obscured by the fog
 	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
 
 
@@ -405,12 +452,17 @@ void AppWindow::onUpdate()
 	
 	//Makes it so the particles are drawn on top of everything else.
 	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->
-		ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	ID3D11RenderTargetView* render_target_view = this->m_swap_chain->getRenderTargetView();
 	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->OMSetRenderTargets
 	(1, &render_target_view, nullptr);
+	
+
+
+
 
 	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
+	if(visibleParticles)
 	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
 	ImGui::Render();

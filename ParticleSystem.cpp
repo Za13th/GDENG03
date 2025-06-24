@@ -79,19 +79,19 @@ void ParticleSystem::Update(float deltaTime)
 			if (sharedInstance->spawnAreaWidth == 0 && sharedInstance->spawnAreaHeight == 0)
 				newParticle.setPosition(Vector3D(sharedInstance->spawnAreaCenter.x,
 					sharedInstance->spawnAreaCenter.y,
-					-2.0f));
+					-0.001f));
 			else if(sharedInstance->spawnAreaWidth == 0)
 				newParticle.setPosition(Vector3D(sharedInstance->spawnAreaCenter.x,
 					sharedInstance->spawnAreaCenter.y + (rand() % (int)(100 * sharedInstance->spawnAreaHeight) - (int)(50 * sharedInstance->spawnAreaHeight)) * 0.01f,
-					-2.0f));
+					-0.001f));
 			else if (sharedInstance->spawnAreaHeight == 0)
 				newParticle.setPosition(Vector3D(sharedInstance->spawnAreaCenter.x + (rand() % (int)(100 * sharedInstance->spawnAreaWidth) - (int)(50 * sharedInstance->spawnAreaWidth)) * 0.01f,
 					sharedInstance->spawnAreaCenter.y,
-					-2.0f));
+					-0.001f));
 			else
 			newParticle.setPosition(Vector3D(sharedInstance->spawnAreaCenter.x + (rand() % (int)(100 * sharedInstance->spawnAreaWidth) - (int)(50 * sharedInstance->spawnAreaWidth)) * 0.01f,
 				sharedInstance->spawnAreaCenter.y + (rand() % (int)(100 * sharedInstance->spawnAreaHeight) - (int)(50 * sharedInstance->spawnAreaHeight)) * 0.01f,
-				-2.0f));
+				-0.001f));
 
 			if (particleMovementRandom)
 			{

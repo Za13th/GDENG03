@@ -24,7 +24,8 @@ struct constant
 	float fogDensity = 0.0f;                    // 4 bytes to align
 
 	Vector3D cameraPos = { 0.0f, 0.0f, 0.0f }; // 12 bytes
-	float padding4 = 0.0f;                    // 4 bytes to align
+	int fogState;                 // 4 bytes to align
+	bool culling;
 };
 
 Particle::Particle() : GameObject("Particle")
@@ -202,11 +203,7 @@ void Particle::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 
 
 	Matrix4x4 temp;
-
 	cc.m_world.setScale(this->getLocalScale());
-
-	temp.setRotationZ(-(speed * cc.m_angle));
-	cc.m_world *= temp;
 
 	this->setPosition(this->getLocalPosition() + particleVelocity);
 
@@ -217,6 +214,8 @@ void Particle::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	cc.fogEnd = 10.0f; 
 	cc.fogDensity = 0.0f; // No fog density for this particle
 	cc.fogColor = Vector3D(0.5f, 0.6f, 0.7f); 
+	cc.fogState = 0;
+	cc.culling = false;
 
 	cc.cameraPos = this->getLocalPosition();
 

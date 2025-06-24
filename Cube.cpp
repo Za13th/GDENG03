@@ -7,6 +7,7 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "SceneCameraHolder.h"
+#include "FogSystem.h"
 #include <iostream>
 
 #include <cstdlib>
@@ -39,7 +40,8 @@ struct constant
 	float fogDensity = 0.0f;                    
 
 	Vector3D cameraPos = { 0.0f, 0.0f, 0.0f }; 
-	float padding4 = 0.0f;                    
+	int fogState;
+	int culling;
 };
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
@@ -221,47 +223,13 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	world_cam.inverse();
 	cc.m_view = world_cam;
 
+	cc.fogStart = FogSystem::getInstance()->getFogStart(); 
+	cc.fogEnd = FogSystem::getInstance()->getFogEnd();
+	cc.fogDensity = FogSystem::getInstance()->getFogDensity();
+	cc.fogColor = FogSystem::getInstance()->getFogColor();
+	cc.fogState = FogSystem::getInstance()->getFogState(); 
+	cc.culling = FogSystem::getInstance()->isCullingEnabled();
 
-	static float fog_start = 2.f;
-	static float fog_end = 10.0f;
-	static float fog_density = 0.1f; 
-
-	// Fog start distance controls
-	if (InputSystem::get()->isKeyDown('Z'))
-	{
-		fog_start = max(0.0f, fog_start - 0.1f);
-	}
-	if (InputSystem::get()->isKeyDown('C'))
-	{
-		fog_start += 0.1f;
-		fog_start = min(fog_start, fog_end - 0.1f); // Ensure fog start is less than fog end)
-	}
-
-	// Fog end distance controls
-	if (InputSystem::get()->isKeyDown('V'))
-	{
-		fog_end = max(fog_start + 0.1f, fog_end - 0.1f);
-	}
-	if (InputSystem::get()->isKeyDown('B'))
-	{
-		fog_end += 0.1f;
-	}
-
-	// Fog density controls
-	if (InputSystem::get()->isKeyDown('N'))
-	{
-		fog_density = max(0.001f, fog_density - 0.001f);
-	}
-	if (InputSystem::get()->isKeyDown('M'))
-	{
-		fog_density += 0.001f;
-	}
-
-
-	cc.fogStart = fog_start; 
-	cc.fogEnd = fog_end; 
-	cc.fogDensity = fog_density; 
-	cc.fogColor = { 0.6f, 0.6f, 0.6f }; 
 
 	cc.cameraPos = SceneCameraHolder::getInstance()->getCamera()->getLocalPosition();
 

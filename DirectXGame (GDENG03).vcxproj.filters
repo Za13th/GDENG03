@@ -67,6 +67,9 @@
     <Filter Include="imgui-stable">
       <UniqueIdentifier>{ab119ab1-fb7c-4f40-8120-be62bb955435}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\FogSystem">
+      <UniqueIdentifier>{a524f2e6-ce74-456d-8b5b-a82d39eb82b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -149,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="SceneCameraHolder.cpp">
       <Filter>GameEngine\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="FogSystem.cpp">
+      <Filter>GameEngine\FogSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="SceneCameraHolder.h">
       <Filter>GameEngine\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="FogSystem.h">
+      <Filter>GameEngine\FogSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

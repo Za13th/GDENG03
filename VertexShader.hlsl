@@ -16,19 +16,22 @@ struct VS_OUTPUT
 cbuffer constant : register(b0)
 {
     row_major float4x4 m_world;        
-    row_major float4x4 m_view;        
+    row_major float4x4 m_view;         
     row_major float4x4 m_proj;         
 
     float m_angle;                     
-    float3 padding;                   
+    float3 padding1;
 
     float fogStart;                   
     float fogEnd;                     
-    float2 padding2;                 
+    float2 padding2;
 
-    float3 fogColor; 
+    float3 fogColor;                 
     float fogDensity; 
-    float3 cameraPosition;
+    float3 cameraPosition;  
+
+    int fogState;
+    int culling;
 };
 
 VS_OUTPUT vsmain(VS_INPUT input)
