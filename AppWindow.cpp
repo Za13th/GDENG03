@@ -202,47 +202,119 @@ void AppWindow::createGraphicsWindow()
 	this->m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 	this->m_cb->load(&cc, sizeof(constant));*/
 
+
+
 	srand(time(0));
 
-	//For #4, Spawning 50 different cubes.
-	
-		for (int i = 0; i < 50; i++)
+	//For #4, Spawning 100 different cubes with much wider distribution and varied sizes
+	for (int i = 0; i < 100; i++)
 	{
 		Cube cube("Test", shader_byte_code, size_shader);
-		cube.setScale(Vector3D(0.4f));
-		cube.setPosition(Vector3D((rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
-			(rand() % (int)(100 * 5.0f) - (int)(50 * 5.0f)) * 0.01f,
-			5 + (rand() % (int)(151 * 5.0f) - (int)(1 * 5.0f)) * 0.01f));
+
+		// Create more reasonable varied cube sizes
+		float sizeCategory = rand() % 4;
+		float scale;
+		switch ((int)sizeCategory)
+		{
+		case 0: // Small cubes
+			scale = 0.2f + (rand() % 20) * 0.01f; // 0.2 to 0.4
+			break;
+		case 1: // Medium-small cubes  
+			scale = 0.4f + (rand() % 30) * 0.01f; // 0.4 to 0.7
+			break;
+		case 2: // Medium cubes
+			scale = 0.7f + (rand() % 30) * 0.01f; // 0.7 to 1.0
+			break;
+		case 3: // Large cubes
+			scale = 1.0f + (rand() % 30) * 0.01f; // 1.0 to 1.3
+			break;
+		}
+
+		// Sometimes create non-uniform scaling for rectangular shapes
+		if (rand() % 5 == 0) // 20% chance (reduced from 25%)
+		{
+			float scaleX = scale * (0.6f + (rand() % 80) * 0.01f); // 0.6x to 1.4x the base scale
+			float scaleY = scale * (0.6f + (rand() % 80) * 0.01f);
+			float scaleZ = scale * (0.6f + (rand() % 80) * 0.01f);
+			cube.setScale(Vector3D(scaleX, scaleY, scaleZ));
+		}
+		else
+		{
+			cube.setScale(Vector3D(scale)); // Uniform scaling
+		}
+
+		float x = (rand() % (int)(100 * 15.0f) - (int)(50 * 15.0f)) * 0.01f; // -15 to 15
+		float y = (rand() % (int)(100 * 10.0f) - (int)(50 * 10.0f)) * 0.01f; // -10 to 10
+		float z = (rand() % (int)(100 * 30.0f) - (int)(5 * 100)) * 0.01f;    // -5 to 25
+
+		cube.setPosition(Vector3D(x, y, z));
 		this->cubes.push_back(cube);
 	}
-	
+
+	// Additional layer of cubes at different depths with moderate size variations
+	for (int i = 0; i < 30; i++)
+	{
+		Cube cube("Far", shader_byte_code, size_shader);
+
+		// Create reasonably sized cubes for the far distance
+		float scale = 0.6f + (rand() % 80) * 0.01f;
+
+		// 20% chance for larger cubes in the distance (reduced from 30%)
+		if (rand() % 10 < 2)
+		{
+			scale = 1.4f + (rand() % 60) * 0.01f; // 1.4 to 2.0 - large but not massive
+		}
+
+		// Sometimes create rectangular shapes (reduced frequency and extremes)
+		if (rand() % 4 == 0) // 25% chance
+		{
+			float scaleX = scale * (0.5f + (rand() % 100) * 0.01f);
+			float scaleY = scale * (0.8f + (rand() % 80) * 0.01f);
+			float scaleZ = scale * (0.5f + (rand() % 100) * 0.01f);
+			cube.setScale(Vector3D(scaleX, scaleY, scaleZ));
+		}
+		else
+		{
+			cube.setScale(Vector3D(scale));
+		}
+
+		// Far layer: Z from 20 to 40
+		float x = (rand() % (int)(100 * 20.0f) - (int)(50 * 20.0f)) * 0.01f; // -20 to 20
+		float y = (rand() % (int)(100 * 15.0f) - (int)(50 * 15.0f)) * 0.01f; // -15 to 15
+		float z = 20.0f + (rand() % (int)(100 * 20.0f)) * 0.01f;              // 20 to 40
+
+		cube.setPosition(Vector3D(x, y, z));
+		this->cubes.push_back(cube);
+	}
 
 
-	//For #6, Scene Replication
-	
-	Cube cube("Test", Vector3D(1,0,0), shader_byte_code, size_shader);
-	cube.setPosition(Vector3D(0.0f, 0.9f, 0.0f));
-	this->cubes.push_back(cube);
-	Cube cube1("Test2", Vector3D(0,1,0), shader_byte_code, size_shader);
-	cube1.setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
-	this->cubes.push_back(cube1);
-	Cube cube2("Test3", Vector3D(0,0,1), shader_byte_code, size_shader);
-	cube2.setPosition(Vector3D(-1.5f, 3.0f, -2.0f));
-	this->cubes.push_back(cube2);
-
-
-
-
-	Plane plane("Test4", shader_byte_code, size_shader);
-	plane.setScale(Vector3D(7.5f, 1.0f, 7.5f));
-	plane.setPosition(Vector3D(0.0f, -1.f, 0.0f));
-	plane.setRotation(Vector3D(0.f,0.0f,0.0f));
+	// Main ground plane - much larger for better depth testing
+	Plane plane("Ground",shader_byte_code, size_shader);
+	plane.setScale(Vector3D(50.0f, 1.0f, 50.0f)); // Much larger plane: 50x50 units
+	plane.setPosition(Vector3D(0.0f, -2.0f, 0.0f)); // Lowered slightly
+	plane.setRotation(Vector3D(0.f, 0.0f, 0.0f));
 	this->planes.push_back(plane);
-	
 
-	
+	// Additional elevated platform for more depth complexity
+	Plane plane2("Platform", shader_byte_code, size_shader);
+	plane2.setScale(Vector3D(15.0f, 1.0f, 15.0f));
+	plane2.setPosition(Vector3D(10.0f, 5.0f, 15.0f));
+	plane2.setRotation(Vector3D(0.f, 0.0f, 0.0f));
+	this->planes.push_back(plane2);
 
+	// Vertical wall plane for depth testing
+	Plane wall("Wall", shader_byte_code, size_shader);
+	wall.setScale(Vector3D(30.0f, 20.0f, 1.0f));
+	wall.setPosition(Vector3D(0.0f, 5.0f, 30.0f));
+	wall.setRotation(Vector3D(1.57f, 0.0f, 0.0f)); // Rotate 90 degrees to make it vertical
+	this->planes.push_back(wall);
 
+	// For Showing that objects that are the same color as the fog still
+	// get culled as normal
+	Cube c("Cube",Vector3D(0.6f), shader_byte_code, size_shader);
+	c.setPosition(Vector3D(0.0f, 4.0f, 0.0f));
+	c.setScale(Vector3D(2.f));
+	this->cubes.push_back(c);
 
 	int preset = 0; // 0 for fog
 	ParticleSystem::initialize();
@@ -300,7 +372,7 @@ void AppWindow::createGraphicsWindow()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(this->m_hwnd);
 	ImGui_ImplDX11_Init(GraphicsEngine::getInstance()->getDevice(), GraphicsEngine::getInstance()->getDeviceContext()->getDeviceContext());
 
@@ -321,86 +393,196 @@ void AppWindow::onUpdate()
 
 	static bool totalFog = true;
 	static bool visibleParticles = true;
+	static bool transparentBackground = false;
 
-	ImGui::Begin("Information");    
-	if (FogSystem::getInstance()->getFogState() == 1)
-	{
-		ImGui::Text("Fog Start: %.2f (Z/C)", FogSystem::getInstance()->getFogStart());
-		ImGui::Text("Fog End: %.2f (V/B)", FogSystem::getInstance()->getFogEnd());
-	}
-	else if (FogSystem::getInstance()->getFogState() != 0)
-	{
-		ImGui::Text("Fog Density: %.3f (N/M)", FogSystem::getInstance()->getFogDensity());
-		ImGui::NewLine();
-	}
-	else
-	{
-		ImGui::Text("Fog Disabled");
-		ImGui::NewLine();
-	}
 
-	static bool twoorthree = false;
-	if (ImGui::Button("No Fog"))
+	// === ENHANCED IMGUI INTERFACE ===
+
+	ImGuiWindowFlags flags = 0;
+	if (transparentBackground)
+	flags |= ImGuiWindowFlags_NoBackground; // No background for the control panel
+	flags |= ImGuiWindowFlags_AlwaysAutoResize;
+
+
+	// Main Control Panel
+	ImGui::Begin("Engine Control Panel", nullptr, flags);
+
+	if (ImGui::Button("Transparent Background"))
 	{
-		twoorthree = false;
-		FogSystem::getInstance()->setFogState(0);
+		transparentBackground = !transparentBackground;
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Linear Fog\n"))
+	// Performance Metrics Section
+	if (ImGui::CollapsingHeader("Performance Metrics", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		twoorthree = false;
-		if (FogSystem::getInstance()->getFogState() != 1)
+		float framerate = ImGui::GetIO().Framerate;
+		float frametime = 1000.0f / framerate;
+
+		ImGui::Text("FPS: %.1f", framerate);
+		ImGui::SameLine();
+		if (framerate < 30.0f)
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "(Low)");
+		else if (framerate < 60.0f)
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "(Medium)");
+		else
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "(Good)");
+
+		ImGui::Text("Frame Time: %.3f ms", frametime);
+
+		// FPS Graph
+		static float fps_history[120] = {};
+		static int fps_history_offset = 0;
+		fps_history[fps_history_offset] = framerate;
+		fps_history_offset = (fps_history_offset + 1) % 120;
+
+		ImGui::PlotLines("FPS", fps_history, 120, fps_history_offset, nullptr, 0.0f, 120.0f, ImVec2(0, 80));
+	}
+
+	// Scene Information Section
+	if (ImGui::CollapsingHeader("Scene Information", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Total Objects: %d", (int)(cubes.size() + planes.size()));
+		ImGui::Indent();
+		ImGui::Text("Cubes: %d", (int)cubes.size());
+		ImGui::Text("Planes: %d", (int)planes.size());
+		ImGui::Text("Particles: %d", ParticleSystem::getInstance()->getParticleAmount());
+		ImGui::Unindent();
+
+		// Camera information
+		Vector3D cam_pos = SceneCameraHolder::getInstance()->getCamera()->getLocalPosition();
+		ImGui::Text("Camera Position:");
+		ImGui::Indent();
+		ImGui::Text("X: %.2f, Y: %.2f, Z: %.2f", cam_pos.x, cam_pos.y, cam_pos.z);
+		ImGui::Unindent();
+	}
+
+	// Fog Controls Section 
+	if (ImGui::CollapsingHeader("Fog Settings", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (FogSystem::getInstance()->getFogState() == 1)
 		{
-			FogSystem::getInstance()->setFogStart(2.0f);
-			FogSystem::getInstance()->setFogEnd(10.0f);
+			ImGui::Text("Fog Start: %.2f (Z/C)", FogSystem::getInstance()->getFogStart());
+			ImGui::Text("Fog End: %.2f (V/B)", FogSystem::getInstance()->getFogEnd());
 		}
-		FogSystem::getInstance()->setFogState(1);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Exponential Fog"))
-	{
-		if (!twoorthree)
-		FogSystem::getInstance()->setFogDensity(0.1f);
-		twoorthree = true;
-		FogSystem::getInstance()->setFogState(2);
+		else if (FogSystem::getInstance()->getFogState() != 0)
+		{
+			ImGui::Text("Fog Density: %.3f (N/M)", FogSystem::getInstance()->getFogDensity());
+			ImGui::NewLine();
+		}
+		else
+		{
+			ImGui::Text("Fog Disabled");
+			ImGui::NewLine();
+		}
+
+		static bool twoorthree = false;
+		if (ImGui::Button("No Fog"))
+		{
+			twoorthree = false;
+			FogSystem::getInstance()->setFogState(0);
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Linear Fog\n"))
+		{
+			twoorthree = false;
+			if (FogSystem::getInstance()->getFogState() != 1)
+			{
+				FogSystem::getInstance()->setFogStart(2.0f);
+				FogSystem::getInstance()->setFogEnd(10.0f);
+			}
+			FogSystem::getInstance()->setFogState(1);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Exponential Fog"))
+		{
+			if (!twoorthree)
+				FogSystem::getInstance()->setFogDensity(0.1f);
+			twoorthree = true;
+			FogSystem::getInstance()->setFogState(2);
+
+		}
+		if (ImGui::Button("Exponential Squared Fog"))
+		{
+			if (!twoorthree)
+				FogSystem::getInstance()->setFogDensity(0.1f);
+			twoorthree = true;
+			FogSystem::getInstance()->setFogState(3);
+		}
+		ImGui::Spacing();
+		if (ImGui::Button("Toggle Object Culling"))
+			FogSystem::getInstance()->toggleCullingEnabled();
+		ImGui::SameLine();
+		if (FogSystem::getInstance()->isCullingEnabled())
+			ImGui::Text("Culling: Enabled");
+		else
+			ImGui::Text("Culling: Disabled");
+		ImGui::Spacing();
+		if (ImGui::Button("Toggle Fog Visibility"))
+		{
+			if (totalFog) totalFog = false;
+			else totalFog = true;
+		}
+		ImGui::SameLine();
+		if (totalFog) ImGui::Text("Fog Visibility: Disabled");
+		else ImGui::Text("Fog Visibility: Enabled");
+		ImGui::Spacing();
+		if (ImGui::Button("Toggle Particle Visibility"))
+		{
+			if (visibleParticles) visibleParticles = false;
+			else visibleParticles = true;
+		}
+		ImGui::SameLine();
+		if (visibleParticles) ImGui::Text("Particles: Enabled");
+		else ImGui::Text("Particles: Disabled");
+		ImGui::Spacing();
 
 	}
-	if (ImGui::Button("Exponential Squared Fog"))
+
+	ImGui::End();
+
+	// Camera Controls Window
+	ImGui::Begin("Camera Controls", nullptr, flags);
+
+	if (ImGui::CollapsingHeader("Movement Controls", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if(!twoorthree)
-		FogSystem::getInstance()->setFogDensity(0.1f);
-		twoorthree = true;
-		FogSystem::getInstance()->setFogState(3);
+		ImGui::Text("Keyboard Controls:");
+		ImGui::BulletText("WASD - Move camera");
+		ImGui::BulletText("X - Toggle Focus for Mouse Movement");
+		ImGui::BulletText("Mouse - Look around (when focused)");
+		ImGui::BulletText("ESC - Exit application");
+
 	}
-	ImGui::Spacing();
-	if (ImGui::Button("Toggle Object Culling"))
-		FogSystem::getInstance()->toggleCullingEnabled();
-	ImGui::SameLine();
-	if (FogSystem::getInstance()->isCullingEnabled())
-		ImGui::Text("Culling: Enabled");
-	else
-		ImGui::Text("Culling: Disabled");
-	ImGui::Spacing();
-	if (ImGui::Button("Toggle Fog Visibility"))
+
+	ImGui::End();
+
+
+
+	// Mini Statistics Overlay (always visible)
+	ImGuiWindowFlags overlay_flags = ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoNav;
+
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.35f);
+
+	if (ImGui::Begin("Overlay", nullptr, overlay_flags))
 	{
-		if (totalFog) totalFog = false;
-		else totalFog = true;
+		ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+		ImGui::Text("Objects: %d", (int)(cubes.size() + planes.size()));
+		ImGui::Text("Particles: %d", ParticleSystem::getInstance()->getParticleAmount());
+
+		// Color-coded performance indicator
+		float fps = ImGui::GetIO().Framerate;
+		if (fps < 30.0f)
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Performance: LOW");
+		else if (fps < 60.0f)
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Performance: MEDIUM");
+		else
+			ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Performance: GOOD");
 	}
-	ImGui::SameLine();
-	if (totalFog) ImGui::Text("Fog Visibility: Disabled");
-	else ImGui::Text("Fog Visibility: Enabled");
-	ImGui::Spacing();
-	if (ImGui::Button("Toggle Particle Visibility"))
-	{
-		if (visibleParticles) visibleParticles = false;
-		else visibleParticles = true;
-	}
-	ImGui::SameLine();
-	if (visibleParticles) ImGui::Text("Particles: Enabled");
-	else ImGui::Text("Particles: Disabled");
-	ImGui::Spacing();
-	
 	ImGui::End();
 
 

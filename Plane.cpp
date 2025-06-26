@@ -82,6 +82,54 @@ Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameOb
 	this->constantBuffer->load(&cc, sizeof(constant));
 }
 
+Plane::Plane(std::string name, Vector3D color ,void* shaderByteCode, size_t sizeShader) : GameObject(name)
+{
+
+	vertex vertex_list[] =
+	{//    X     Y     Z
+		//Rainbow
+		{ Vector3D(-0.5f, -0.0001f, -0.5f) , color,  color},
+		{ Vector3D(-0.5f, 0.0001f, -0.5f) ,   color,   color },
+		{ Vector3D(0.5f, 0.0001f, -0.5f) , color, color },
+		{ Vector3D(0.5f, -0.0001f, -0.5f),  color,    color},
+
+		{ Vector3D(0.5f, -0.0001f, 0.5f) ,   color, color},
+		{ Vector3D(0.5f, 0.0001f, 0.5f) ,   color,  color},
+		{ Vector3D(-0.5f, 0.0001f, 0.5f) , color,   color },
+		{ Vector3D(-0.5f, -0.0001f, 0.5f),  color,   color}
+	};
+
+	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
+	UINT size_list = ARRAYSIZE(vertex_list);
+
+	unsigned int index_list[] =
+	{
+		0, 1, 2,
+		2, 3, 0,
+		4, 5, 6,
+		6, 7, 4,
+		1, 6, 5,
+		5, 2, 1,
+		7, 0, 3,
+		3, 4, 7,
+		3, 2, 5,
+		5, 4, 3,
+		7, 6, 1,
+		1, 0, 7
+	};
+
+	this->indexBuffer = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);
+
+	constant cc;
+	cc.m_angle = 0;
+	this->constantBuffer = GraphicsEngine::get()->createConstantBuffer();
+
+	this->indexBuffer->load(index_list, size_index_list);
+	this->vertexBuffer->load(vertex_list, sizeof(vertex), size_list, shaderByteCode, sizeShader);
+	this->constantBuffer->load(&cc, sizeof(constant));
+}
+
 Plane::~Plane()
 {
 

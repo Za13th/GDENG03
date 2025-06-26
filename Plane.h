@@ -8,6 +8,7 @@ class Plane : public GameObject
 {
 public:
 	Plane(std::string name, void* shaderByteCode, size_t sizeShader);
+	Plane(std::string name, Vector3D color ,void* shaderByteCode, size_t sizeShader);
 	~Plane();
 
 	void update(float deltaTime) override;
