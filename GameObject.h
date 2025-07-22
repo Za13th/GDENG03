@@ -1,6 +1,10 @@
 #pragma once
 #include <iostream>
+#include <unordered_map>
+#include <vector>
 #include "Vector3D.h"
+#include "Matrix4x4.h"
+#include "Component.h"
 
 class VertexShader;
 class PixelShader;
@@ -8,6 +12,11 @@ class PixelShader;
 class GameObject
 {
 	public: 
+
+		typedef std::string String;
+		typedef std::unordered_map<String, Component*> ComponentTable;
+		typedef std::vector<Component*> ComponentList;
+
 		GameObject(std::string name);
 		~GameObject();
 
@@ -26,12 +35,36 @@ class GameObject
 		void setRotation(Vector3D rotation);
 		Vector3D getLocalRotation();
 
-		std::string name;
-	private:
-		Vector3D localPosition;
-		Vector3D localScale;
-		Vector3D localRotation;
+		void getInspectorUI();
+		void reconstructMatrix();
+		void reconstructVectors();
 
+		void setLocalMatrix(float* matrix);
+		float* getPhysicsLocalMatrix();
+
+		void attachComponent(Component* component);
+		void detachComponent(Component* component);
+
+		Component* findComponentByName(std::string name);
+		Component* findComponentByType(Component::ComponentType type, std::string name){}
+		ComponentList getComponentsOfType(Component::ComponentType type){}
+
+		std::string name;
+	protected:
+		Vector3D localPosition = Vector3D(0.f,0.f,0.f);
+		Vector3D localScale = Vector3D(1.f, 1.f, 1.f);
+		Vector3D localRotation = Vector3D(0.f, 0.f, 0.f);;
+		Matrix4x4 localMatrix;
+
+		float position[3] = { localPosition.x,localPosition.y ,localPosition.z };
+		float scale[3] = { localScale.x,localScale.y,localScale.z };
+		float rotation[3] = { localRotation.x,localRotation.y,localRotation.z };
+
+		ComponentList components;
+
+		bool overrideMatrix = false;
+
+		virtual void awake(){}
 
 };
 

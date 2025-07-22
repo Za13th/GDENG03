@@ -1,5 +1,8 @@
 #include "Window.h"
 #include "EngineTime.h"
+#include "imgui.h"
+
+extern IMGUI_IMPL_API LRESULT CALLBACK ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM uparam, LPARAM lparam);
 
 Window::Window()
 {
@@ -8,6 +11,10 @@ Window::Window()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM uparam, LPARAM lparam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, uparam, lparam))
+		return true; // If ImGui is handling the message, return true to prevent further processing
+
+
 	switch (msg)
 	{
 		case WM_CREATE:
@@ -69,7 +76,9 @@ bool Window::init()
 	if (!::RegisterClassEx(&wc)) //if class registration fails, return false
 		return false;
 	//create window here
-	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"DirectX Application", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1024, 768,
+	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"DirectX Application", 
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 
+		CW_USEDEFAULT, 1024, 768,
 		NULL, NULL, NULL, this);
 
 	if (!this->m_hwnd) //if window creation failed, return false
@@ -84,7 +93,9 @@ bool Window::init()
 
 bool Window::broadcast()
 {
+
 	EngineTime::LogFrameStart();
+
 	this->onUpdate();
 	MSG msg;
 	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0)
@@ -92,8 +103,9 @@ bool Window::broadcast()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	Sleep(1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	EngineTime::LogFrameEnd();
+
 	return true;
 }
 bool Window::release()

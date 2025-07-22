@@ -23,7 +23,7 @@ class SwapChain
 	private:	
 		IDXGISwapChain* m_swap_chain;
 		ID3D11RenderTargetView* m_rtv;
-		ID3D11DepthStencilView* m_depth_stencil_view;;
+		ID3D11DepthStencilView* m_depth_stencil_view;
 
 		friend class DeviceContext;
 

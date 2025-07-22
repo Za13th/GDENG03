@@ -6,10 +6,91 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
-#include "ParticleSystem.h"
+#include "SceneCameraHolder.h"
+#include "FogSystem.h"
+#include "TextureManager.h"
+#include "MeshManager.h"
+#include "BaseComponentSystem.h"
+#include "PhysicsComponent.h"
+#include "PhysicsSystem.h"
+
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 
 #include <cstdlib>
 #include <ctime>
+
+#define _CRT_SECURE_NO_WARNINGS
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+// Simple helper function to load an image into a DX11 texture with common settings
+bool LoadTextureFromMemory(const void* data, size_t data_size, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
+{
+	// Load from disk into a raw RGBA buffer
+	int image_width = 0;
+	int image_height = 0;
+	unsigned char* image_data = stbi_load_from_memory((const unsigned char*)data, (int)data_size, &image_width, &image_height, NULL, 4);
+	if (image_data == NULL)
+		return false;
+
+	// Create texture
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.Width = image_width;
+	desc.Height = image_height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+
+	ID3D11Texture2D* pTexture = NULL;
+	D3D11_SUBRESOURCE_DATA subResource;
+	subResource.pSysMem = image_data;
+	subResource.SysMemPitch = desc.Width * 4;
+	subResource.SysMemSlicePitch = 0;
+	GraphicsEngine::get()->getDevice()->CreateTexture2D(&desc, &subResource, &pTexture);
+
+	// Create texture view
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	GraphicsEngine::get()->getDevice()->CreateShaderResourceView(pTexture, &srvDesc, out_srv);
+	pTexture->Release();
+
+	*out_width = image_width;
+	*out_height = image_height;
+	stbi_image_free(image_data);
+
+	return true;
+}
+
+// Open and read a file, then forward to LoadTextureFromMemory()
+bool LoadTextureFromFile(const char* file_name, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
+{
+	FILE* f = fopen(file_name, "rb");
+	if (f == NULL)
+		return false;
+	fseek(f, 0, SEEK_END);
+	size_t file_size = (size_t)ftell(f);
+	if (file_size == -1)
+		return false;
+	fseek(f, 0, SEEK_SET);
+	void* file_data = IM_ALLOC(file_size);
+	fread(file_data, 1, file_size, f);
+	fclose(f);
+	bool ret = LoadTextureFromMemory(file_data, file_size, out_srv, out_width, out_height);
+	IM_FREE(file_data);
+	return ret;
+}
+
 
 __declspec(align(16))
 struct constant
@@ -68,19 +149,22 @@ void AppWindow::update()
 
 	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1, 1, 0), (sin(m_delta_scale) + 1.0f)/2.0f));
 
-	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5, -1.5, 0), Vector3D(1.5, 1.5, 0), m_delta_pos));
-	//cc.m_world *= temp;
-			
-	/*		cc.m_world.setScale(Vector3D(m_scale_cube));
 
-		    temp.setRotationZ(0.0f);
-			cc.m_world *= temp;
-			temp.setRotationY(m_rot_y);
-			cc.m_world *= temp;
-			temp.setRotationX(m_rot_x);
-			cc.m_world *= temp;
-	*/		
-			cc.m_world.setIdentity();
+			
+	cc.m_world.setScale(Vector3D(m_scale_cube));
+
+	temp.setTranslation(Vector3D(5, 0, 0));
+	cc.m_world *= temp;
+		    //temp.setRotationZ(0.0f);
+			//cc.m_world *= temp;
+			//temp.setRotationY(m_rot_y);
+			//cc.m_world *= temp;
+			//temp.setRotationX(m_rot_x);
+			//cc.m_world *= temp;
+			
+
+	
+	/*
 			Matrix4x4 world_cam;
 			world_cam.setIdentity();
 
@@ -96,17 +180,20 @@ void AppWindow::update()
 			m_world_cam = world_cam;
 
 			world_cam.inverse();
-
-
-
-
-
+*/
+			//cc.m_world.setIdentity();
+			auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+			world_cam.inverse();
 			cc.m_view = world_cam;
 			//cc.m_view.setIdentity();
 
 			RECT rc = this->getClientWindowRect();
 			int width = rc.right - rc.left;
 			int height = rc.bottom - rc.top;
+
+			cc.m_view = world_cam;
+
+
 
 			//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
 			cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
@@ -124,10 +211,22 @@ void AppWindow::update()
 void AppWindow::createGraphicsWindow()
 {
 
+	SceneCameraHolder::initialize();
 	//InputSystem::get()->addListener(this);
-	InputSystem::get()->showCursor(false);
+	InputSystem::get()->showCursor(true);
 
 	GraphicsEngine::initialize();
+	BaseComponentSystem::getInstance()->initialize();
+	auto P6 = BaseComponentSystem::getInstance()->getPhysicsSystem();
+
+	
+
+	m_texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\brick.png");
+	m_mesh[0] = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\teapot.obj");
+	m_mesh[1] = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\bunny.obj");
+	m_mesh[2] = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\armadillo.obj");
+
+
 
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
 	RECT rc = this->getClientWindowRect();
@@ -135,6 +234,9 @@ void AppWindow::createGraphicsWindow()
 	int height = rc.bottom - rc.top;
 	std::cout << "Window rect width: " << width << std::endl;
 	std::cout << "Window rect height: " << height << std::endl;
+
+	SceneCameraHolder::getInstance()->getCamera()->height = height;
+	SceneCameraHolder::getInstance()->getCamera()->width = width;
 
 	this->m_swap_chain->init(this->m_hwnd, width, height);
 
@@ -146,6 +248,7 @@ void AppWindow::createGraphicsWindow()
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 	this->m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 
+	/*
 	vertex vertex_list[] =
 	{//    X     Y     Z
 		//Rainbow
@@ -160,7 +263,7 @@ void AppWindow::createGraphicsWindow()
 		{ Vector3D(-0.5f, -0.5f, 0.5f),  Vector3D(0,1,0),   Vector3D(0,1,1)}
 	};
 
-	this->m_vb = GraphicsEngine::get()->createVertexBuffer();
+	//this->m_vb = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(vertex_list);
 
 	unsigned int index_list[] =
@@ -181,43 +284,97 @@ void AppWindow::createGraphicsWindow()
 
 
 
-	this->m_ib = GraphicsEngine::get()->createIndexBuffer();
-	UINT size_index_list = ARRAYSIZE(index_list);
+	//this->m_ib = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);*/
+	
 
 	constant cc;
 	cc.m_angle = 0;
 	m_cb = GraphicsEngine::get()->createConstantBuffer();
 
-	this->m_ib->load(index_list, size_index_list);
-	this->m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	//this->m_ib->load(index_list, size_index_list);
+	//this->m_vb->load(vertex_list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 	this->m_cb->load(&cc, sizeof(constant));
 
 
-	
-	/*Cube cube("Test", shader_byte_code, size_shader);
-		this->cubes.push_back(cube);
-
-
-		Plane plane("Test", shader_byte_code, size_shader);
-		plane.setScale(Vector3D(2.0f, 1.0f, 1.0f));
-		plane.setRotation(Vector3D(85.f,0.0f,0.0f));
-		this->planes.push_back(plane);*/
 
 	srand(time(0));
-	int preset = 0;
+
+
+	/*Plane plane("Ground", shader_byte_code, size_shader);
+	plane.setScale(Vector3D(10.0f, 1.0f, 10.0f)); 
+	plane.setPosition(Vector3D(0.0f, -1.0f, 5.0f)); 
+	this->planes.push_back(plane);*/
+
+	
+	Cube c("Cube 1", shader_byte_code, size_shader);
+	c.setScale(Vector3D(1.0f));
+	Cube c2 = c;
+	Cube c3(c);
+
+	c.setPosition(Vector3D(0.0f, 5.0f, 5.0f));
+	c.setRotation(0.0f);
+	c.setScale(1);
+
+	c2.name = "Cube 2";
+	c2.setPosition(Vector3D(0.0f, 0.0f, 5.0f));
+	c2.setScale(1);
+
+	c3.name = "Cube 3";
+	c3.setPosition(Vector3D(0.0f, -5.f, 5.0f));
+	c3.setRotation(0.0f);
+	c3.setScale(1);
+
+	this->cubes.push_back(c);
+	this->cubes.push_back(c2);
+	this->cubes.push_back(c3);
+
+	this->cubes.at(0).attachComponent(new PhysicsComponent("P6 First", &cubes[0]));
+	this->cubes.at(1).attachComponent(new PhysicsComponent("P6 Second", &cubes[1]));
+	this->cubes.at(2).attachComponent(new PhysicsComponent("P6 Third", &cubes[2])); 
+	
+
+
+
+	
+	MeshObject m("Bunny", m_mesh[1], nullptr);
+	m.setPosition(Vector3D(-5.0f, 0.0f, 0.0f));
+	m.setScale(Vector3D(10.0f));
+	this->meshes.push_back(m);
+	
+
+	MeshObject m2("Armadillo", m_mesh[2], nullptr);
+	m2.setPosition(Vector3D(0.0f, 0.0f, 0.0f));
+	m2.setScale(Vector3D(1.0f));
+	this->meshes.push_back(m2);
+
+	
+
+	MeshObject m3("Teapot", m_mesh[0], m_texture);
+	m3.setPosition(Vector3D(5.0f, 0.0f, 0.0f));
+	m3.setScale(Vector3D(1.0f));
+	this->meshes.push_back(m3);
+
+
+
+
+
+	
+	
+
+
+	/*int preset = 0; // 0 for fog
 	ParticleSystem::initialize();
 	Particle templateParticle = Particle();
 	if (preset == 0)
 	{
-		templateParticle.setColor(Vector3D(1));
-		templateParticle.setColor(Vector3D(0.6f, 1, 1), 7);
-		templateParticle.setColor1(Vector3D(0.5f, 1, 1));
-		templateParticle.setColor1(Vector3D(0.95f), 0);
+		templateParticle.setColor(Vector3D(0.8f));
 
-		ParticleSystem::getInstance()->interval = 0.1f;
+		ParticleSystem::getInstance()->particleMovementRandomDown = true;
+		ParticleSystem::getInstance()->interval = 0.005f;
 		ParticleSystem::getInstance()->max_size = 100;
-		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.9f,0.0f };
-		ParticleSystem::getInstance()->spawnAreaWidth = 2.30f;
+		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,0.88f,0.0f };
+		ParticleSystem::getInstance()->spawnAreaWidth = 2.20f;
 		ParticleSystem::getInstance()->spawnAreaHeight = 0.10f;
 	}
 	else if (preset == 1)
@@ -233,7 +390,7 @@ void AppWindow::createGraphicsWindow()
 		ParticleSystem::getInstance()->spawnAreaCenter = { 0.f,-0.13f,0.0f };
 		ParticleSystem::getInstance()->particleMovementRandomUp = true;
 	}
-	else 
+	else if (preset == 2)
 	{
 		ParticleSystem::getInstance()->interval= 0.001f;
 		ParticleSystem::getInstance()->max_size = 2000;
@@ -241,8 +398,14 @@ void AppWindow::createGraphicsWindow()
 		ParticleSystem::getInstance()->spawnAreaHeight = 1.80f;
 		ParticleSystem::getInstance()->particleMovementRandom = true;
 	}
-
-	ParticleSystem::getInstance()->Create(templateParticle,&shader_byte_code, &size_shader);
+	else
+	{
+		ParticleSystem::getInstance()->max_size = 100;
+		ParticleSystem::getInstance()->particleMovementRandom = true;
+	}
+*/
+	//ParticleSystem::getInstance()->Create(templateParticle,&shader_byte_code, &size_shader);
+	FogSystem::initialize();
 
 
 	GraphicsEngine::get()->releaseCompiledShader();
@@ -250,6 +413,15 @@ void AppWindow::createGraphicsWindow()
 	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
 	this->m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->releaseCompiledShader();
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	// Setup Dear ImGui style
+	//ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(this->m_hwnd);
+	ImGui_ImplDX11_Init(GraphicsEngine::getInstance()->getDevice(), GraphicsEngine::getInstance()->getDeviceContext()->getDeviceContext());
 
 }
 
@@ -260,11 +432,105 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
+	//FogSystem::getInstance()->update();
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	static bool totalFog = false;
+	static bool visibleParticles = false;
+	static bool transparentBackground = false;
+
+	static int my_image_width = 0;
+	static int my_image_height = 0;
+	static ID3D11ShaderResourceView* my_texture = nullptr;
+	static bool first = true;
+
+	if (first)
+	{
+		bool ret = LoadTextureFromFile("dlsu.jpg", &my_texture, &my_image_width, &my_image_height);
+		IM_ASSERT(ret);
+		first = false;
+	}
+
+
+	
+
+
+
+	// === ENHANCED IMGUI INTERFACE ===
+
+	ImGuiWindowFlags flags = 0;
+	if (transparentBackground)
+	flags |= ImGuiWindowFlags_NoBackground; // No background for the control panel
+	flags |= ImGuiWindowFlags_AlwaysAutoResize;
+
+
+
+	// Camera Controls Window
+	ImGui::Begin("About", nullptr, flags);
+
+	if (ImGui::Button("Transparent Background"))
+	{
+		transparentBackground = !transparentBackground;
+	}
+	if (ImGui::CollapsingHeader("Movement Controls", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Keyboard Controls:");
+		ImGui::BulletText("WASD - Move camera");
+		ImGui::BulletText("QE - Move camera up/down");
+		ImGui::BulletText("X - Toggle Focus for Mouse Movement");
+		ImGui::BulletText("Mouse - Look around (when focused)");
+		ImGui::BulletText("ESC - Exit application");
+
+	}
+	if (ImGui::CollapsingHeader("Credits"))
+	{
+		ImGui::Image(my_texture, ImVec2(my_image_width, my_image_height));
+		ImGui::Text("Developer: Jayvee Russel A. Torreno");
+	}
+	ImGui::End();
+
+	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x, 0.0f), ImGuiCond_FirstUseEver, ImVec2(1.0f, 0.0f));
+
+	ImGuiWindowFlags inspectorFlags = 0;
+	inspectorFlags |= ImGuiWindowFlags_NoMove;
+	inspectorFlags |= ImGuiWindowFlags_AlwaysAutoResize;
+
+	ImGui::Begin("Inspector", nullptr, inspectorFlags);
+
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		ImGui::PushID(i);
+		cubes[i].getInspectorUI();
+		ImGui::PopID();
+	}
+
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		ImGui::PushID(i);
+		meshes[i].getInspectorUI();
+		ImGui::PopID();
+	}
+
+	ImGui::End();
+
+
+
+
+
 	Window::onUpdate();             
 	InputSystem::get()->update(); 
-	GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
-
-
+	if(FogSystem::getInstance()->getFogState() == 0)
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	else if (totalFog)
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
+	else
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
+	
+	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
 
 
 	RECT rc = this->getClientWindowRect();
@@ -272,48 +538,106 @@ void AppWindow::onUpdate()
 	int height = rc.bottom - rc.top;
 	GraphicsEngine::get()->getDeviceContext()->setViewportSize(width, height);
 
+	SceneCameraHolder::getInstance()->getCamera()->update(EngineTime::getDeltaTime());
 
-	this->update();
-
+	/*
 	
+	this->update();
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_ps, this->m_cb);
 
 	GraphicsEngine::get()->getDeviceContext()->setVertexShader(this->m_vs);
 	GraphicsEngine::get()->getDeviceContext()->setPixelShader(this->m_ps);
 
+	GraphicsEngine::get()->getDeviceContext()->setTexture(this->m_ps, this->m_texture);
 
-	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_vb);
-	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_ib); 
+	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_mesh[0]->getVertexBuffer());
+	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_mesh[0]->getIndexBuffer());
 	//Cube:
-	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[0]->getIndexBuffer()->getSizeIndexList(), 0, 0);
+	
+	*/
+
+
+	/*	this->meshes[0].draw(width, height, this->m_vs, this->m_ps);
+	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_mesh[1]->getVertexBuffer());
+	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_mesh[1]->getIndexBuffer());
+	//Cube:
+	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[1]->getIndexBuffer()->getSizeIndexList(), 0, 0);
+
+	this->meshes[1].draw(width, height, this->m_vs, this->m_ps);
+	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->m_mesh[2]->getVertexBuffer());
+	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_mesh[2]->getIndexBuffer());
+	//Cube:
+	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[2]->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
+
+
+	if (InputSystem::get()->isKeyDown('P'))
+	BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
 
 	for (int i = 0; i < quads.size(); i++)
 		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
 
-	for(int i = 0 ; i < cubes.size(); i++)
+	for (int i = 0; i < cubes.size(); i++)
+	{
+		this->cubes[i].update(EngineTime::getDeltaTime());
 		this->cubes[i].draw(width, height, this->m_vs, this->m_ps);
+	}
+
 
 	for (int i = 0; i < planes.size(); i++)
 		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
-	
-	ParticleSystem::getInstance()->Update(EngineTime::getDeltaTime());
-	if(InputSystem::get()->isKeyDown('P'))
-	ParticleSystem::getInstance()->Draw(width, height, this->m_vs, this->m_ps);
 
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		this->meshes[i].draw(width, height, this->m_vs, this->m_ps);
+	}
+
+
+
+
+	
+	//Makes it so the particles are drawn on top of everything else.
+	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->
+	ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	ID3D11RenderTargetView* render_target_view = this->m_swap_chain->getRenderTargetView();
+	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->OMSetRenderTargets
+	(1, &render_target_view, nullptr);
+	
+
+
+
+
+
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	
 	m_swap_chain->present(true);
+
+	if (InputSystem::get()->isKeyDown(VK_ESCAPE))
+	{
+		this->onDestroy();
+		exit(0);
+	}
 }
 
 void AppWindow::onDestroy()
 {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	Window::onDestroy();
 
-	if (this->m_vb != nullptr) //vertex buffers are part of the quad class instead
+
+	/*	if (this->m_vb != nullptr) //vertex buffers are part of the quad class instead
 		this->m_vb->release();
 	if (this->m_ib != nullptr);
 		this->m_ib->release();
 	if (this->m_cb != nullptr);
-		this->m_cb->release();
+		this->m_cb->release();*/
+
 	this->m_swap_chain->release();
 	if (this->m_vs != nullptr)
 		this->m_vs->release();
@@ -324,14 +648,19 @@ void AppWindow::onDestroy()
 	for (int i = 0; i < quads.size(); i++)
 		quads[i].Release();
 	
-	for (int i = 0; i < cubes.size(); i++)
-		cubes[i].release();
+		cubes[0].release();
 	
 	for (int i = 0; i < planes.size(); i++)
 		planes[i].release();
+
+	for (int i = 0; i < meshes.size(); i++)
+		meshes[i].release();
 	
 
-	ParticleSystem::destroy();
+	TextureManager::getInstance()->destroy();
+	MeshManager::getInstance()->destroy();
+	BaseComponentSystem::getInstance()->destroy();
+	//ParticleSystem::destroy();
 }
 
 void AppWindow::onFocus()
@@ -362,6 +691,8 @@ void AppWindow::onKeyDown(int key)
 		m_rightward = 1.0f;
 		//m_rot_y += 3.14f * EngineTime::getDeltaTime();
 
+	
+
 }
 void AppWindow::onKeyUp(int key)
 {
@@ -375,31 +706,34 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 	int width = rc.right - rc.left;
 	int height = rc.bottom - rc.top;
 
-	m_rot_x += (mouse_pos.y - (height / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
-	m_rot_y += (mouse_pos.x - (width / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+	if (this->m_camera_rotation)
+	{
+		m_rot_x += (mouse_pos.y - (height / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+		m_rot_y += (mouse_pos.x - (width / 2.0f)) * EngineTime::getDeltaTime() * 0.2f;
+		InputSystem::get()->setCursorPositon(Point(width / 2.0f, height / 2.0f)); // Reset cursor position to center of the window
+	}
 
-
-	InputSystem::get()->setCursorPositon(Point(width / 2.0f, height / 2.0f)); // Reset cursor position to center of the window
+	
 }
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 0.5f;
+
 }
 
 void AppWindow::onLeftMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+
 }
 
 void AppWindow::onRightMouseDown(const Point& mouse_pos)
 {
-	m_scale_cube = 2.0f;
+
 }
 
 void AppWindow::onRightMouseUp(const Point& mouse_pos)
 {
-	m_scale_cube = 1.0f;
+
 }
 
 AppWindow::~AppWindow()

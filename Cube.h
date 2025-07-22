@@ -3,11 +3,14 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
+#include "Vector3D.h"
+#include "TextureManager.h"
 
 class Cube : public GameObject
 {
 	public:
 		Cube(std::string name, void* shaderByteCode, size_t sizeShader);
+		Cube(std::string name, Vector3D Color ,void* shaderByteCode, size_t sizeShader);
 		~Cube();
 
 		void update(float deltaTime) override;
@@ -25,5 +28,7 @@ class Cube : public GameObject
 		float deltaScale = 0.0f;
 		float deltaTime = 0.0f;
 		float speed = 1.57f; //default is 1.57f for PardCode
+
+		Texture* texture = nullptr;
 };
 

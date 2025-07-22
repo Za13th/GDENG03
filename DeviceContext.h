@@ -7,6 +7,7 @@ class IndexBuffer;
 class ConstantBuffer;
 class VertexShader;
 class PixelShader;
+class Texture;
 //struct DirectionalLight;
 
 class DeviceContext
@@ -26,8 +27,13 @@ class DeviceContext
 		void setVertexShader(VertexShader* vertex_shader);
 		void setPixelShader(PixelShader* pixel_shader);
 
+		void setTexture(VertexShader* vertex_shader, Texture* texture);
+		void setTexture(PixelShader* pixel_shader, Texture* texture);
+
 		void setConstantBuffer(VertexShader* vertex_shader, ConstantBuffer* constant_buffer);
 		void setConstantBuffer(PixelShader* pixel_shader, ConstantBuffer* constant_buffer);
+
+		ID3D11DeviceContext* getDeviceContext();
 
 		bool release();
 		~DeviceContext();

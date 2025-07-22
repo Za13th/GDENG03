@@ -24,6 +24,7 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Windowed = TRUE;
+	desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	
 
 	HRESULT hr = GraphicsEngine::get()->m_dxgi_factory->CreateSwapChain(device, &desc, &this->m_swap_chain);
@@ -72,7 +73,6 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 		return false;
 	}
 
-	//Just to show that it works, let's disable the depth stencil to show what heppens without it.
 	//When disabled, the plane is completely visible because depth is not properly rendered.
 	hr = device->CreateDepthStencilView(buffer, NULL, &this->m_depth_stencil_view);
 
@@ -90,7 +90,7 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 
 bool SwapChain::present(bool vsync)
 {
-	m_swap_chain->Present(vsync, NULL);
+	m_swap_chain->Present(vsync, 0);
 
 	return true;
 }

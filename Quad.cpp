@@ -15,10 +15,6 @@ struct constant
 
 Quad::Quad() : GameObject("Quad")
 {   //default rainbow quad 
-	this->vertexes[0] = { Vector3D(-0.5f, -0.5f, 0.0f) ,Vector3D(1,0,0),  Vector3D(1,0,1)};
-	this->vertexes[1] = { Vector3D(-0.5f, 0.5f, 0.0f),   Vector3D(0,1,0),   Vector3D(0.5,0.5,1)};
-	this->vertexes[2] = { Vector3D(0.5f, -0.5f, 0.0f),   Vector3D(0,0,0.5), Vector3D(0.4,0.4,0.4) };
-	this->vertexes[3] = { Vector3D(0.5f, 0.5f, 0.0f),    Vector3D(1,1,0),    Vector3D(0,1,1) };
 
 	this->size_vertexes = ARRAYSIZE(vertexes);
 }
@@ -45,34 +41,22 @@ void Quad::Create(void** shader_byte_code, size_t* size_shader)
 
 void Quad::setColor(Vector3D color)
 {
-	this->vertexes[0].color = color;
-	this->vertexes[1].color = color;
-	this->vertexes[2].color = color;
-	this->vertexes[3].color = color;
+
 }
 
 void Quad::setColor(Vector3D color1, Vector3D color2, Vector3D color3, Vector3D color4)
 {
-	this->vertexes[0].color = color1;
-	this->vertexes[1].color = color2;
-	this->vertexes[2].color = color3;
-	this->vertexes[3].color = color4;
+
 }
 
 void Quad::setColor1(Vector3D color)
 {
-	this->vertexes[0].color1 = color;
-	this->vertexes[1].color1 = color;
-	this->vertexes[2].color1 = color;
-	this->vertexes[3].color1 = color;
+
 }
 
 void Quad::setColor1(Vector3D color1, Vector3D color2, Vector3D color3, Vector3D color4)
 {
-	this->vertexes[0].color1 = color1;
-	this->vertexes[1].color1 = color2;
-	this->vertexes[2].color1 = color3;
-	this->vertexes[3].color1 = color4;
+
 }
 
 void Quad::update(float deltaTime)

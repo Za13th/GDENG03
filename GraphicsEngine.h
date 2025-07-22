@@ -28,6 +28,7 @@ class GraphicsEngine
 
 		SwapChain* createSwapChain();
 		DeviceContext* getDeviceContext();
+		ID3D11Device* getDevice();
 		VertexBuffer* createVertexBuffer();
 		IndexBuffer* createIndexBuffer();
 		ConstantBuffer* createConstantBuffer();
@@ -36,6 +37,8 @@ class GraphicsEngine
 
 		bool compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_size_code);
 		bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_size_code);
+
+		void getVertexMeshLayoutShaderByteCodeAndSize(void** shader_byte_code, size_t* size);
 
 		void releaseCompiledShader();
 		static GraphicsEngine* get();
@@ -63,6 +66,9 @@ class GraphicsEngine
 		ID3DBlob* m_psblob = nullptr;
 		ID3D11VertexShader* m_vs = nullptr;
 		ID3D11PixelShader* m_ps = nullptr;
+
+		unsigned char m_mesh_layout_byte_code[1024];
+		size_t m_mesh_layout_size = 0;
 
 		friend class SwapChain;
 		friend class VertexBuffer;

@@ -12,11 +12,14 @@
 #include "PixelShader.h"
 #include "InputListener.h"
 #include "Matrix4x4.h"
+#include "Texture.h"
+#include "Mesh.h"
 
 
 #include "Quad.h"
 #include "Cube.h"
 #include "Plane.h"
+#include "MeshObject.h"
 
 
 class AppWindow : public Window, public InputListener
@@ -69,10 +72,15 @@ class AppWindow : public Window, public InputListener
 		float m_scale_cube = 1.0f;
 		float m_forward = 0.0f;
 		float m_rightward = 0.0f;
+		bool m_camera_rotation = false;
 		Matrix4x4 m_world_cam;
 
 		std::vector<Quad> quads;
 		std::vector<Cube> cubes;
 		std::vector<Plane> planes;
+		std::vector<MeshObject> meshes;
+
+		Texture* m_texture = nullptr;
+		Mesh* m_mesh[3] = {nullptr, nullptr, nullptr};
 };
 

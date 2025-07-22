@@ -1,7 +1,8 @@
 #pragma comment(lib,"d3d11.lib") 
+#pragma comment(lib,"DirectXTexD.lib") 
+
 #include "AppWindow.h"
 #include "EngineTime.h"
-
 
 int main()
 {

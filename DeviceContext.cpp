@@ -5,6 +5,7 @@
 #include "ConstantBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Texture.h"
 //#include "DirectionalLight.h"
 
 
@@ -81,6 +82,16 @@ void DeviceContext::setPixelShader(PixelShader* pixel_shader)
 	m_device_context->PSSetShader(pixel_shader->m_ps, nullptr, 0);
 }
 
+void DeviceContext::setTexture(VertexShader* vertex_shader, Texture* texture)
+{
+	m_device_context->VSSetShaderResources(0, 1, &texture->m_shader_resource_view);
+}
+
+void DeviceContext::setTexture(PixelShader* pixel_shader, Texture* texture)
+{
+	m_device_context->PSSetShaderResources(0, 1, &texture->m_shader_resource_view);
+}
+
 void DeviceContext::setConstantBuffer(VertexShader* vertex_shader, ConstantBuffer* constant_buffer)
 {
 	this->m_device_context->VSSetConstantBuffers(0, 1, &constant_buffer->m_buffer);
@@ -91,6 +102,10 @@ void DeviceContext::setConstantBuffer(PixelShader* pixel_shader, ConstantBuffer*
 	this->m_device_context->PSSetConstantBuffers(0, 1, &constant_buffer->m_buffer);
 }
 
+ID3D11DeviceContext* DeviceContext::getDeviceContext()
+{
+	return this->m_device_context;
+}
 
 bool DeviceContext::release()
 {

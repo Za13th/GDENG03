@@ -34,7 +34,15 @@ void GraphicsEngine::destroy()
 
 GraphicsEngine::GraphicsEngine()
 {
+		void* Xshader_byte_code = nullptr;
+		size_t Xsize_shader = 0;
 
+		this->compileVertexShader(L"VertexMeshLayoutShader.hlsl", "vsmain", &Xshader_byte_code, &Xsize_shader);
+		::memcpy(this->m_mesh_layout_byte_code, Xshader_byte_code, Xsize_shader);
+		m_mesh_layout_size = Xsize_shader;
+		this->releaseCompiledShader();
+
+	
 }
 
 
@@ -111,6 +119,11 @@ DeviceContext* GraphicsEngine::getDeviceContext()
 	return this->m_imm_device_context;
 }
 
+ID3D11Device* GraphicsEngine::getDevice()
+{
+	return this->m_d3d_device;
+}
+
 VertexBuffer* GraphicsEngine::createVertexBuffer()
 {
 	return new VertexBuffer();
@@ -132,6 +145,7 @@ VertexShader* GraphicsEngine::createVertexShader(const void* shader_byte_code, s
 	if (!vs->init(shader_byte_code, byte_code_size))
 	{
 		std::cout << "G.Engine FAIL 2\n";
+		if(vs)
 		vs->release();
 		return nullptr;
 	}
@@ -178,6 +192,12 @@ bool GraphicsEngine::compilePixelShader(const wchar_t* file_name, const char* en
 	*byte_size_code = m_blob->GetBufferSize();
 
 	return true;
+}
+
+void GraphicsEngine::getVertexMeshLayoutShaderByteCodeAndSize(void** shader_byte_code, size_t* size)
+{
+	*shader_byte_code = this->m_mesh_layout_byte_code;
+	*size = this->m_mesh_layout_size;
 }
 
 void GraphicsEngine::releaseCompiledShader()

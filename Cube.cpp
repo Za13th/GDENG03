@@ -5,6 +5,9 @@
 #include "EngineTime.h"
 #include "SwapChain.h"
 #include "Matrix4x4.h"
+#include "InputSystem.h"
+#include "SceneCameraHolder.h"
+#include "FogSystem.h"
 #include <iostream>
 
 #include <cstdlib>
@@ -19,21 +22,81 @@ struct constant
 	float m_angle;
 };
 
+
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
 {
+	texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\wood.jpg");
+
+	Vector3D position_list[] =
+	{
+		Vector3D(-0.5f, -0.5f, -0.5f),
+		Vector3D(-0.5f, 0.5f, -0.5f),
+		Vector3D(0.5f, 0.5f, -0.5f),
+		Vector3D(0.5f, -0.5f, -0.5f),
+
+		Vector3D(0.5f, -0.5f, 0.5f),
+		Vector3D(0.5f, 0.5f, 0.5f),
+		Vector3D(-0.5f, 0.5f, 0.5f),
+		Vector3D(-0.5f, -0.5f, 0.5f)
+	};
+
+	Vector3D color_list[] =
+	{
+		Vector3D(1, 0, 0),   // Red
+		Vector3D(1, 1, 0),   // Yellow
+		Vector3D(1, 0, 1),   // Magenta
+		Vector3D(0, 1, 0),   // Green
+		Vector3D(1, 1, 1),   // White
+		Vector3D(0, 0, 1),   // Blue
+		Vector3D(0, 1, 1),   // Cyan
+		Vector3D(0.1f, 0.1f, 0.1f) // Dark Gray
+	};
+
+	Vector2D texcoord_list[] =
+	{
+		Vector2D(0, 1),
+		Vector2D(0, 0),
+		Vector2D(1, 0),
+		Vector2D(1, 1)
+	};
+
+	texcoord_list[0] *= 2.0f;
+	texcoord_list[1] *= 2.0f;
+	texcoord_list[2] *= 2.0f;
+	texcoord_list[3] *= 2.0f;
 
 	vertex vertex_list[] =
 	{//    X     Y     Z
 		//Rainbow
-		{ Vector3D(-0.5f, -0.5f, -0.5f) , Vector3D(1,0,0),  Vector3D(1,0,0)},
-		{ Vector3D(-0.5f, 0.5f, -0.5f) ,   Vector3D(1,1,0),   Vector3D(1,1,0) },
-		{ Vector3D(0.5f, 0.5f, -0.5f) ,  Vector3D(1,1,0), Vector3D(1,1,0) },
-		{ Vector3D(0.5f, -0.5f, -0.5f),  Vector3D(1,0,0),    Vector3D(1,0,0)},
+		{ position_list[0], texcoord_list[0] },
+		{ position_list[1], texcoord_list[1] },
+		{ position_list[2], texcoord_list[2] },
+		{ position_list[3], texcoord_list[3] },
 
-		{ Vector3D(0.5f, -0.5f, 0.5f) ,   Vector3D(0,1,0), Vector3D(0,1,0)},
-		{ Vector3D(0.5f, 0.5f, 0.5f) ,   Vector3D(0,1,0),  Vector3D(0,1,0) },
-		{ Vector3D(-0.5f, 0.5f, 0.5f) , Vector3D(0,1,1),   Vector3D(0,1,1) },
-		{ Vector3D(-0.5f, -0.5f, 0.5f),  Vector3D(0,1,0),   Vector3D(0,1,0)}
+		{ position_list[4], texcoord_list[0] },
+		{ position_list[5], texcoord_list[1] },
+		{ position_list[6], texcoord_list[2] },
+		{ position_list[7], texcoord_list[3] },
+
+		{ position_list[1], texcoord_list[0] },
+		{ position_list[6], texcoord_list[1] },
+		{ position_list[5], texcoord_list[2] },
+		{ position_list[2], texcoord_list[3] },
+
+		{ position_list[7], texcoord_list[0] },
+		{ position_list[0], texcoord_list[1] },
+		{ position_list[3], texcoord_list[2] },
+		{ position_list[4], texcoord_list[3] },
+
+		{ position_list[3], texcoord_list[0] },
+		{ position_list[2], texcoord_list[1] },
+		{ position_list[5], texcoord_list[2] },
+		{ position_list[4], texcoord_list[3] },
+
+		{ position_list[7], texcoord_list[0] },
+		{ position_list[6], texcoord_list[1] },
+		{ position_list[1], texcoord_list[2] },
+		{ position_list[0], texcoord_list[3] }
 	};
 
 	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
@@ -43,16 +106,21 @@ Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObje
 	{
 		0, 1, 2,
 		2, 3, 0,
+
 		4, 5, 6,
 		6, 7, 4,
-		1, 6, 5,
-		5, 2, 1,
-		7, 0, 3,
-		3, 4, 7,
-		3, 2, 5,
-		5, 4, 3,
-		7, 6, 1,
-		1, 0, 7
+
+		8, 9, 10,
+		10, 11, 8,
+
+		12, 13, 14,
+		14, 15, 12,
+
+		16, 17, 18,
+		18, 19, 16,
+
+		20, 21, 22,
+		22, 23, 20
 	};
 
 	this->indexBuffer = GraphicsEngine::get()->createIndexBuffer();
@@ -67,6 +135,11 @@ Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObje
 	this->constantBuffer->load(&cc, sizeof(constant));
 }
 
+Cube::Cube(std::string name,Vector3D Color ,void* shaderByteCode, size_t sizeShader) : GameObject(name)
+{
+
+}
+
 Cube::~Cube()
 {
 
@@ -74,32 +147,15 @@ Cube::~Cube()
 
 void Cube::update(float deltaTime)
 {
-	this->ticks += deltaTime;
-	this->deltaPos = this->speed * deltaTime;
-}
-
-void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
-{
 	static float m_angle = 0;
-	m_angle +=  EngineTime::getDeltaTime();
+	m_angle += deltaTime;
 	constant cc;
 	cc.m_angle = m_angle;
 
-
-
-	deltaPos += EngineTime::getDeltaTime() / 10.0f;
-	if (deltaPos > 1.0f) deltaPos = 0.0f;
-
-
 	Matrix4x4 temp;
 
-	this->deltaScale += EngineTime::getDeltaTime() / 10.f;
-	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1, 1, 0), (sin(this->deltaScale) + 1.0f)/2.0f));
-	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5, -1.5, 0), Vector3D(1.5, 1.5, 0), this->deltaPos));
-	//cc.m_world *= temp;
-
-
 	cc.m_world.setScale(this->getLocalScale());
+
 	temp.setRotationZ(this->getLocalRotation().z);
 	cc.m_world *= temp;
 	temp.setRotationY(this->getLocalRotation().y);
@@ -107,21 +163,49 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	temp.setRotationX(this->getLocalRotation().x);
 	cc.m_world *= temp;
 
-	temp.setTranslation(this->getLocalPosition());
-	cc.m_world *= temp;
+	//temp.setTranslation(this->getLocalPosition());
+	//cc.m_world *= temp;
+
+	//temp.setTranslation(this->localMatrix.getTranslation());
+	//cc.m_world *= temp;
+
+	cc.m_world.setScale(this->getLocalScale());
+	cc.m_world *= this->localMatrix;
 
 
+	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+	world_cam.inverse();
+	cc.m_view = world_cam;
 
 
-	cc.m_view.setIdentity();
-	cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
+	//cc.m_view.setIdentity();
+	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
+	//For Fog
+	
+	auto width = SceneCameraHolder::getInstance()->getCamera()->width;
+	auto height = SceneCameraHolder::getInstance()->getCamera()->height;
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
+
+	//For Culling
+	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
 
+	//std::cout << "My Gameobject is Updating: " << this->name << " : " << getLocalPosition().y << std::endl;
+}
 
+void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
+{
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(ps, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setVertexShader(vs);
 	GraphicsEngine::get()->getDeviceContext()->setPixelShader(ps);
+
+	//Set Texture:
+	if (this->texture)
+	{
+		GraphicsEngine::get()->getDeviceContext()->setTexture(ps, this->texture);
+	}
+
 	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->vertexBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->indexBuffer);
 
@@ -137,9 +221,7 @@ void Cube::setAnimSpeed(float speed)
 
 void Cube::release()
 {
-	if (this->vertexBuffer)
 		this->vertexBuffer->release();
-	if (this->indexBuffer)
 		this->indexBuffer->release();
 	if (this->constantBuffer)
 		this->constantBuffer->release();
