@@ -64,34 +64,38 @@ void Camera::updateViewMatrix()
 
 void Camera::update(float deltaTime)
 {
-	if (InputSystem::getInstance()->isKeyDown('W'))
-		m_forward = 1.0f;
-	else if (InputSystem::getInstance()->isKeyDown('S'))
-		m_forward = -1.0f;
-	if (InputSystem::getInstance()->isKeyDown('A'))
-		m_rightward = -1.0f;
-	else if (InputSystem::getInstance()->isKeyDown('D'))
-		m_rightward = 1.0f;
-	if (InputSystem::getInstance()->isKeyDown('Q'))
-		m_upward = 1.0f;
-	else if (InputSystem::getInstance()->isKeyDown('E'))
-		m_upward = -1.0f;
-
-	static bool pressed = false;
-	if (InputSystem::get()->isKeyDown('X') && !pressed)
+	if (cameraMovement)
 	{
-		if (!this->cameraRotation)
-			this->cameraRotation = true;
-		else this->cameraRotation = false;
+		if (InputSystem::getInstance()->isKeyDown('W'))
+			m_forward = 1.0f;
+		else if (InputSystem::getInstance()->isKeyDown('S'))
+			m_forward = -1.0f;
+		if (InputSystem::getInstance()->isKeyDown('A'))
+			m_rightward = -1.0f;
+		else if (InputSystem::getInstance()->isKeyDown('D'))
+			m_rightward = 1.0f;
+		if (InputSystem::getInstance()->isKeyDown('Q'))
+			m_upward = 1.0f;
+		else if (InputSystem::getInstance()->isKeyDown('E'))
+			m_upward = -1.0f;
 
-		InputSystem::get()->showCursor(!this->cameraRotation);
-		pressed = true;
-	}
-	else if (InputSystem::get()->isKeyUp('X'))
+		static bool pressed = false;
+		if (InputSystem::get()->isKeyDown('X') && !pressed)
+		{
+			if (!this->cameraRotation)
+				this->cameraRotation = true;
+			else this->cameraRotation = false;
+
+			InputSystem::get()->showCursor(!this->cameraRotation);
+			pressed = true;
+		}
+		else if (InputSystem::get()->isKeyUp('X'))
 		{
 			pressed = false;
 		}
-}
+	}
+	}
+
 
 Matrix4x4 Camera::getViewMatrix()
 {

@@ -15,6 +15,7 @@ class Camera : public GameObject, public InputListener
 		void update(float deltaTime) override;
 		void updateViewMatrix();
 		Matrix4x4 getViewMatrix();
+		void setCameraMovement(bool movement) { this->cameraMovement = movement; }
 
 
 		void onKeyDown(int key) override;
@@ -32,6 +33,7 @@ class Camera : public GameObject, public InputListener
 		int width = 0;
 
 	private:
+		bool cameraMovement = true;
 		bool cameraRotation = false;
 		float m_rot_x = 0.0f;
 		float m_rot_y = 0.0f;

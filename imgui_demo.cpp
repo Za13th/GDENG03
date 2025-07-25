@@ -1087,7 +1087,7 @@ static void ShowDemoWindowWidgets()
                 ImGui::PushID(i);
                 if (ImGui::Selectable("Sailor", selected[i] != 0, 0, ImVec2(50, 50)))
                 {
-                    // Toggle
+                    // ToggleText Input > Resize Callback
                     selected[i] = !selected[i];
 
                     // Note: We _unnecessarily_ test for both x/y and i here only to silence some static analyzer.
