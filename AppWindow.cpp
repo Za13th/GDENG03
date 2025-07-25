@@ -141,7 +141,7 @@ void AppWindow::update()
 
 	m_delta_pos += EngineTime::getDeltaTime() / 10.0f;
 	if (m_delta_pos > 1.0f) m_delta_pos = 0.0f;
-	
+
 
 	Matrix4x4 temp;
 
@@ -150,61 +150,61 @@ void AppWindow::update()
 	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1, 1, 0), (sin(m_delta_scale) + 1.0f)/2.0f));
 
 
-			
+
 	cc.m_world.setScale(Vector3D(m_scale_cube));
 
 	temp.setTranslation(Vector3D(5, 0, 0));
 	cc.m_world *= temp;
-		    //temp.setRotationZ(0.0f);
-			//cc.m_world *= temp;
-			//temp.setRotationY(m_rot_y);
-			//cc.m_world *= temp;
-			//temp.setRotationX(m_rot_x);
-			//cc.m_world *= temp;
-			
+	//temp.setRotationZ(0.0f);
+	//cc.m_world *= temp;
+	//temp.setRotationY(m_rot_y);
+	//cc.m_world *= temp;
+	//temp.setRotationX(m_rot_x);
+	//cc.m_world *= temp;
 
-	
-	/*
-			Matrix4x4 world_cam;
-			world_cam.setIdentity();
 
-			temp.setRotationX(m_rot_x, true);
-			world_cam *= temp;
-			temp.setRotationY(m_rot_y, true);
-			world_cam *= temp;
 
-			Vector3D new_pos = m_world_cam.getTranslation() + m_world_cam.getZDirection() * (m_forward * 2.0f *EngineTime::getDeltaTime());
-			new_pos = new_pos + m_world_cam.getXDirection() * (m_rightward * 2.0f * EngineTime::getDeltaTime());
-			world_cam.setTranslation(new_pos, false);
-			
-			m_world_cam = world_cam;
+/*
+		Matrix4x4 world_cam;
+		world_cam.setIdentity();
 
-			world_cam.inverse();
+		temp.setRotationX(m_rot_x, true);
+		world_cam *= temp;
+		temp.setRotationY(m_rot_y, true);
+		world_cam *= temp;
+
+		Vector3D new_pos = m_world_cam.getTranslation() + m_world_cam.getZDirection() * (m_forward * 2.0f *EngineTime::getDeltaTime());
+		new_pos = new_pos + m_world_cam.getXDirection() * (m_rightward * 2.0f * EngineTime::getDeltaTime());
+		world_cam.setTranslation(new_pos, false);
+
+		m_world_cam = world_cam;
+
+		world_cam.inverse();
 */
-			//cc.m_world.setIdentity();
-			auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
-			world_cam.inverse();
-			cc.m_view = world_cam;
-			//cc.m_view.setIdentity();
+//cc.m_world.setIdentity();
+	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
+	world_cam.inverse();
+	cc.m_view = world_cam;
+	//cc.m_view.setIdentity();
 
-			RECT rc = this->getClientWindowRect();
-			int width = rc.right - rc.left;
-			int height = rc.bottom - rc.top;
+	RECT rc = this->getClientWindowRect();
+	int width = rc.right - rc.left;
+	int height = rc.bottom - rc.top;
 
-			cc.m_view = world_cam;
-
-
-
-			//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
-			cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
+	cc.m_view = world_cam;
 
 
 
-			this->m_cb->update(GraphicsEngine::get()->getDeviceContext(), &cc);
-		
+	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f);
+	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
 
 
-	}
+
+	this->m_cb->update(GraphicsEngine::get()->getDeviceContext(), &cc);
+
+
+
+}
 
 
 
@@ -219,7 +219,7 @@ void AppWindow::createGraphicsWindow()
 	BaseComponentSystem::getInstance()->initialize();
 	auto P6 = BaseComponentSystem::getInstance()->getPhysicsSystem();
 
-	
+
 
 	m_texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\brick.png");
 	m_mesh[0] = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\teapot.obj");
@@ -286,7 +286,7 @@ void AppWindow::createGraphicsWindow()
 
 	//this->m_ib = GraphicsEngine::get()->createIndexBuffer();
 	UINT size_index_list = ARRAYSIZE(index_list);*/
-	
+
 
 	constant cc;
 	cc.m_angle = 0;
@@ -302,11 +302,11 @@ void AppWindow::createGraphicsWindow()
 
 
 	/*Plane plane("Ground", shader_byte_code, size_shader);
-	plane.setScale(Vector3D(10.0f, 1.0f, 10.0f)); 
-	plane.setPosition(Vector3D(0.0f, -1.0f, 5.0f)); 
+	plane.setScale(Vector3D(10.0f, 1.0f, 10.0f));
+	plane.setPosition(Vector3D(0.0f, -1.0f, 5.0f));
 	this->planes.push_back(plane);*/
 
-	
+
 	Cube c("Cube 1", shader_byte_code, size_shader);
 	c.setScale(Vector3D(1.0f));
 	Cube c2 = c;
@@ -331,24 +331,24 @@ void AppWindow::createGraphicsWindow()
 
 	this->cubes.at(0).attachComponent(new PhysicsComponent("P6 First", &cubes[0]));
 	this->cubes.at(1).attachComponent(new PhysicsComponent("P6 Second", &cubes[1]));
-	this->cubes.at(2).attachComponent(new PhysicsComponent("P6 Third", &cubes[2])); 
-	
+	this->cubes.at(2).attachComponent(new PhysicsComponent("P6 Third", &cubes[2]));
 
 
 
-	
+
+
 	MeshObject m("Bunny", m_mesh[1], nullptr);
 	m.setPosition(Vector3D(-5.0f, 0.0f, 0.0f));
 	m.setScale(Vector3D(10.0f));
 	this->meshes.push_back(m);
-	
+
 
 	MeshObject m2("Armadillo", m_mesh[2], nullptr);
 	m2.setPosition(Vector3D(0.0f, 0.0f, 0.0f));
 	m2.setScale(Vector3D(1.0f));
 	this->meshes.push_back(m2);
 
-	
+
 
 	MeshObject m3("Teapot", m_mesh[0], m_texture);
 	m3.setPosition(Vector3D(5.0f, 0.0f, 0.0f));
@@ -359,8 +359,8 @@ void AppWindow::createGraphicsWindow()
 
 
 
-	
-	
+
+
 
 
 	/*int preset = 0; // 0 for fog
@@ -404,7 +404,7 @@ void AppWindow::createGraphicsWindow()
 		ParticleSystem::getInstance()->particleMovementRandom = true;
 	}
 */
-	//ParticleSystem::getInstance()->Create(templateParticle,&shader_byte_code, &size_shader);
+//ParticleSystem::getInstance()->Create(templateParticle,&shader_byte_code, &size_shader);
 	FogSystem::initialize();
 
 
@@ -456,7 +456,7 @@ void AppWindow::onUpdate()
 	}
 
 
-	
+
 
 
 
@@ -464,34 +464,77 @@ void AppWindow::onUpdate()
 
 	ImGuiWindowFlags flags = 0;
 	if (transparentBackground)
-	flags |= ImGuiWindowFlags_NoBackground; // No background for the control panel
+		flags |= ImGuiWindowFlags_NoBackground; // No background for the control panel
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
 
 
+	// Main Menu Bar
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("Spawn")) {
+			if (ImGui::MenuItem("Spawn Mesh"))
+				meshScreen = !meshScreen;
+			ImGui::EndMenu();
+		}
 
-	// Camera Controls Window
-	ImGui::Begin("About", nullptr, flags);
+		if (ImGui::BeginMenu("About")) {
+			if (ImGui::MenuItem("About", "", aboutScreen))
+				aboutScreen = !aboutScreen;
+		}
+		ImGui::EndMainMenuBar();
+	}
 
-	if (ImGui::Button("Transparent Background"))
-	{
-		transparentBackground = !transparentBackground;
-	}
-	if (ImGui::CollapsingHeader("Movement Controls", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Text("Keyboard Controls:");
-		ImGui::BulletText("WASD - Move camera");
-		ImGui::BulletText("QE - Move camera up/down");
-		ImGui::BulletText("X - Toggle Focus for Mouse Movement");
-		ImGui::BulletText("Mouse - Look around (when focused)");
-		ImGui::BulletText("ESC - Exit application");
 
-	}
-	if (ImGui::CollapsingHeader("Credits"))
+	if (!meshScreen)
 	{
-		ImGui::Image(my_texture, ImVec2(my_image_width, my_image_height));
-		ImGui::Text("Developer: Jayvee Russel A. Torreno");
+		ImGui::Begin("Spawn Mesh Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		static char buf[128] = ""; ImGui::InputText("Filepath", buf, 64);
+		static float pos[3] = { 0.0f,0.0f,0.0f };
+		ImGui::InputFloat3("Position", pos);
+		static float scale = 10.0f;
+		ImGui::InputFloat("Scale", &scale, 0.01f, 1.f, "%.3f");
+
+		if (ImGui::Button("Load")) {
+			std::cout << "Mesh Loading";
+			size_t cSize = strlen(buf) + 1;
+			wchar_t* wc = new wchar_t[cSize];
+			mbstowcs(wc, buf, cSize);
+			loadedMesh = MeshManager::getInstance()->createMeshFromFile(wc);
+
+			MeshObject m("test", loadedMesh, nullptr);
+			m.setPosition(Vector3D(pos[0], pos[1], pos[2]));
+			m.setScale(Vector3D(scale));
+			this->meshes.push_back(m);
+		}
+
+		ImGui::End();
 	}
-	ImGui::End();
+
+	if (!aboutScreen)
+	{
+		// Camera Controls Window
+		ImGui::Begin("About", nullptr, flags);
+
+		if (ImGui::Button("Transparent Background"))
+		{
+			transparentBackground = !transparentBackground;
+		}
+		if (ImGui::CollapsingHeader("Movement Controls", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Text("Keyboard Controls:");
+			ImGui::BulletText("WASD - Move camera");
+			ImGui::BulletText("QE - Move camera up/down");
+			ImGui::BulletText("X - Toggle Focus for Mouse Movement");
+			ImGui::BulletText("Mouse - Look around (when focused)");
+			ImGui::BulletText("ESC - Exit application");
+
+		}
+		if (ImGui::CollapsingHeader("Credits"))
+		{
+			ImGui::Image(my_texture, ImVec2(my_image_width, my_image_height));
+			ImGui::Text("Developer: Jayvee Russel A. Torreno");
+		}
+		ImGui::End();
+	}
 
 	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x, 0.0f), ImGuiCond_FirstUseEver, ImVec2(1.0f, 0.0f));
 
@@ -521,15 +564,15 @@ void AppWindow::onUpdate()
 
 
 
-	Window::onUpdate();             
-	InputSystem::get()->update(); 
-	if(FogSystem::getInstance()->getFogState() == 0)
-		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f/255.f), (float)(206.f /255.f), (float)(255.f /255.f), 1);
+	Window::onUpdate();
+	InputSystem::get()->update();
+	if (FogSystem::getInstance()->getFogState() == 0)
+		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(135.f / 255.f), (float)(206.f / 255.f), (float)(255.f / 255.f), 1);
 	else if (totalFog)
 		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.6f), (float)(0.6f), (float)(0.6f), 1);
 	else
 		GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
-	
+
 	//GraphicsEngine::get()->getDeviceContext()->clearRenderTargetColor(this->m_swap_chain, (float)(0.65f), (float)(0.65f), (float)(0.65f), 1);
 
 
@@ -541,7 +584,7 @@ void AppWindow::onUpdate()
 	SceneCameraHolder::getInstance()->getCamera()->update(EngineTime::getDeltaTime());
 
 	/*
-	
+
 	this->update();
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(this->m_ps, this->m_cb);
@@ -555,7 +598,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->m_mesh[0]->getIndexBuffer());
 	//Cube:
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[0]->getIndexBuffer()->getSizeIndexList(), 0, 0);
-	
+
 	*/
 
 
@@ -573,7 +616,7 @@ void AppWindow::onUpdate()
 
 
 	if (InputSystem::get()->isKeyDown('P'))
-	BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
+		BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
 
 	for (int i = 0; i < quads.size(); i++)
 		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
@@ -596,14 +639,14 @@ void AppWindow::onUpdate()
 
 
 
-	
+
 	//Makes it so the particles are drawn on top of everything else.
 	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->
-	ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	ID3D11RenderTargetView* render_target_view = this->m_swap_chain->getRenderTargetView();
 	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->OMSetRenderTargets
 	(1, &render_target_view, nullptr);
-	
+
 
 
 
@@ -612,7 +655,7 @@ void AppWindow::onUpdate()
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	
+
 	m_swap_chain->present(true);
 
 	if (InputSystem::get()->isKeyDown(VK_ESCAPE))
@@ -647,15 +690,15 @@ void AppWindow::onDestroy()
 
 	for (int i = 0; i < quads.size(); i++)
 		quads[i].Release();
-	
-		cubes[0].release();
-	
+
+	cubes[0].release();
+
 	for (int i = 0; i < planes.size(); i++)
 		planes[i].release();
 
 	for (int i = 0; i < meshes.size(); i++)
 		meshes[i].release();
-	
+
 
 	TextureManager::getInstance()->destroy();
 	MeshManager::getInstance()->destroy();
@@ -679,19 +722,19 @@ void AppWindow::onKeyDown(int key)
 {
 	if (key == 'W')
 		m_forward = 1.0f;
-		//m_rot_x += 3.14f * EngineTime::getDeltaTime();
+	//m_rot_x += 3.14f * EngineTime::getDeltaTime();
 	else if (key == 'S')
 		m_forward = -1.0f;
-		//m_rot_x -= 3.14f * EngineTime::getDeltaTime();
+	//m_rot_x -= 3.14f * EngineTime::getDeltaTime();
 
 	if (key == 'A')
 		m_rightward = -1.0f;
-		//m_rot_y -= 3.14f * EngineTime::getDeltaTime();
+	//m_rot_y -= 3.14f * EngineTime::getDeltaTime();
 	else if (key == 'D')
 		m_rightward = 1.0f;
-		//m_rot_y += 3.14f * EngineTime::getDeltaTime();
+	//m_rot_y += 3.14f * EngineTime::getDeltaTime();
 
-	
+
 
 }
 void AppWindow::onKeyUp(int key)
@@ -713,7 +756,7 @@ void AppWindow::onMouseMove(const Point& mouse_pos)
 		InputSystem::get()->setCursorPositon(Point(width / 2.0f, height / 2.0f)); // Reset cursor position to center of the window
 	}
 
-	
+
 }
 
 void AppWindow::onLeftMouseDown(const Point& mouse_pos)
