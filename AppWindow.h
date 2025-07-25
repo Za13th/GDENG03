@@ -83,9 +83,10 @@ class AppWindow : public Window, public InputListener
 		Texture* m_texture = nullptr;
 		Mesh* m_mesh[3] = {nullptr, nullptr, nullptr};
 		Mesh* loadedMesh = nullptr;
+		Texture* loadedTexture = nullptr;
 		
-		bool meshScreen = true;
-		bool aboutScreen = true;
+		bool meshScreen = false;
+		bool aboutScreen = false;
 		size_t cSize;
 };
 

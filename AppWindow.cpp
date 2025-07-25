@@ -20,6 +20,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <string>
 
 #define _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_IMPLEMENTATION
@@ -472,47 +473,79 @@ void AppWindow::onUpdate()
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("Spawn")) {
 			if (ImGui::MenuItem("Spawn Mesh"))
-				meshScreen = !meshScreen;
+				meshScreen = true;
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("About")) {
-			if (ImGui::MenuItem("About", "", aboutScreen))
-				aboutScreen = !aboutScreen;
+		if (ImGui::BeginMenu("About"))
+		{
+			aboutScreen = true;
+			ImGui::EndMenu();
 		}
+
+		
 		ImGui::EndMainMenuBar();
 	}
-
-
-	if (!meshScreen)
+	static int meshCount = 1;
+	static char meshPath[128] = "Assets\\Meshes\\";
+	static char texturePath[128] = "Assets\\Textures\\";
+	if (meshScreen)
 	{
-		ImGui::Begin("Spawn Mesh Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		static char buf[128] = ""; ImGui::InputText("Filepath", buf, 64);
+		ImGui::Begin("Spawn Mesh Menu", &meshScreen, ImGuiWindowFlags_AlwaysAutoResize);
+		static char buf[128] = ""; ImGui::InputText("Mesh File Name", buf, 64);
+		static char buf2[128] = ""; ImGui::InputText("Texture File Name", buf2, 64);
 		static float pos[3] = { 0.0f,0.0f,0.0f };
 		ImGui::InputFloat3("Position", pos);
-		static float scale = 10.0f;
+		static float scale = 1.0f;
 		ImGui::InputFloat("Scale", &scale, 0.01f, 1.f, "%.3f");
 
 		if (ImGui::Button("Load")) {
-			std::cout << "Mesh Loading";
-			size_t cSize = strlen(buf) + 1;
+			strcat(meshPath, buf);
+			size_t cSize = strlen(meshPath) + 1;
 			wchar_t* wc = new wchar_t[cSize];
-			mbstowcs(wc, buf, cSize);
+			mbstowcs(wc, meshPath, cSize);
 			loadedMesh = MeshManager::getInstance()->createMeshFromFile(wc);
+			strcpy(meshPath, "Assets\\Meshes\\");
 
-			MeshObject m("test", loadedMesh, nullptr);
-			m.setPosition(Vector3D(pos[0], pos[1], pos[2]));
-			m.setScale(Vector3D(scale));
-			this->meshes.push_back(m);
+			strcat(texturePath, buf2);
+			size_t cSize2 = strlen(texturePath) + 1;
+			wchar_t* wc2 = new wchar_t[cSize2];
+			mbstowcs(wc2, texturePath, cSize2);
+			loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
+			strcpy(texturePath, "Assets\\Textures\\");
+
+			if (loadedMesh != nullptr)
+			{
+				std::cout << "Mesh Loading\n";
+
+				if (loadedTexture != nullptr)
+					std::cout << "Texture Loading\n";
+				else
+				{
+					std::cout << "Texture Loading Failed\n";
+					loadedTexture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\error.jpg"); 
+				}
+
+
+				MeshObject m("Mesh " + std::to_string(meshCount), loadedMesh, loadedTexture);
+				m.setPosition(Vector3D(pos[0], pos[1], pos[2]));
+				m.setScale(Vector3D(scale));
+				this->meshes.push_back(m);
+				meshCount += 1;
+			}
+			else
+				std::cout << "Mesh Loading Failed" << std::endl;
+
 		}
 
 		ImGui::End();
 	}
+	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen);
 
-	if (!aboutScreen)
+	if (aboutScreen)
 	{
 		// Camera Controls Window
-		ImGui::Begin("About", nullptr, flags);
+		ImGui::Begin("About", &aboutScreen, flags);
 
 		if (ImGui::Button("Transparent Background"))
 		{
@@ -544,17 +577,18 @@ void AppWindow::onUpdate()
 
 	ImGui::Begin("Inspector", nullptr, inspectorFlags);
 
-	for (int i = 0; i < cubes.size(); i++)
+	int i = 0, j = 0;
+	for (; i < cubes.size(); i++)
 	{
 		ImGui::PushID(i);
 		cubes[i].getInspectorUI();
 		ImGui::PopID();
 	}
 
-	for (int i = 0; i < meshes.size(); i++)
+	for (; j < meshes.size(); j++)
 	{
-		ImGui::PushID(i);
-		meshes[i].getInspectorUI();
+		ImGui::PushID(i + j);
+		meshes[j].getInspectorUI();
 		ImGui::PopID();
 	}
 
