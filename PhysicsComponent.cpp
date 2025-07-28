@@ -20,12 +20,71 @@ PhysicsComponent::PhysicsComponent(String name, GameObject* owner) : Component(n
 	//transform.setOrientation(Quaternion::fromEulerAngles(rot.x, rot.y, rot.z));
 	//transform.setPosition(Vector3(pos.x, pos.y, pos.z));
 	this->rigidBody = physicsWorld->createRigidBody(transform);
-	BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, scale.y / 2, scale.z / 2));
+
+	if (owner->objectType == GameObject::Cube)
+	{
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, scale.y / 2, scale.z / 2));
+		transform.setToIdentity();
+		this->rigidBody->addCollider(boxshape, transform);
+		this->rigidBody->updateMassFromColliders();
+		this->rigidBody->enableGravity(true);
+		this->rigidBody->setType(BodyType::DYNAMIC);
+	}
+	else if (owner->objectType == GameObject::Plane)
+	{
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, 0.0005, scale.z / 2));
+		transform.setToIdentity();
+		this->rigidBody->addCollider(boxshape, transform);
+		this->rigidBody->updateMassFromColliders();
+		this->rigidBody->enableGravity(true);
+		this->rigidBody->setType(BodyType::STATIC);
+	}
+
+
+	transform = this->rigidBody->getTransform();
+	float matrix[16];
+
+	transform.getOpenGLMatrix(matrix);
+
+	this->owner->setLocalMatrix(matrix);
+}
+
+void PhysicsComponent::adjustRigidbody()
+{
+	this->rigidBody->removeCollider(this->rigidBody->getCollider(0)); // Remove the previous collider
+
+	PhysicsCommon* physicsCommon = BaseComponentSystem::getInstance()->getPhysicsSystem()->getPhysicsCommon();
+	PhysicsWorld* physicsWorld = BaseComponentSystem::getInstance()->getPhysicsSystem()->getPhysicsWorld();
+
+	Vector3D scale = this->owner->getLocalScale();
+	Vector3D pos = this->owner->getLocalPosition();
+	Vector3D rot = this->owner->getLocalRotation();
+
+	Transform transform;
 	transform.setToIdentity();
-	this->rigidBody->addCollider(boxshape, transform);
-	this->rigidBody->updateMassFromColliders();
-	this->rigidBody->enableGravity(true);
-	this->rigidBody->setType(BodyType::DYNAMIC);
+	transform.setOrientation(Quaternion::fromEulerAngles(rot.x, rot.y, rot.z));
+	transform.setPosition(Vector3(pos.x, pos.y, pos.z));
+	this->rigidBody = physicsWorld->createRigidBody(transform);
+
+	if (owner->objectType == GameObject::Cube)
+	{
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, scale.y / 2, scale.z / 2));
+		transform.setToIdentity();
+		this->rigidBody->addCollider(boxshape, transform);
+		this->rigidBody->updateMassFromColliders();
+		this->rigidBody->enableGravity(true);
+		this->rigidBody->setType(BodyType::DYNAMIC);
+	}
+	else if (owner->objectType == GameObject::Plane)
+	{
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, 0.0005, scale.z / 2));
+		transform.setToIdentity();
+		this->rigidBody->addCollider(boxshape, transform);
+		this->rigidBody->updateMassFromColliders();
+		this->rigidBody->enableGravity(true);
+		this->rigidBody->setType(BodyType::STATIC);
+	}
+
 
 	transform = this->rigidBody->getTransform();
 	float matrix[16];

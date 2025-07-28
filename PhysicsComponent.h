@@ -10,15 +10,8 @@ class PhysicsComponent : public Component
 		~PhysicsComponent();
 		void perform(float deltaTime) override;
 		RigidBody* getRigidBody();
+		void adjustRigidbody();
 		
-		void disableGravity()
-		{
-			if (this->rigidBody)
-			{
-				this->rigidBody->enableGravity(false);
-				this->rigidBody->setType(BodyType::STATIC);
-			}
-		}
 
 	private:
 		float mass = 1000; //in kilograms

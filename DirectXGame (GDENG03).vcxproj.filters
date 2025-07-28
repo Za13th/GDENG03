@@ -198,7 +198,7 @@
     <ClCompile Include="BaseComponentSystem.cpp">
       <Filter>GameEngine\ComponentSystem</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsCube.cpp" />
+    <ClCompile Include="GameObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -348,7 +348,7 @@
     <ClInclude Include="MyQuaternion.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsCube.h" />
+    <ClInclude Include="GameObjectManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

@@ -13,6 +13,7 @@
 #include "BaseComponentSystem.h"
 #include "PhysicsComponent.h"
 #include "PhysicsSystem.h"
+#include "GameObjectManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -308,57 +309,7 @@ void AppWindow::createGraphicsWindow()
 	this->planes.push_back(plane);*/
 
 
-	Cube c("Cube 1", shader_byte_code, size_shader);
-	c.setScale(Vector3D(1.0f));
-	Cube c2 = c;
-	Cube c3(c);
-
-	c.setPosition(Vector3D(0.0f, 5.0f, 5.0f));
-	c.setRotation(0.0f);
-	c.setScale(1);
-
-	c2.name = "Cube 2";
-	c2.setPosition(Vector3D(0.0f, 0.0f, 5.0f));
-	c2.setScale(1);
-
-	c3.name = "Cube 3";
-	c3.setPosition(Vector3D(0.0f, -5.f, 5.0f));
-	c3.setRotation(0.0f);
-	c3.setScale(1);
-
-	this->cubes.push_back(c);
-	this->cubes.push_back(c2);
-	this->cubes.push_back(c3);
-
-	this->cubes.at(0).attachComponent(new PhysicsComponent("P6 First", &cubes[0]));
-	this->cubes.at(1).attachComponent(new PhysicsComponent("P6 Second", &cubes[1]));
-	this->cubes.at(2).attachComponent(new PhysicsComponent("P6 Third", &cubes[2]));
-
-
-
-
-
-	MeshObject m("Bunny", m_mesh[1], nullptr);
-	m.setPosition(Vector3D(-5.0f, 0.0f, 0.0f));
-	m.setScale(Vector3D(10.0f));
-	this->meshes.push_back(m);
-
-
-	MeshObject m2("Armadillo", m_mesh[2], nullptr);
-	m2.setPosition(Vector3D(0.0f, 0.0f, 0.0f));
-	m2.setScale(Vector3D(1.0f));
-	this->meshes.push_back(m2);
-
-
-
-	MeshObject m3("Teapot", m_mesh[0], m_texture);
-	m3.setPosition(Vector3D(5.0f, 0.0f, 0.0f));
-	m3.setScale(Vector3D(1.0f));
-	this->meshes.push_back(m3);
-
-
-
-
+	GameObjectManager::initialize(shader_byte_code, size_shader);
 
 
 
@@ -463,136 +414,46 @@ void AppWindow::onUpdate()
 
 	// === ENHANCED IMGUI INTERFACE ===
 
+	static bool pause = true;
+	static bool frameStep = false;
 	ImGuiWindowFlags flags = 0;
-	if (transparentBackground)
-		flags |= ImGuiWindowFlags_NoBackground; // No background for the control panel
+
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
+
+	ImGui::Begin("Game State", nullptr, flags);
+	
+
+	if (pause == false)
+	{
+		ImGui::Text("Playing...");
+
+		if (ImGui::Button("Pause"))
+		{
+			pause = true;
+		}
+	}
+	else
+	{
+		ImGui::Text("Paused");
+		if (ImGui::Button("Play"))
+		{
+			pause = false;
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Frame Step"))
+	{
+		pause = false;
+		frameStep = true;
+	}
+	ImGui::End();
 
 
 	// Main Menu Bar
-	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("Spawn")) {
-			if (ImGui::MenuItem("Spawn Mesh"))
-				meshScreen = true;
-			ImGui::EndMenu();
-		}
+	GameObjectManager::getInstance()->getObjectSpawnUI();
 
-		if (ImGui::BeginMenu("About"))
-		{
-			aboutScreen = true;
-			ImGui::EndMenu();
-		}
-
-		
-		ImGui::EndMainMenuBar();
-	}
-	static int meshCount = 1;
-	static char meshPath[128] = "Assets\\Meshes\\";
-	static char texturePath[128] = "Assets\\Textures\\";
-	if (meshScreen)
-	{
-		ImGui::Begin("Spawn Mesh Menu", &meshScreen, ImGuiWindowFlags_AlwaysAutoResize);
-		static char buf[128] = ""; ImGui::InputText("Mesh File Name", buf, 64);
-		static char buf2[128] = ""; ImGui::InputText("Texture File Name", buf2, 64);
-		static float pos[3] = { 0.0f,0.0f,0.0f };
-		ImGui::InputFloat3("Position", pos);
-		static float scale = 1.0f;
-		ImGui::InputFloat("Scale", &scale, 0.01f, 1.f, "%.3f");
-
-		if (ImGui::Button("Load")) {
-			strcat(meshPath, buf);
-			size_t cSize = strlen(meshPath) + 1;
-			wchar_t* wc = new wchar_t[cSize];
-			mbstowcs(wc, meshPath, cSize);
-			loadedMesh = MeshManager::getInstance()->createMeshFromFile(wc);
-			strcpy(meshPath, "Assets\\Meshes\\");
-
-			strcat(texturePath, buf2);
-			size_t cSize2 = strlen(texturePath) + 1;
-			wchar_t* wc2 = new wchar_t[cSize2];
-			mbstowcs(wc2, texturePath, cSize2);
-			loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
-			strcpy(texturePath, "Assets\\Textures\\");
-
-			if (loadedMesh != nullptr)
-			{
-				std::cout << "Mesh Loading\n";
-
-				if (loadedTexture != nullptr)
-					std::cout << "Texture Loading\n";
-				else
-				{
-					std::cout << "Texture Loading Failed\n";
-					loadedTexture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\error.jpg"); 
-				}
-
-
-				MeshObject m("Mesh " + std::to_string(meshCount), loadedMesh, loadedTexture);
-				m.setPosition(Vector3D(pos[0], pos[1], pos[2]));
-				m.setScale(Vector3D(scale));
-				this->meshes.push_back(m);
-				meshCount += 1;
-			}
-			else
-				std::cout << "Mesh Loading Failed" << std::endl;
-
-		}
-
-		ImGui::End();
-	}
-	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen);
-
-	if (aboutScreen)
-	{
-		// Camera Controls Window
-		ImGui::Begin("About", &aboutScreen, flags);
-
-		if (ImGui::Button("Transparent Background"))
-		{
-			transparentBackground = !transparentBackground;
-		}
-		if (ImGui::CollapsingHeader("Movement Controls", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::Text("Keyboard Controls:");
-			ImGui::BulletText("WASD - Move camera");
-			ImGui::BulletText("QE - Move camera up/down");
-			ImGui::BulletText("X - Toggle Focus for Mouse Movement");
-			ImGui::BulletText("Mouse - Look around (when focused)");
-			ImGui::BulletText("ESC - Exit application");
-
-		}
-		if (ImGui::CollapsingHeader("Credits"))
-		{
-			ImGui::Image(my_texture, ImVec2(my_image_width, my_image_height));
-			ImGui::Text("Developer: Jayvee Russel A. Torreno");
-		}
-		ImGui::End();
-	}
-
-	ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x, 0.0f), ImGuiCond_FirstUseEver, ImVec2(1.0f, 0.0f));
-
-	ImGuiWindowFlags inspectorFlags = 0;
-	inspectorFlags |= ImGuiWindowFlags_NoMove;
-	inspectorFlags |= ImGuiWindowFlags_AlwaysAutoResize;
-
-	ImGui::Begin("Inspector", nullptr, inspectorFlags);
-
-	int i = 0, j = 0;
-	for (; i < cubes.size(); i++)
-	{
-		ImGui::PushID(i);
-		cubes[i].getInspectorUI();
-		ImGui::PopID();
-	}
-
-	for (; j < meshes.size(); j++)
-	{
-		ImGui::PushID(i + j);
-		meshes[j].getInspectorUI();
-		ImGui::PopID();
-	}
-
-	ImGui::End();
+	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
+	GameObjectManager::getInstance()->getInspectorUI();
 
 
 
@@ -649,41 +510,10 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[2]->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
 
 
-	if (InputSystem::get()->isKeyDown('P'))
+	if (!pause)
 		BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
 
-	for (int i = 0; i < quads.size(); i++)
-		this->quads[i].draw(width, height, this->m_vs, this->m_ps);
-
-	for (int i = 0; i < cubes.size(); i++)
-	{
-		this->cubes[i].update(EngineTime::getDeltaTime());
-		this->cubes[i].draw(width, height, this->m_vs, this->m_ps);
-	}
-
-
-	for (int i = 0; i < planes.size(); i++)
-		this->planes[i].draw(width, height, this->m_vs, this->m_ps);
-
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		this->meshes[i].draw(width, height, this->m_vs, this->m_ps);
-	}
-
-
-
-
-
-	//Makes it so the particles are drawn on top of everything else.
-	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->
-		ClearDepthStencilView(nullptr, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	ID3D11RenderTargetView* render_target_view = this->m_swap_chain->getRenderTargetView();
-	GraphicsEngine::get()->getDeviceContext()->getDeviceContext()->OMSetRenderTargets
-	(1, &render_target_view, nullptr);
-
-
-
-
+	GameObjectManager::getInstance()->drawObjects(!pause,EngineTime::getDeltaTime(), width, height, this->m_vs, this->m_ps);
 
 
 
@@ -691,6 +521,12 @@ void AppWindow::onUpdate()
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	m_swap_chain->present(true);
+
+	if (frameStep)
+	{
+		pause = true;
+		frameStep = false;
+	}
 
 	if (InputSystem::get()->isKeyDown(VK_ESCAPE))
 	{
@@ -725,13 +561,7 @@ void AppWindow::onDestroy()
 	for (int i = 0; i < quads.size(); i++)
 		quads[i].Release();
 
-	cubes[0].release();
-
-	for (int i = 0; i < planes.size(); i++)
-		planes[i].release();
-
-	for (int i = 0; i < meshes.size(); i++)
-		meshes[i].release();
+	GameObjectManager::destroy();
 
 
 	TextureManager::getInstance()->destroy();

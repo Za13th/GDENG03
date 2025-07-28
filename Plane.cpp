@@ -1,3 +1,8 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
 #include "Plane.h"
 #include "structs.h"
 #include "GraphicsEngine.h"
@@ -10,9 +15,6 @@
 #include "FogSystem.h"
 #include <iostream>
 
-#include <cstdlib>
-#include <ctime>
-
 __declspec(align(16))
 struct constant
 {
@@ -24,10 +26,79 @@ struct constant
 
 Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
 {
+	this->objectType = GameObject::Plane;
+	texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\grass.jpg");
+
+	Vector3D position_list[] =
+	{
+		Vector3D(-0.5f, -0.005f, -0.5f),
+		Vector3D(-0.5f, 0.005f, -0.5f),
+		Vector3D(0.5f, 0.005f, -0.5f),
+		Vector3D(0.5f, -0.005f, -0.5f),
+
+		Vector3D(0.5f, -0.005f, 0.5f),
+		Vector3D(0.5f, 0.005f, 0.5f),
+		Vector3D(-0.5f, 0.005f, 0.5f),
+		Vector3D(-0.5f, -0.005f, 0.5f)
+	};
+
+	Vector3D color_list[] =
+	{
+		Vector3D(1, 0, 0),   // Red
+		Vector3D(1, 1, 0),   // Yellow
+		Vector3D(1, 0, 1),   // Magenta
+		Vector3D(0, 1, 0),   // Green
+		Vector3D(1, 1, 1),   // White
+		Vector3D(0, 0, 1),   // Blue
+		Vector3D(0, 1, 1),   // Cyan
+		Vector3D(0.1f, 0.1f, 0.1f) // Dark Gray
+	};
+
+	Vector2D texcoord_list[] =
+	{
+		Vector2D(0, 1),
+		Vector2D(0, 0),
+		Vector2D(1, 0),
+		Vector2D(1, 1)
+	};
+
+	texcoord_list[0] *= 2.0f;
+	texcoord_list[1] *= 2.0f;
+	texcoord_list[2] *= 2.0f;
+	texcoord_list[3] *= 2.0f;
 
 	vertex vertex_list[] =
 	{//    X     Y     Z
-		{Vector3D(1),Vector2D(1)}
+		//Rainbow
+		{ position_list[0], texcoord_list[0] },
+		{ position_list[1], texcoord_list[1] },
+		{ position_list[2], texcoord_list[2] },
+		{ position_list[3], texcoord_list[3] },
+
+		{ position_list[4], texcoord_list[0] },
+		{ position_list[5], texcoord_list[1] },
+		{ position_list[6], texcoord_list[2] },
+		{ position_list[7], texcoord_list[3] },
+
+		{ position_list[1], texcoord_list[0] },
+		{ position_list[6], texcoord_list[1] },
+		{ position_list[5], texcoord_list[2] },
+		{ position_list[2], texcoord_list[3] },
+
+		{ position_list[7], texcoord_list[0] },
+		{ position_list[0], texcoord_list[1] },
+		{ position_list[3], texcoord_list[2] },
+		{ position_list[4], texcoord_list[3] },
+
+		{ position_list[3], texcoord_list[0] },
+		{ position_list[2], texcoord_list[1] },
+		{ position_list[5], texcoord_list[2] },
+		{ position_list[4], texcoord_list[3] },
+
+		{ position_list[7], texcoord_list[0] },
+		{ position_list[6], texcoord_list[1] },
+		{ position_list[1], texcoord_list[2] },
+		{ position_list[0], texcoord_list[3] }
 	};
 
 	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
@@ -37,16 +108,21 @@ Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameOb
 	{
 		0, 1, 2,
 		2, 3, 0,
+
 		4, 5, 6,
 		6, 7, 4,
-		1, 6, 5,
-		5, 2, 1,
-		7, 0, 3,
-		3, 4, 7,
-		3, 2, 5,
-		5, 4, 3,
-		7, 6, 1,
-		1, 0, 7
+
+		8, 9, 10,
+		10, 11, 8,
+
+		12, 13, 14,
+		14, 15, 12,
+
+		16, 17, 18,
+		18, 19, 16,
+
+		20, 21, 22,
+		22, 23, 20
 	};
 
 	this->indexBuffer = GraphicsEngine::get()->createIndexBuffer();
@@ -59,45 +135,8 @@ Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameOb
 	this->indexBuffer->load(index_list, size_index_list);
 	this->vertexBuffer->load(vertex_list, sizeof(vertex), size_list, shaderByteCode, sizeShader);
 	this->constantBuffer->load(&cc, sizeof(constant));
-}
 
-Plane::Plane(std::string name, Vector3D color ,void* shaderByteCode, size_t sizeShader) : GameObject(name)
-{
-
-	vertex vertex_list[] =
-	{//    X     Y     Z
-		{Vector3D(1),Vector2D(1)}
-	};
-
-	this->vertexBuffer = GraphicsEngine::get()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(vertex_list);
-
-	unsigned int index_list[] =
-	{
-		0, 1, 2,
-		2, 3, 0,
-		4, 5, 6,
-		6, 7, 4,
-		1, 6, 5,
-		5, 2, 1,
-		7, 0, 3,
-		3, 4, 7,
-		3, 2, 5,
-		5, 4, 3,
-		7, 6, 1,
-		1, 0, 7
-	};
-
-	this->indexBuffer = GraphicsEngine::get()->createIndexBuffer();
-	UINT size_index_list = ARRAYSIZE(index_list);
-
-	constant cc;
-	cc.m_angle = 0;
-	this->constantBuffer = GraphicsEngine::get()->createConstantBuffer();
-
-	this->indexBuffer->load(index_list, size_index_list);
-	this->vertexBuffer->load(vertex_list, sizeof(vertex), size_list, shaderByteCode, sizeShader);
-	this->constantBuffer->load(&cc, sizeof(constant));
+	this->localScale.y = 0.01;
 }
 
 Plane::~Plane()
@@ -107,69 +146,87 @@ Plane::~Plane()
 
 void Plane::update(float deltaTime)
 {
-	this->ticks += deltaTime;
-	this->deltaPos = this->speed * deltaTime;
+	m_angle += deltaTime;
+
+	if (this->localScale.y != 0.01)
+	{
+		this->localScale.y = 0.01;
+	}
+
+	this->position[0] = this->getLocalPosition().x;
+	this->position[1] = this->getLocalPosition().y;
+	this->position[2] = this->getLocalPosition().z;
+
+	this->scale[0] = this->getLocalScale().x;
+	this->scale[1] = this->getLocalScale().y;
+	this->scale[2] = this->getLocalScale().z;
+
+	this->rotation[0] = this->getLocalRotation().x * (180.0 / M_PI);
+	this->rotation[1] = this->getLocalRotation().y * (180.0 / M_PI);
+	this->rotation[2] = this->getLocalRotation().z * (180.0 / M_PI);
+
 }
 
 void Plane::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 {
-	static float m_angle = 0;
-	m_angle += EngineTime::getDeltaTime();
 	constant cc;
 	cc.m_angle = m_angle;
 
-
-
-	deltaPos += EngineTime::getDeltaTime() / 10.0f;
-	if (deltaPos > 1.0f) deltaPos = 0.0f;
-
-
 	Matrix4x4 temp;
 
-	this->deltaScale += EngineTime::getDeltaTime() / 10.f;
-	//cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5, 0.5, 0), Vector3D(1, 1, 0), (sin(this->deltaScale) + 1.0f)/2.0f));
-	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5, -1.5, 0), Vector3D(1.5, 1.5, 0), this->deltaPos));
-	//cc.m_world *= temp;
-
-
 	cc.m_world.setScale(this->getLocalScale());
+
 	temp.setRotationZ(this->getLocalRotation().z);
-	//temp.setRotationZ(m_angle * deltaPos);
 	cc.m_world *= temp;
 	temp.setRotationY(this->getLocalRotation().y);
 	cc.m_world *= temp;
 	temp.setRotationX(this->getLocalRotation().x);
-	//temp.setRotationX(m_angle * deltaPos);
 	cc.m_world *= temp;
 
 	temp.setTranslation(this->getLocalPosition());
 	cc.m_world *= temp;
+
+	//temp.setTranslation(this->localMatrix.getTranslation());
+	//cc.m_world *= temp;
+
+
+
+	//cc.m_world.setScale(this->getLocalScale());
+	//cc.m_world *= this->localMatrix;
+
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
 	world_cam.inverse();
 	cc.m_view = world_cam;
 
 
-
 	//cc.m_view.setIdentity();
 	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
 	//For Fog
+
 	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
 
-	//For Culling (Use With Simple Fog)
+	//For Culling
 	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
 
-
+	//std::cout << "My Gameobject is Updating: " << this->name << " : " << getLocalPosition().y << std::endl;
 
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(ps, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setVertexShader(vs);
 	GraphicsEngine::get()->getDeviceContext()->setPixelShader(ps);
+
+	//Set Texture:
+	if (this->texture)
+	{
+		GraphicsEngine::get()->getDeviceContext()->setTexture(ps, this->texture);
+	}
+
 	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->vertexBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setIndexBuffer(this->indexBuffer);
 
-	//Draw Plane:
+	//Draw Cube:
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(indexBuffer->getSizeIndexList(), 0, 0);
 
 }

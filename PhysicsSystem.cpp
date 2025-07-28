@@ -1,5 +1,6 @@
 #include "PhysicsSystem.h"
 #include "EngineTime.h"
+#include <iostream>
 
 
 PhysicsSystem::PhysicsSystem()
@@ -34,6 +35,7 @@ void PhysicsSystem::unregisterComponent(PhysicsComponent* component)
 		if (it != this->componentTable.end())
 		{
 			this->componentTable.erase(it);
+
 		}
 		auto list_it = std::find(this->componentList.begin(), this->componentList.end(), component);
 		if (list_it != this->componentList.end())

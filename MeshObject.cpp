@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "MeshObject.h"
 #include <iostream>
 #include "DeviceContext.h"
@@ -7,6 +10,9 @@
 #include "SceneCameraHolder.h"
 #include "MeshManager.h"
 #include "TextureManager.h"
+
+
+
 
 __declspec(align(16))
 struct constant
@@ -19,6 +25,7 @@ struct constant
 
 MeshObject::MeshObject(std::string name, Mesh* mesh, Texture* texture) : GameObject(name)
 {
+	this->objectType = GameObject::MeshObject;
 	this->texture = texture;
 	this->mesh = mesh;
 
@@ -37,7 +44,17 @@ MeshObject::~MeshObject()
 
 void MeshObject::update(float deltaTime)
 {
+	this->position[0] = this->getLocalPosition().x;
+	this->position[1] = this->getLocalPosition().y;
+	this->position[2] = this->getLocalPosition().z;
 
+	this->scale[0] = this->getLocalScale().x;
+	this->scale[1] = this->getLocalScale().y;
+	this->scale[2] = this->getLocalScale().z;
+
+	this->rotation[0] = this->getLocalRotation().x * (180.0 / M_PI);
+	this->rotation[1] = this->getLocalRotation().y * (180.0 / M_PI);
+	this->rotation[2] = this->getLocalRotation().z * (180.0 / M_PI);
 }
 
 void MeshObject::draw(int width, int height, VertexShader* vs, PixelShader* ps)

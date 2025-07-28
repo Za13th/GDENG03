@@ -1,3 +1,8 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
 #include "Cube.h"
 #include "structs.h"
 #include "GraphicsEngine.h"
@@ -10,8 +15,7 @@
 #include "FogSystem.h"
 #include <iostream>
 
-#include <cstdlib>
-#include <ctime>
+
 
 __declspec(align(16))
 struct constant
@@ -25,6 +29,7 @@ struct constant
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
 {
+	this->objectType = GameObject::Cube;
 	texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\wood.jpg");
 
 	Vector3D position_list[] =
@@ -147,12 +152,32 @@ Cube::~Cube()
 
 void Cube::update(float deltaTime)
 {
-	static float m_angle = 0;
 	m_angle += deltaTime;
-	constant cc;
-	cc.m_angle = m_angle;
+
+
+	this->position[0] = this->getLocalPosition().x;
+	this->position[1] = this->getLocalPosition().y;
+	this->position[2] = this->getLocalPosition().z;
+
+	this->scale[0] = this->getLocalScale().x;
+	this->scale[1] = this->getLocalScale().y;
+	this->scale[2] = this->getLocalScale().z;
+
+	this->rotation[0] = this->getLocalRotation().x * (180.0 / M_PI);
+	this->rotation[1] = this->getLocalRotation().y * (180.0 / M_PI);
+	this->rotation[2] = this->getLocalRotation().z * (180.0 / M_PI);
+	
+
+	//std::cout << "My Gameobject is Updating: " << this->name << " : " << getLocalPosition().y << std::endl;
+}
+
+void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
+{
 
 	Matrix4x4 temp;
+
+	constant cc;
+	cc.m_angle = m_angle;
 
 	cc.m_world.setScale(this->getLocalScale());
 
@@ -163,14 +188,14 @@ void Cube::update(float deltaTime)
 	temp.setRotationX(this->getLocalRotation().x);
 	cc.m_world *= temp;
 
-	//temp.setTranslation(this->getLocalPosition());
-	//cc.m_world *= temp;
+	temp.setTranslation(this->getLocalPosition());
+	cc.m_world *= temp;
 
 	//temp.setTranslation(this->localMatrix.getTranslation());
 	//cc.m_world *= temp;
 
-	cc.m_world.setScale(this->getLocalScale());
-	cc.m_world *= this->localMatrix;
+	//cc.m_world.setScale(this->getLocalScale());
+	//cc.m_world *= this->localMatrix;
 
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
@@ -181,20 +206,13 @@ void Cube::update(float deltaTime)
 	//cc.m_view.setIdentity();
 	//cc.m_proj.setOrthoLH(width / 400.0f, height / 400.0f, -4.0f, 4.0f); 
 	//For Fog
-	
-	auto width = SceneCameraHolder::getInstance()->getCamera()->width;
-	auto height = SceneCameraHolder::getInstance()->getCamera()->height;
+
 	cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, 100.0f);
 
 	//For Culling
 	//cc.m_proj.setPerspectiveFovLH(1.57, (float)width / (float)height, 0.1f, fog_end * 0.21);
 	this->constantBuffer->update(GraphicsEngine::get()->getDeviceContext(), &cc);
 
-	//std::cout << "My Gameobject is Updating: " << this->name << " : " << getLocalPosition().y << std::endl;
-}
-
-void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
-{
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(vs, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setConstantBuffer(ps, this->constantBuffer);
 	GraphicsEngine::get()->getDeviceContext()->setVertexShader(vs);

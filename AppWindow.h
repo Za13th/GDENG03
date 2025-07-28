@@ -76,16 +76,10 @@ class AppWindow : public Window, public InputListener
 		Matrix4x4 m_world_cam;
 
 		std::vector<Quad> quads;
-		std::vector<Cube> cubes;
-		std::vector<Plane> planes;
-		std::vector<MeshObject> meshes;
-
 		Texture* m_texture = nullptr;
 		Mesh* m_mesh[3] = {nullptr, nullptr, nullptr};
-		Mesh* loadedMesh = nullptr;
-		Texture* loadedTexture = nullptr;
+
 		
-		bool meshScreen = false;
 		bool aboutScreen = false;
 		size_t cSize;
 };

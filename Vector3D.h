@@ -46,6 +46,15 @@ class Vector3D
 			return v;
 		}
 
+		void normalize() {
+			float len = length();
+			if (len > 0) {
+				x /= len;
+				y /= len;
+				z /= len;
+			}
+		}
+
 
 };
 

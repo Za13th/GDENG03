@@ -1,6 +1,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "GameObject.h"
+#include "PhysicsComponent.h"
+#include "BaseComponentSystem.h"
+#include "GameObjectManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -98,7 +101,31 @@ void GameObject::getInspectorUI()
 			localScale = Vector3D(scale[0], scale[1], scale[2]);
 			localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
 			this->reconstructMatrix();
+
+			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			{
+				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+				if (physicsComponent)
+				{
+					physicsComponent->adjustRigidbody();
+				}
+			}
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Delete"))
+		{
+			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			{
+				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+				if (physicsComponent)
+				{
+					BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+				}
+			}
+
+			GameObjectManager::getInstance()->removeGameObject(this);
+		}
+
 	}
 
 
@@ -163,7 +190,7 @@ void GameObject::setLocalMatrix(float* matrix)
 	this->localMatrix.m[3][3] = matrix[15];
 	
 
-	this->setPosition(matrix[12], matrix[13], matrix[14]);
+	this->reconstructVectors();
 }
 
 float* GameObject::getPhysicsLocalMatrix()
@@ -231,11 +258,32 @@ void GameObject::detachComponent(Component* component)
 	}
 }
 
+void GameObject::detachAllComponents()
+{
+	for (auto& component : components)
+	{
+		component->detachOwner();
+	}
+	components.clear();
+}
+
 Component* GameObject::findComponentByName(std::string name)
 {
 	for (auto& component : components)
 	{
 		if (component->getName() == name)
+		{
+			return component;
+		}
+	}
+	return nullptr;
+}
+
+Component* GameObject::findComponentByType(Component::ComponentType type, std::string name)
+{
+	for (auto& component : components)
+	{
+		if (component->getType() == type && component->getName() == name)
 		{
 			return component;
 		}

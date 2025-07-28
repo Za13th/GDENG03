@@ -17,6 +17,8 @@ class GameObject
 		typedef std::unordered_map<String, Component*> ComponentTable;
 		typedef std::vector<Component*> ComponentList;
 
+		enum ObjectType { MeshObject = -1, Cube = 0, Plane = 1, Sphere = 2, Cylinder = 3 };
+
 		GameObject(std::string name);
 		~GameObject();
 
@@ -44,17 +46,21 @@ class GameObject
 
 		void attachComponent(Component* component);
 		void detachComponent(Component* component);
+		void detachAllComponents();
 
 		Component* findComponentByName(std::string name);
-		Component* findComponentByType(Component::ComponentType type, std::string name){}
+		Component* findComponentByType(Component::ComponentType type, std::string name);
 		ComponentList getComponentsOfType(Component::ComponentType type){}
 
 		std::string name;
+		ObjectType objectType;
 	protected:
 		Vector3D localPosition = Vector3D(0.f,0.f,0.f);
 		Vector3D localScale = Vector3D(1.f, 1.f, 1.f);
 		Vector3D localRotation = Vector3D(0.f, 0.f, 0.f);;
 		Matrix4x4 localMatrix;
+
+		float m_angle = 0;
 
 		float position[3] = { localPosition.x,localPosition.y ,localPosition.z };
 		float scale[3] = { localScale.x,localScale.y,localScale.z };

@@ -4,12 +4,12 @@
 #include "IndexBuffer.h"
 #include "ConstantBuffer.h"
 #include "Vector2D.h"
+#include "TextureManager.h"
 
 class Plane : public GameObject
 {
 public:
 	Plane(std::string name, void* shaderByteCode, size_t sizeShader);
-	Plane(std::string name, Vector3D color ,void* shaderByteCode, size_t sizeShader);
 	~Plane();
 
 	void update(float deltaTime) override;
@@ -27,4 +27,6 @@ private:
 	float deltaScale = 0.0f;
 	float deltaTime = 0.0f;
 	float speed = 1.57f; //default is 1.57f for PardCode
+
+	Texture* texture = nullptr;
 };
