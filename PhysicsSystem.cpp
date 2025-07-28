@@ -29,18 +29,26 @@ void PhysicsSystem::registerComponent(PhysicsComponent* component)
 
 void PhysicsSystem::unregisterComponent(PhysicsComponent* component)
 {
+	bool x = false, y = false;
 	if (component)
 	{
 		auto it = this->componentTable.find(component->getName());
 		if (it != this->componentTable.end())
 		{
 			this->componentTable.erase(it);
+			x = true;
 
 		}
 		auto list_it = std::find(this->componentList.begin(), this->componentList.end(), component);
 		if (list_it != this->componentList.end())
 		{
 			this->componentList.erase(list_it);
+			y = true;
+		}
+
+		if (component->getRigidBody() && x && y)
+		{
+			this->physicsWorld->destroyRigidBody(component->getRigidBody());
 		}
 	}
 }

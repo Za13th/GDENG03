@@ -280,7 +280,11 @@ void GameObjectManager::getObjectSpawnUI()
 					}
 
 
-					auto m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+					MeshObject* m;
+					if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
+					m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+					else
+					m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
 					m->setPosition(Vector3D(pos[0], pos[1], pos[2]));
 					m->setScale(Vector3D(scale));
 					this->meshes.push_back(m);
@@ -297,7 +301,10 @@ void GameObjectManager::getObjectSpawnUI()
 void GameObjectManager::spawnCube()
 {
 	Cube* newCube = new Cube(*templateCube);
-	newCube->name = "Cube " + std::to_string(cubes.size() + 1);
+	if (findGameObjectByName("Cube " + std::to_string(cubes.size() + 1)) != nullptr)
+		newCube->name = "Cube " + std::to_string(cubes.size() + 2);
+	else
+		newCube->name = "Cube " + std::to_string(cubes.size() + 1);
 
 	newCube->setPosition(0, 0, 0);
 	newCube->setScale(Vector3D(1.0f, 1.0f, 1.0f));
@@ -310,7 +317,10 @@ void GameObjectManager::spawnCube()
 void GameObjectManager::spawnPlane()
 {
 	Plane* newPlane = new Plane(*templatePlane);
-	newPlane->name = "Plane " + std::to_string(planes.size() + 1);
+	if (findGameObjectByName("Plane " + std::to_string(planes.size() + 1)) != nullptr)
+		newPlane->name = "Plane " + std::to_string(planes.size() + 2);
+	else
+		newPlane->name = "Plane " + std::to_string(planes.size() + 1);
 
 	newPlane->setPosition(0, 0, 0);
 	newPlane->setScale(Vector3D(3.0f, 0.1f, 3.0f));
@@ -323,7 +333,10 @@ void GameObjectManager::spawnPlane()
 void GameObjectManager::spawnP6Cube()
 {
 	Cube* newPhysicsCube = new Cube(*templateCube);
-	newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 1);
+	if (findGameObjectByName("P6 Cube " + std::to_string(cubes.size() + 1)) != nullptr)
+		newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 2);
+	else
+		newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 1);
 
 	newPhysicsCube->setPosition(0, 0, 0);
 	newPhysicsCube->setScale(Vector3D(1.0f, 1.0f, 1.0f));
@@ -338,7 +351,10 @@ void GameObjectManager::spawnP6Cube()
 void GameObjectManager::spawnP6Plane()
 {
 	Plane* newPhysicsPlane = new Plane(*templatePlane);
-	newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 1);
+	if (findGameObjectByName("P6 Plane " + std::to_string(planes.size() + 1)) != nullptr)
+		newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 2);
+	else
+		newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 1);
 
 	newPhysicsPlane->setPosition(0, -5, 0);
 	newPhysicsPlane->setScale(Vector3D(3.0f, 0.1f, 3.0f));
