@@ -140,6 +140,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="DebugUIManager.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="EngineTime.cpp" />
     <ClCompile Include="FogSystem.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="DebugUIManager.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="EngineTime.h" />

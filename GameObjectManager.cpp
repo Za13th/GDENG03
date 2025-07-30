@@ -4,6 +4,7 @@
 #include "BaseComponentSystem.h"
 #include "SceneCameraHolder.h"
 #include "PhysicsComponent.h"
+#include "DebugUIManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -275,7 +276,7 @@ void GameObjectManager::getObjectSpawnUI()
 						std::cout << "Texture Loading\n";
 					else
 					{
-						std::cout << "Texture Loading Failed\n";
+						DebugUIManager::getInstance()->Log("Texture Loading Failed!");
 						loadedTexture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\error.jpg");
 					}
 
@@ -290,7 +291,7 @@ void GameObjectManager::getObjectSpawnUI()
 					this->meshes.push_back(m);
 				}
 				else
-					std::cout << "Mesh Loading Failed" << std::endl;
+					DebugUIManager::getInstance()->Log("Mesh Loading Failed!");
 			}
 			ImGui::End();
 		}

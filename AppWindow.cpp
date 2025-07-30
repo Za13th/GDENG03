@@ -14,6 +14,7 @@
 #include "PhysicsComponent.h"
 #include "PhysicsSystem.h"
 #include "GameObjectManager.h"
+#include "DebugUIManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -447,6 +448,9 @@ void AppWindow::onUpdate()
 		frameStep = true;
 	}
 	ImGui::End();
+
+	//Debug Log
+	DebugUIManager::getInstance()->draw();
 
 
 	// Main Menu Bar

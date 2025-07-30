@@ -199,6 +199,7 @@
       <Filter>GameEngine\ComponentSystem</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectManager.cpp" />
+    <ClCompile Include="DebugUIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -349,6 +350,7 @@
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectManager.h" />
+    <ClInclude Include="DebugUIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
