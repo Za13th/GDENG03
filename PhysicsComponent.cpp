@@ -32,7 +32,7 @@ PhysicsComponent::PhysicsComponent(String name, GameObject* owner) : Component(n
 	}
 	else if (owner->objectType == GameObject::Plane)
 	{
-		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, 0.0005, scale.z / 2));
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x * 5, 0.005, scale.z * 5));
 		transform.setToIdentity();
 		this->rigidBody->addCollider(boxshape, transform);
 		this->rigidBody->updateMassFromColliders();
@@ -77,7 +77,7 @@ void PhysicsComponent::adjustRigidbody()
 	}
 	else if (owner->objectType == GameObject::Plane)
 	{
-		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x / 2, 0.0005, scale.z / 2));
+		BoxShape* boxshape = physicsCommon->createBoxShape(Vector3(scale.x * 5, 0.005, scale.z * 5));
 		transform.setToIdentity();
 		this->rigidBody->addCollider(boxshape, transform);
 		this->rigidBody->updateMassFromColliders();

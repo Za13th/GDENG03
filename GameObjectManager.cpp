@@ -324,7 +324,7 @@ void GameObjectManager::spawnPlane()
 		newPlane->name = "Plane " + std::to_string(planes.size() + 1);
 
 	newPlane->setPosition(0, 0, 0);
-	newPlane->setScale(Vector3D(3.0f, 0.1f, 3.0f));
+	newPlane->setScale(Vector3D(1.0f, 1.0f, 1.0f));
 	newPlane->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
 
 	newPlane->reconstructMatrix();
@@ -358,7 +358,7 @@ void GameObjectManager::spawnP6Plane()
 		newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 1);
 
 	newPhysicsPlane->setPosition(0, -5, 0);
-	newPhysicsPlane->setScale(Vector3D(3.0f, 0.1f, 3.0f));
+	newPhysicsPlane->setScale(Vector3D(1.0f, 1.0f, 1.0f));
 	newPhysicsPlane->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
 
 	newPhysicsPlane->reconstructMatrix();

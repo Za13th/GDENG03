@@ -31,15 +31,15 @@ Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameOb
 
 	Vector3D position_list[] =
 	{
-		Vector3D(-0.5f, -0.005f, -0.5f),
-		Vector3D(-0.5f, 0.005f, -0.5f),
-		Vector3D(0.5f, 0.005f, -0.5f),
-		Vector3D(0.5f, -0.005f, -0.5f),
+		Vector3D(-5.0f, -0.005f, -5.0f),
+		Vector3D(-5.0f, 0.005f, -5.0f),
+		Vector3D(5.0f, 0.005f, -5.0f),
+		Vector3D(5.0f, -0.005f, -5.0f),
 
-		Vector3D(0.5f, -0.005f, 0.5f),
-		Vector3D(0.5f, 0.005f, 0.5f),
-		Vector3D(-0.5f, 0.005f, 0.5f),
-		Vector3D(-0.5f, -0.005f, 0.5f)
+		Vector3D(5.0f, -0.005f, 5.0f),
+		Vector3D(5.0f, 0.005f, 5.0f),
+		Vector3D(-5.0f, 0.005f, 5.0f),
+		Vector3D(-5.0f, -0.005f, 5.0f)
 	};
 
 	Vector3D color_list[] =
@@ -135,8 +135,6 @@ Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameOb
 	this->indexBuffer->load(index_list, size_index_list);
 	this->vertexBuffer->load(vertex_list, sizeof(vertex), size_list, shaderByteCode, sizeShader);
 	this->constantBuffer->load(&cc, sizeof(constant));
-
-	this->localScale.y = 0.01;
 }
 
 Plane::~Plane()
@@ -148,9 +146,9 @@ void Plane::update(float deltaTime)
 {
 	m_angle += deltaTime;
 
-	if (this->localScale.y != 0.01)
+	if (this->localScale.y != 1.0f)
 	{
-		this->localScale.y = 0.01;
+		this->localScale.y = 1.0f;
 	}
 
 	this->position[0] = this->getLocalPosition().x;
@@ -169,6 +167,8 @@ void Plane::update(float deltaTime)
 
 void Plane::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 {
+	this->localScale.y = 1.0f;
+
 	constant cc;
 	cc.m_angle = m_angle;
 
