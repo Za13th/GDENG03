@@ -50,7 +50,10 @@ PhysicsComponent::PhysicsComponent(String name, GameObject* owner) : Component(n
 	}
 	else if (owner->objectType == GameObject::Cylinder)
 	{
-		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2));
+		if (((scale.y * 2) - (scale.x)) > 0)
+			capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+
 		transform.setToIdentity();
 		this->rigidBody->addCollider(capsuleShape, transform);
 		this->rigidBody->updateMassFromColliders();
@@ -59,7 +62,10 @@ PhysicsComponent::PhysicsComponent(String name, GameObject* owner) : Component(n
 	}
 	else if (owner->objectType == GameObject::Capsule)
 	{
-		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2));
+		if (((scale.y * 2) - (scale.x)) > 0)
+			capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+
 		transform.setToIdentity();
 		this->rigidBody->addCollider(capsuleShape, transform);
 		this->rigidBody->updateMassFromColliders();
@@ -120,7 +126,10 @@ void PhysicsComponent::adjustRigidbody()
 	}
 	else if (owner->objectType == GameObject::Cylinder)
 	{
-		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, 0.01f);
+		if (((scale.y * 2) - (scale.x))> 0)
+			capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+
 		transform.setToIdentity();
 		this->rigidBody->addCollider(capsuleShape, transform);
 		this->rigidBody->updateMassFromColliders();
@@ -129,7 +138,10 @@ void PhysicsComponent::adjustRigidbody()
 	}
 	else if (owner->objectType == GameObject::Capsule)
 	{
-		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+		CapsuleShape* capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, 0.01f);
+		if (((scale.y * 2) - (scale.x)) > 0)
+			capsuleShape = physicsCommon->createCapsuleShape(scale.x / 2, (scale.y * 2) - (scale.x));
+
 		transform.setToIdentity();
 		this->rigidBody->addCollider(capsuleShape, transform);
 		this->rigidBody->updateMassFromColliders();
