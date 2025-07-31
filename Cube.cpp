@@ -45,18 +45,6 @@ Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObje
 		Vector3D(-0.5f, -0.5f, 0.5f)
 	};
 
-	Vector3D color_list[] =
-	{
-		Vector3D(1, 0, 0),   // Red
-		Vector3D(1, 1, 0),   // Yellow
-		Vector3D(1, 0, 1),   // Magenta
-		Vector3D(0, 1, 0),   // Green
-		Vector3D(1, 1, 1),   // White
-		Vector3D(0, 0, 1),   // Blue
-		Vector3D(0, 1, 1),   // Cyan
-		Vector3D(0.1f, 0.1f, 0.1f) // Dark Gray
-	};
-
 	Vector2D texcoord_list[] =
 	{
 		Vector2D(0, 1),

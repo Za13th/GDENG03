@@ -2,6 +2,9 @@
 #include "GameObject.h"
 #include "Cube.h"
 #include "Plane.h"
+#include "Sphere.h"
+#include "Cylinder.h"
+#include "Capsule.h"
 #include "MeshObject.h"
 class GameObjectManager
 {
@@ -23,6 +26,9 @@ public:
 	void spawnPlane();
 	void spawnP6Cube();
 	void spawnP6Plane();
+	void spawnP6Sphere();
+	void spawnP6Cylinder();
+	void spawnP6Capsule();
 
 private:
 	GameObjectManager();
@@ -34,10 +40,18 @@ private:
 	bool meshScreen = false;
 	Cube* templateCube = nullptr;
 	Plane* templatePlane = nullptr;
+	Sphere* templateSphere = nullptr;
+	Cylinder* templateCylinder = nullptr;
+	Capsule* templateCapsule = nullptr;
 
 	std::vector<Cube*> cubes;
 	std::vector<Plane*> planes;
+	std::vector<Sphere*> spheres;
+	std::vector<Cylinder*> cylinders;
+	std::vector<Capsule*> capsules;
 	std::vector<MeshObject*> meshes;
+
+
 
 };
 

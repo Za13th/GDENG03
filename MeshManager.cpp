@@ -16,6 +16,11 @@ void MeshManager::destroy()
 {
 	if (sharedInstance != nullptr)
 	{
+		for (auto& pair : sharedInstance->m_map_meshes)
+		{
+			delete pair.second; // Delete each Mesh resource
+		}
+		sharedInstance->m_map_meshes.clear(); // Clear the map
 		delete sharedInstance;
 		sharedInstance = nullptr;
 	}
