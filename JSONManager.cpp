@@ -40,7 +40,8 @@ void JSONManager::save()
 		DebugUIManager::getInstance()->Log("Cubes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
-			j[list[i]->name] = {
+			j["Game Object"] = {
+				{"name", list[i]->name},
 				{"objType", GameObjectManager::Cubes},
 				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
 				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
@@ -56,7 +57,8 @@ void JSONManager::save()
 		DebugUIManager::getInstance()->Log("Planes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
-			j[list[i]->name] = {
+			j["Game Object"] = {
+				{"name", list[i]->name},
 				{"objType", GameObjectManager::Planes},
 				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
 				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
@@ -72,7 +74,8 @@ void JSONManager::save()
 		DebugUIManager::getInstance()->Log("Meshes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
-			j[list[i]->name] = {
+			j["Game Object"] = {
+				{"name", list[i]->name},
 				{"objType", GameObjectManager::Meshes},
 				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
 				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
