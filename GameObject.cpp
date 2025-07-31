@@ -168,7 +168,7 @@ void GameObject::reconstructVectors()
 
 void GameObject::setLocalMatrix(float* matrix)
 {
-	
+
 	this->localMatrix.m[0][0] = matrix[0];
 	this->localMatrix.m[0][1] = matrix[1];
 	this->localMatrix.m[0][2] = matrix[2];
@@ -188,7 +188,7 @@ void GameObject::setLocalMatrix(float* matrix)
 	this->localMatrix.m[3][1] = matrix[13];
 	this->localMatrix.m[3][2] = matrix[14];
 	this->localMatrix.m[3][3] = matrix[15];
-	
+
 
 	this->reconstructVectors();
 }
@@ -289,5 +289,39 @@ Component* GameObject::findComponentByType(Component::ComponentType type, std::s
 		}
 	}
 	return nullptr;
+}
+
+std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
+{
+	std::vector<Component::ComponentType> list;
+	bool notset = false, script = false, renderer = false, input = false, physics = false;
+	for (auto& component : components)
+	{
+		switch (component->getType()) {
+		case Component::NotSet:
+			notset = true;
+			break;
+		case Component::Script:
+			script = true;
+			break;
+		case Component::Renderer:
+			renderer = true;
+			break;
+		case Component::Input:
+			input = true;
+			break;
+		case Component::Physics:
+			physics = true;
+			break;
+		}
+	}
+
+	if (notset) list.push_back(Component::NotSet);
+	if (script) list.push_back(Component::Script);
+	if (renderer) list.push_back(Component::Renderer);
+	if (input) list.push_back(Component::Input);
+	if (physics) list.push_back(Component::Physics);
+
+	return list;
 }
 

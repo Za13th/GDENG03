@@ -175,6 +175,27 @@ std::vector<GameObject*> GameObjectManager::getAllGameObjects()
 	return allObjects;
 }
 
+std::vector<GameObject*> GameObjectManager::getAllGameObjectsOfType(objType type)
+{
+	std::vector<GameObject*> objects;
+	switch (type) {
+	case Cubes:
+		for (auto& cube : cubes)
+			objects.push_back(cube);
+		break;
+	case Planes:
+		for (auto& plane : planes)
+			objects.push_back(plane);
+		break;
+	case Meshes:
+		for (auto& mesh : meshes)
+			objects.push_back(mesh);
+		break;
+	}
+
+	return objects;
+}
+
 void GameObjectManager::getInspectorUI()
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -211,7 +232,7 @@ void GameObjectManager::getInspectorUI()
 void GameObjectManager::getObjectSpawnUI()
 {
 	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("Spawn")) 
+		if (ImGui::BeginMenu("Spawn"))
 		{
 			if (ImGui::MenuItem("Spawn Cube"))
 			{
@@ -237,9 +258,13 @@ void GameObjectManager::getObjectSpawnUI()
 		}
 
 		ImGui::EndMainMenuBar();
-	
+
 		static char meshPath[128] = "Assets\\Meshes\\";
-		static char texturePath[128] = "Assets\\Textures\\";
+		static char texturePath[128] = "Assets\\Textures\\";	
+		
+		static char meshPathOut[128];
+		static char texturePathOut[128];
+
 		static Mesh* loadedMesh = nullptr;
 		static Texture* loadedTexture = nullptr;
 		if (meshScreen)
@@ -259,6 +284,7 @@ void GameObjectManager::getObjectSpawnUI()
 				wchar_t* wc = new wchar_t[cSize];
 				mbstowcs(wc, meshPath, cSize);
 				loadedMesh = MeshManager::getInstance()->createMeshFromFile(wc);
+				strcpy(meshPathOut, meshPath);
 				strcpy(meshPath, "Assets\\Meshes\\");
 
 				strcat(texturePath, buf2);
@@ -266,6 +292,7 @@ void GameObjectManager::getObjectSpawnUI()
 				wchar_t* wc2 = new wchar_t[cSize2];
 				mbstowcs(wc2, texturePath, cSize2);
 				loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
+				strcpy(texturePathOut, texturePath);
 				strcpy(texturePath, "Assets\\Textures\\");
 
 				if (loadedMesh != nullptr)
@@ -278,16 +305,19 @@ void GameObjectManager::getObjectSpawnUI()
 					{
 						DebugUIManager::getInstance()->Log("Texture Loading Failed!");
 						loadedTexture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\error.jpg");
+						strcpy(texturePathOut, "Assets\\Textures\\error.jpg");
 					}
 
 
 					MeshObject* m;
 					if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
-					m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+						m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
 					else
-					m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
+						m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
 					m->setPosition(Vector3D(pos[0], pos[1], pos[2]));
 					m->setScale(Vector3D(scale));
+					m->meshLoc = meshPathOut;
+					m->textureLoc = texturePathOut;
 					this->meshes.push_back(m);
 				}
 				else

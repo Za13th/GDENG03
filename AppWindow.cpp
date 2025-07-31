@@ -15,6 +15,7 @@
 #include "PhysicsSystem.h"
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
+#include "JSONManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -455,6 +456,24 @@ void AppWindow::onUpdate()
 
 	// Main Menu Bar
 	GameObjectManager::getInstance()->getObjectSpawnUI();
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("Scene")) {
+			if (ImGui::MenuItem("Save"))
+			{
+				JSONManager::getInstance()->save();
+			}
+
+			if (ImGui::MenuItem("Load"))
+			{
+				JSONManager::getInstance()->load();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+	
 
 	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
 	GameObjectManager::getInstance()->getInspectorUI();

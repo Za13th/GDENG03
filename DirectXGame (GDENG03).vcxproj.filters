@@ -200,6 +200,7 @@
     </ClCompile>
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="DebugUIManager.cpp" />
+    <ClCompile Include="JSONManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -351,6 +352,7 @@
     </ClInclude>
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="DebugUIManager.h" />
+    <ClInclude Include="JSONManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
