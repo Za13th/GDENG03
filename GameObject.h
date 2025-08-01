@@ -11,66 +11,75 @@ class PixelShader;
 
 class GameObject
 {
-	public: 
+public:
 
-		typedef std::string String;
-		typedef std::unordered_map<String, Component*> ComponentTable;
-		typedef std::vector<Component*> ComponentList;
+	typedef std::string String;
+	typedef std::unordered_map<String, Component*> ComponentTable;
+	typedef std::vector<Component*> ComponentList;
 
-		enum ObjectType { MeshObject = -1, Cube = 0, Plane = 1, Sphere = 2, Cylinder = 3, Capsule = 4 };
 
-		GameObject(std::string name);
-		~GameObject();
+	enum ObjectType { MeshObject = -1, Cube = 0, Plane = 1, Sphere = 2, Cylinder = 3, Capsule = 4 };
 
-		virtual void update(float deltaTime) = 0;
-		virtual void draw(int width, int height, VertexShader* vs, PixelShader* ps) = 0;
 
-		void setPosition(float x, float y, float z);
-		void setPosition(Vector3D position);
-		Vector3D getLocalPosition();
+	GameObject(std::string name);
+	~GameObject();
 
-		void setScale(float x, float y, float z);
-		void setScale(Vector3D scale);
-		Vector3D getLocalScale();
+	virtual void update(float deltaTime) = 0;
+	virtual void draw(int width, int height, VertexShader* vs, PixelShader* ps) = 0;
 
-		void setRotation(float x, float y, float z);
-		void setRotation(Vector3D rotation);
-		Vector3D getLocalRotation();
+	void setPosition(float x, float y, float z);
+	void setPosition(Vector3D position);
+	Vector3D getLocalPosition();
 
-		void getInspectorUI();
-		void reconstructMatrix();
-		void reconstructVectors();
+	void setScale(float x, float y, float z);
+	void setScale(Vector3D scale);
+	Vector3D getLocalScale();
 
-		void setLocalMatrix(float* matrix);
-		float* getPhysicsLocalMatrix();
+	void setRotation(float x, float y, float z);
+	void setRotation(Vector3D rotation);
+	Vector3D getLocalRotation();
 
-		void attachComponent(Component* component);
-		void detachComponent(Component* component);
-		void detachAllComponents();
+	void getInspectorUI();
+	void reconstructMatrix();
+	void reconstructVectors();
 
-		Component* findComponentByName(std::string name);
-		Component* findComponentByType(Component::ComponentType type, std::string name);
-		ComponentList getComponentsOfType(Component::ComponentType type){}
+	void setLocalMatrix(float* matrix);
+	float* getPhysicsLocalMatrix();
 
-		std::string name;
-		ObjectType objectType;
-	protected:
-		Vector3D localPosition = Vector3D(0.f,0.f,0.f);
-		Vector3D localScale = Vector3D(1.f, 1.f, 1.f);
-		Vector3D localRotation = Vector3D(0.f, 0.f, 0.f);;
-		Matrix4x4 localMatrix;
+	void attachComponent(Component* component);
+	void detachComponent(Component* component);
+	void detachAllComponents();
 
-		float m_angle = 0;
+	Component* findComponentByName(std::string name);
+	Component* findComponentByType(Component::ComponentType type, std::string name);
+	ComponentList getComponentsOfType(Component::ComponentType type) {}
+	std::vector<Component::ComponentType> getAttachedComponentTypes();
 
-		float position[3] = { localPosition.x,localPosition.y ,localPosition.z };
-		float scale[3] = { localScale.x,localScale.y,localScale.z };
-		float rotation[3] = { localRotation.x,localRotation.y,localRotation.z };
+	std::string name;
+	ObjectType objectType;
+	std::string meshLoc;
+	std::string textureLoc;
 
-		ComponentList components;
+protected:
+	Vector3D localPosition = Vector3D(0.f, 0.f, 0.f);
+	Vector3D localScale = Vector3D(1.f, 1.f, 1.f);
+	Vector3D localRotation = Vector3D(0.f, 0.f, 0.f);;
+	Matrix4x4 localMatrix;
 
-		bool overrideMatrix = false;
+	float m_angle = 0;
 
-		virtual void awake(){}
+	float position[3] = { localPosition.x,localPosition.y ,localPosition.z };
+	float scale[3] = { localScale.x,localScale.y,localScale.z };
+	float rotation[3] = { localRotation.x,localRotation.y,localRotation.z };
+
+
+
+
+	ComponentList components;
+
+	bool overrideMatrix = false;
+
+	virtual void awake() {}
 
 };
 

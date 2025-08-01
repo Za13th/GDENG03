@@ -10,6 +10,7 @@ class GameObjectManager
 {
 public:
 	typedef std::string String;
+	enum objType {Cubes = 0, Planes = 1, Meshes = 2};
 
 	static GameObjectManager* getInstance();
 	static void initialize(void* shaderByteCode, size_t sizeShader);
@@ -19,6 +20,7 @@ public:
 	void drawObjects(bool update, float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
 	GameObject* findGameObjectByName(const String& name);
 	std::vector<GameObject*> getAllGameObjects();
+	std::vector<GameObject*> getAllGameObjectsOfType(objType type);
 	void getInspectorUI();
 	void getObjectSpawnUI();
 
