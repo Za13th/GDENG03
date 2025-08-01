@@ -30,7 +30,7 @@ struct constant
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
 {
 	this->objectType = GameObject::Cube;
-	texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\wood.jpg");
+	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\defaultSquare.jpg");
 
 	Vector3D position_list[] =
 	{
@@ -43,18 +43,6 @@ Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : GameObje
 		Vector3D(0.5f, 0.5f, 0.5f),
 		Vector3D(-0.5f, 0.5f, 0.5f),
 		Vector3D(-0.5f, -0.5f, 0.5f)
-	};
-
-	Vector3D color_list[] =
-	{
-		Vector3D(1, 0, 0),   // Red
-		Vector3D(1, 1, 0),   // Yellow
-		Vector3D(1, 0, 1),   // Magenta
-		Vector3D(0, 1, 0),   // Green
-		Vector3D(1, 1, 1),   // White
-		Vector3D(0, 0, 1),   // Blue
-		Vector3D(0, 1, 1),   // Cyan
-		Vector3D(0.1f, 0.1f, 0.1f) // Dark Gray
 	};
 
 	Vector2D texcoord_list[] =
@@ -194,8 +182,8 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	//temp.setTranslation(this->localMatrix.getTranslation());
 	//cc.m_world *= temp;
 
-	//cc.m_world.setScale(this->getLocalScale());
-	//cc.m_world *= this->localMatrix;
+	cc.m_world.setScale(this->getLocalScale());
+	cc.m_world *= this->localMatrix;
 
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
