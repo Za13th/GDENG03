@@ -209,6 +209,7 @@
     </ClCompile>
     <ClCompile Include="Cylinder.cpp" />
     <ClCompile Include="Capsule.cpp" />
+    <ClCompile Include="TextureComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -366,6 +367,7 @@
     </ClInclude>
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="Capsule.h" />
+    <ClInclude Include="TextureComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

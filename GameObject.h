@@ -5,6 +5,7 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "Component.h"
+#include "TextureComponent.h"
 
 class VertexShader;
 class PixelShader;
@@ -40,6 +41,7 @@ public:
 	Vector3D getLocalRotation();
 
 	void getInspectorUI();
+	void getInspectorUIPlus();
 	void reconstructMatrix();
 	void reconstructVectors();
 

@@ -367,6 +367,15 @@ void GameObjectManager::getInspectorUI()
 		ImGui::PopID();
 	}
 	ImGui::End();
+
+	if (inspectorWindowOpen)
+	{
+		currentObject->getInspectorUIPlus();
+	}
+	else
+	{
+		currentObject = nullptr;
+	}
 }
 
 void GameObjectManager::getObjectSpawnUI()
@@ -490,7 +499,7 @@ void GameObjectManager::getObjectSpawnUI()
 			ImGui::End();
 		}
 	}
-	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen);
+	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
 }
 
 void GameObjectManager::spawnCube()

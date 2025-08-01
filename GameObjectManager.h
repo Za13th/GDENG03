@@ -47,6 +47,9 @@ public:
 	void spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot);
 	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot);
 
+	void setCurrentObject(GameObject* g) { this->currentObject = g; }
+	bool inspectorWindowOpen = false;
+
 private:
 	GameObjectManager();
 	~GameObjectManager();
@@ -68,7 +71,8 @@ private:
 	std::vector<Capsule*> capsules;
 	std::vector<MeshObject*> meshes;
 
-
+	GameObject* currentObject = nullptr;
+	
 
 };
 

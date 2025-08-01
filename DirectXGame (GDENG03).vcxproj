@@ -173,6 +173,7 @@
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureComponent.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="structs.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureComponent.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Vector3D.h" />

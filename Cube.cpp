@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include "Cube.h"
+#include "TextureComponent.h"
 #include "structs.h"
 #include "GraphicsEngine.h"
 #include "DeviceContext.h"
@@ -207,9 +208,13 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	GraphicsEngine::get()->getDeviceContext()->setPixelShader(ps);
 
 	//Set Texture:
-	if (this->texture)
+	if (!this->findComponentByType(Component::Material, name + " TX Component"))
 	{
 		GraphicsEngine::get()->getDeviceContext()->setTexture(ps, this->texture);
+	}
+	else
+	{
+		GraphicsEngine::get()->getDeviceContext()->setTexture(ps, ((TextureComponent*)(this->findComponentByType(Component::Material, name + " TX Component")))->getTexture());
 	}
 
 	GraphicsEngine::get()->getDeviceContext()->setVertexBuffer(this->vertexBuffer);
