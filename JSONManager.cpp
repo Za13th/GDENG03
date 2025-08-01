@@ -1,6 +1,7 @@
 #include "JSONManager.h"
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
+#include "BaseComponentSystem.h"
 #include <fstream>
 #include <string>
 
@@ -232,6 +233,7 @@ void JSONManager::save(bool bg)
 void JSONManager::load(bool bg)
 {
 	GameObjectManager::getInstance()->clearAll();
+	BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterAllComponents();
 	std::ifstream f("bg.json");
 	std::ifstream f2("level.json");
 	json j;

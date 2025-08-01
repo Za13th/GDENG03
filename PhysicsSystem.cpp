@@ -63,6 +63,15 @@ void PhysicsSystem::unregisterComponentByName(const String& name)
 	}
 }
 
+void PhysicsSystem::unregisterAllComponents()
+{
+	for (int i = 0; i < this->componentList.size(); i++)
+		this->physicsWorld->destroyRigidBody(this->componentList[i]->getRigidBody());
+
+	this->componentList.clear();
+	this->componentTable.clear();
+}
+
 PhysicsComponent* PhysicsSystem::findComponentByName(const String& name)
 {
 	auto it = this->componentTable.find(name);
