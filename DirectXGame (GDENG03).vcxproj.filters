@@ -85,6 +85,9 @@
     <Filter Include="GameEngine\ComponentSystem">
       <UniqueIdentifier>{49f877b1-9684-4e2a-ba0b-668ef0dd3ce5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere">
+      <UniqueIdentifier>{116112eb-028a-4471-9318-6eb77927b963}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -201,6 +204,11 @@
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="DebugUIManager.cpp" />
     <ClCompile Include="JSONManager.cpp" />
+    <ClCompile Include="Sphere.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="Cylinder.cpp" />
+    <ClCompile Include="Capsule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -353,6 +361,11 @@
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="DebugUIManager.h" />
     <ClInclude Include="JSONManager.h" />
+    <ClInclude Include="Sphere.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="Cylinder.h" />
+    <ClInclude Include="Capsule.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

@@ -17,7 +17,9 @@ public:
 	typedef std::unordered_map<String, Component*> ComponentTable;
 	typedef std::vector<Component*> ComponentList;
 
-	enum ObjectType { MeshObject = -1, Cube = 0, Plane = 1, Sphere = 2, Cylinder = 3 };
+
+	enum ObjectType { MeshObject = -1, Cube = 0, Plane = 1, Sphere = 2, Cylinder = 3, Capsule = 4 };
+
 
 	GameObject(std::string name);
 	~GameObject();
