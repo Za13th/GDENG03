@@ -729,6 +729,54 @@ void GameObjectManager::spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, co
 	this->meshes.push_back(m);
 }
 
+void GameObjectManager::spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Sphere* newSphere = new Sphere(*templateSphere);
+	if (findGameObjectByName("Sphere " + std::to_string(spheres.size() + 1)) != nullptr)
+		newSphere->name = "Sphere " + std::to_string(spheres.size() + 2);
+	else
+		newSphere->name = "Sphere " + std::to_string(spheres.size() + 1);
+
+	newSphere->setPosition(pos.x, pos.y, pos.z);
+	newSphere->setScale(scale);
+	newSphere->setRotation(rot);
+
+	newSphere->reconstructMatrix();
+	spheres.push_back(newSphere);
+}
+
+void GameObjectManager::spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Cylinder* newCylinder = new Cylinder(*templateCylinder);
+	if (findGameObjectByName("Cylinder " + std::to_string(cylinders.size() + 1)) != nullptr)
+		newCylinder->name = "Cylinder " + std::to_string(cylinders.size() + 2);
+	else
+		newCylinder->name = "Cylinder " + std::to_string(cylinders.size() + 1);
+
+	newCylinder->setPosition(pos.x, pos.y, pos.z);
+	newCylinder->setScale(scale);
+	newCylinder->setRotation(rot);
+
+	newCylinder->reconstructMatrix();
+	cylinders.push_back(newCylinder);
+}
+
+void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Capsule* newCapsule = new Capsule(*templateCapsule);
+	if (findGameObjectByName("Capsule " + std::to_string(capsules.size() + 1)) != nullptr)
+		newCapsule->name = "Capsule " + std::to_string(capsules.size() + 2);
+	else
+		newCapsule->name = "Capsule " + std::to_string(capsules.size() + 1);
+
+	newCapsule->setPosition(pos.x, pos.y, pos.z);
+	newCapsule->setScale(scale);
+	newCapsule->setRotation(rot);
+
+	newCapsule->reconstructMatrix();
+	capsules.push_back(newCapsule);
+}
+
 void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot)
 {
 	Cube* newPhysicsCube = new Cube(*templateCube);
