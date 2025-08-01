@@ -97,45 +97,48 @@ void GameObject::getInspectorUI()
 		ImGui::InputFloat3("Scale", &scale[0]);
 		ImGui::InputFloat3("Rotation", &rotation[0]);
 
-		if (ImGui::Button("Apply"))
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Play)
 		{
-			localPosition = Vector3D(position[0], position[1], position[2]);
-			localScale = Vector3D(scale[0], scale[1], scale[2]);
-			localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
-			this->reconstructMatrix();
-
-			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			if (ImGui::Button("Apply"))
 			{
-				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-				if (physicsComponent)
+				localPosition = Vector3D(position[0], position[1], position[2]);
+				localScale = Vector3D(scale[0], scale[1], scale[2]);
+				localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
+				this->reconstructMatrix();
+
+				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
-					physicsComponent->adjustRigidbody();
+					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+					if (physicsComponent)
+					{
+						physicsComponent->adjustRigidbody();
+					}
 				}
 			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Delete"))
-		{
-			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			ImGui::SameLine();
+			if (ImGui::Button("Delete"))
 			{
-				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-				if (physicsComponent)
+				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
-					BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+					if (physicsComponent)
+					{
+						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+					}
 				}
-			}
 
-			GameObjectManager::getInstance()->removeGameObject(this);
-		}
-		if (ImGui::Button("More Info"))
-		{
-			GameObjectManager::getInstance()->setCurrentObject(this);
-			GameObjectManager::getInstance()->inspectorWindowOpen = true;
+				GameObjectManager::getInstance()->removeGameObject(this);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("More Info"))
+			{
+				GameObjectManager::getInstance()->setCurrentObject(this);
+				GameObjectManager::getInstance()->inspectorWindowOpen = true;
+			}
 		}
 
 	}
-
-
+	
 }
 
 void GameObject::getInspectorUIPlus()

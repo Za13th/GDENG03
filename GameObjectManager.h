@@ -6,6 +6,7 @@
 #include "Cylinder.h"
 #include "Capsule.h"
 #include "MeshObject.h"
+#include "GameStateManager.h"
 class GameObjectManager
 {
 public:
@@ -18,7 +19,7 @@ public:
 	void addGameObject(GameObject* gameObject);
 	void removeGameObject(GameObject* gameObject);
 	void clearAll();
-	void drawObjects(bool update, float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
+	void drawObjects(float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
 	GameObject* findGameObjectByName(const String& name);
 	std::vector<GameObject*> getAllGameObjects();
 	std::vector<GameObject*> getAllGameObjectsOfType(objType type);

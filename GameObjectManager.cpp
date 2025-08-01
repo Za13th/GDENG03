@@ -179,11 +179,11 @@ void GameObjectManager::clearAll()
 	capsules.clear();
 }
 
-void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int height, VertexShader* vs, PixelShader* ps)
+void GameObjectManager::drawObjects(float deltaTime, int width, int height, VertexShader* vs, PixelShader* ps)
 {
 	for (int i = 0; i < cubes.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			cubes[i]->update(deltaTime);
 		}
@@ -191,7 +191,7 @@ void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int
 	}
 	for (int i = 0; i < planes.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			planes[i]->update(deltaTime);
 		}
@@ -199,7 +199,7 @@ void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int
 	}
 	for (int i = 0; i < spheres.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			spheres[i]->update(deltaTime);
 		}
@@ -207,7 +207,7 @@ void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int
 	}
 	for (int i = 0; i < cylinders.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			cylinders[i]->update(deltaTime);
 		}
@@ -215,7 +215,7 @@ void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int
 	}
 	for (int i = 0; i < capsules.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			capsules[i]->update(deltaTime);
 		}
@@ -223,7 +223,7 @@ void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int
 	}
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		if (update)
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		{
 			meshes[i]->update(deltaTime);
 		}
@@ -499,6 +499,12 @@ void GameObjectManager::getObjectSpawnUI()
 			ImGui::End();
 		}
 	}
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
+	{
+		inspectorWindowOpen = false;
+		meshScreen = false;
+	}
+
 	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
 }
 

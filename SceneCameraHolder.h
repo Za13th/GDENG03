@@ -7,6 +7,7 @@ class SceneCameraHolder
 		static void initialize();
 		static void destroy();
 		
+		void updateCamera();
 		Camera* getCamera();
 
 	private:
@@ -16,7 +17,9 @@ class SceneCameraHolder
 		SceneCameraHolder& operator=(const SceneCameraHolder&) = delete;
 
 		static SceneCameraHolder* sharedInstance;
-		Camera* camera = nullptr;
+		Camera* currentCam = nullptr;
+
+		Camera* cameraList[3] = { nullptr, nullptr, nullptr };
 		
 };
 
