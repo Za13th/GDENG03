@@ -118,6 +118,11 @@ void GameObject::getInspectorUI()
 			ImGui::SameLine();
 			if (ImGui::Button("Delete"))
 			{
+				if (GameObjectManager::getInstance()->getCurrentObject() == this)
+				{
+					GameObjectManager::getInstance()->inspectorWindowOpen = false;
+				}
+
 				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
 					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));

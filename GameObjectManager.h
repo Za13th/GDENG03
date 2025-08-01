@@ -49,6 +49,7 @@ public:
 	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot);
 
 	void setCurrentObject(GameObject* g) { this->currentObject = g; }
+	GameObject* getCurrentObject() { return this->currentObject; }
 	bool inspectorWindowOpen = false;
 
 private:
