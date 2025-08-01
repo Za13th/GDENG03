@@ -446,6 +446,7 @@ void AppWindow::onUpdate()
 		ImGui::SameLine();
 		if (ImGui::Button("Stop"))
 		{
+			JSONManager::getInstance()->load(true);
 			GameStateManager::getInstance()->setGameState(GameStateManager::Edit);
 		}
 		ImGui::SameLine();
@@ -460,6 +461,7 @@ void AppWindow::onUpdate()
 
 		if (ImGui::Button("Play"))
 		{
+			JSONManager::getInstance()->save(true);
 			GameStateManager::getInstance()->setGameState(GameStateManager::Play);
 		}
 	}
@@ -477,12 +479,12 @@ void AppWindow::onUpdate()
 			if (ImGui::BeginMenu("Scene")) {
 				if (ImGui::MenuItem("Save"))
 				{
-					JSONManager::getInstance()->save();
+					JSONManager::getInstance()->save(false);
 				}
 
 				if (ImGui::MenuItem("Load"))
 				{
-					JSONManager::getInstance()->load();
+					JSONManager::getInstance()->load(false);
 				}
 				ImGui::EndMenu();
 			}

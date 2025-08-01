@@ -32,7 +32,7 @@ void JSONManager::destroy()
 	}
 }
 
-void JSONManager::save()
+void JSONManager::save(bool bg)
 {
 	int total = 0;
 	json j;
@@ -127,17 +127,120 @@ void JSONManager::save()
 		}
 	}
 
+	list.clear();
+	list = GameObjectManager::getInstance()->getAllGameObjectsOfType(GameObjectManager::Spheres);
+	if (list.size() > 0) {
+		DebugUIManager::getInstance()->Log("Spheres found, exporting");
+		for (int i = 0; i < list.size(); i++) {
 
-	DebugUIManager::getInstance()->Log("Exported to level.json");
-	std::ofstream o("level.json");
-	o << std::setw(4) << j << std::endl;
+			j[std::to_string(total)] = {
+				{"name", list[i]->name},
+				{"objType", GameObjectManager::Spheres},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
+				{"components", list[i]->getAttachedComponentTypes()}
+			};
+			total++;
+		}
+	}
+
+	list.clear();
+	list = GameObjectManager::getInstance()->getAllGameObjectsOfType(GameObjectManager::Cylinders);
+	if (list.size() > 0) {
+		DebugUIManager::getInstance()->Log("Cylinders found, exporting");
+		for (int i = 0; i < list.size(); i++) {
+
+			j[std::to_string(total)] = {
+				{"name", list[i]->name},
+				{"objType", GameObjectManager::Cylinders},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
+				{"components", list[i]->getAttachedComponentTypes()}
+			};
+			total++;
+		}
+	}
+
+	list.clear();
+	list = GameObjectManager::getInstance()->getAllGameObjectsOfType(GameObjectManager::Capsules);
+	if (list.size() > 0) {
+		DebugUIManager::getInstance()->Log("Capsules found, exporting");
+		for (int i = 0; i < list.size(); i++) {
+
+			j[std::to_string(total)] = {
+				{"name", list[i]->name},
+				{"objType", GameObjectManager::Capsules},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
+				{"components", list[i]->getAttachedComponentTypes()}
+			};
+			total++;
+		}
+	}
+
+
+	if (bg) {
+		std::ofstream o("bg.json");
+		o << std::setw(4) << j << std::endl;
+	}
+	else {
+		DebugUIManager::getInstance()->Log("Exported to level.json");
+		std::ofstream o("level.json");
+		o << std::setw(4) << j << std::endl;
+	}
 }
 
-void JSONManager::load()
+void JSONManager::load(bool bg)
 {
 	GameObjectManager::getInstance()->clearAll();
-	std::ifstream f("level.json");
-	json j = json::parse(f);
+	std::ifstream f("bg.json");
+	std::ifstream f2("level.json");
+	json j;
+	if (bg) {
+		j = json::parse(f);
+	}
+	else {
+		j = json::parse(f2);
+	}
 
 	for (int i = 0; i < j.size(); i++) {
 		Vector3D p(j[std::to_string(i)]["position"]["px"], j[std::to_string(i)]["position"]["py"], j[std::to_string(i)]["position"]["pz"]);
@@ -172,16 +275,18 @@ void JSONManager::load()
 		}
 		else if (j[std::to_string(i)]["objType"] == 3)
 		{
-			//copy code here when non p6 exists
-			std::cout << "sphere";
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Sphere(p, s, r);
+			else GameObjectManager::getInstance()->spawnSphere(p, s, r);
 		}
 		else if (j[std::to_string(i)]["objType"] == 4)
-		{//copy code here when non p6 exists
-			std::cout << "cylinder";
+		{
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cylinder(p, s, r);
+			else GameObjectManager::getInstance()->spawnCylinder(p, s, r);
 		}
 		else if (j[std::to_string(i)]["objType"] == 5)
-		{//copy code here when non p6 exists
-			std::cout << "capsule";
+		{
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Capsule(p, s, r);
+			else GameObjectManager::getInstance()->spawnCapsule(p, s, r);
 		}
 
 
