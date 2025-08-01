@@ -35,7 +35,7 @@ public:
 	
 	void spawnCube(Vector3D pos, Vector3D scale, Vector3D rot);
 	void spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, char meshPath[128], char texturePath[128]);
+	void spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, const char meshPath[128], const char texturePath[128]);
 	void spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot);
 	void spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot);
 	void spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot);

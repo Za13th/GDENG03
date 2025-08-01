@@ -144,7 +144,6 @@ void JSONManager::load()
 		Vector3D s(j[std::to_string(i)]["scale"]["sx"], j[std::to_string(i)]["scale"]["sy"], j[std::to_string(i)]["scale"]["sz"]);
 		Vector3D r(j[std::to_string(i)]["rotation"]["rx"], j[std::to_string(i)]["rotation"]["ry"], j[std::to_string(i)]["rotation"]["rz"]);
 
-		std::cout << j[std::to_string(i)]["components"] << "\n";
 		std::vector<int> c;
 		for (auto& elem : j[std::to_string(i)]["components"])
 			c.push_back(elem);
@@ -169,7 +168,7 @@ void JSONManager::load()
 		}
 		else if (j[std::to_string(i)]["objType"] == 2)
 		{
-			std::cout << "mesh";
+			GameObjectManager::getInstance()->spawnMesh(p, s, r, j[std::to_string(i)]["texture"].get<std::string>().c_str(), j[std::to_string(i)]["mesh"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 3)
 		{

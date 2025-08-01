@@ -5,6 +5,7 @@
 #include "SceneCameraHolder.h"
 #include "PhysicsComponent.h"
 #include "DebugUIManager.h"
+#include <iostream>
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -411,8 +412,8 @@ void GameObjectManager::getObjectSpawnUI()
 		ImGui::EndMainMenuBar();
 
 		static char meshPath[128] = "Assets\\Meshes\\";
-		static char texturePath[128] = "Assets\\Textures\\";	
-		
+		static char texturePath[128] = "Assets\\Textures\\";
+
 		static char meshPathOut[128];
 		static char texturePathOut[128];
 
@@ -635,6 +636,35 @@ void GameObjectManager::spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot)
 
 	newPlane->reconstructMatrix();
 	planes.push_back(newPlane);
+}
+
+void GameObjectManager::spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, const char meshPath[128], const char texturePath[128])
+{
+	static Mesh* loadedMesh = nullptr;
+	static Texture* loadedTexture = nullptr;
+	std::cout << meshPath;
+	std::cout << texturePath;
+
+	size_t cSize = strlen(meshPath) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	mbstowcs(wc, meshPath, cSize);
+	loadedMesh = MeshManager::getInstance()->createMeshFromFile(wc);
+
+	size_t cSize2 = strlen(texturePath) + 1;
+	wchar_t* wc2 = new wchar_t[cSize2];
+	mbstowcs(wc2, texturePath, cSize2);
+	loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
+
+	MeshObject* m;
+	if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
+		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+	else
+		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
+	m->setPosition(pos.x, pos.y, pos.z);
+	m->setScale(scale);
+	m->setRotation(rot);
+
+	this->meshes.push_back(m);
 }
 
 void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot)
