@@ -181,9 +181,18 @@ void GameObjectManager::clearAll()
 
 void GameObjectManager::drawObjects(float deltaTime, int width, int height, VertexShader* vs, PixelShader* ps)
 {
+	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Edit)
+	{
+		inspectorWindowOpen = false;
+		meshScreen = false;
+	}
+
+	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
+
 	for (int i = 0; i < cubes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			cubes[i]->update(deltaTime);
 		}
@@ -191,7 +200,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < planes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			planes[i]->update(deltaTime);
 		}
@@ -199,7 +209,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < spheres.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			spheres[i]->update(deltaTime);
 		}
@@ -207,7 +218,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < cylinders.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			cylinders[i]->update(deltaTime);
 		}
@@ -215,7 +227,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < capsules.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			capsules[i]->update(deltaTime);
 		}
@@ -223,7 +236,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			meshes[i]->update(deltaTime);
 		}
@@ -499,13 +513,6 @@ void GameObjectManager::getObjectSpawnUI()
 			ImGui::End();
 		}
 	}
-	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
-	{
-		inspectorWindowOpen = false;
-		meshScreen = false;
-	}
-
-	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
 }
 
 void GameObjectManager::spawnCube()

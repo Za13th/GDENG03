@@ -97,7 +97,7 @@ void GameObject::getInspectorUI()
 		ImGui::InputFloat3("Scale", &scale[0]);
 		ImGui::InputFloat3("Rotation", &rotation[0]);
 
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Play)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
 		{
 			if (ImGui::Button("Apply"))
 			{

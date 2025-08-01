@@ -44,7 +44,7 @@ void SceneCameraHolder::destroy()
 void SceneCameraHolder::updateCamera()
 {
 	static bool first = true;
-	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Pause)
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
 	{
 		this->currentCam = this->cameraList[0];
 		first = true;
@@ -53,7 +53,11 @@ void SceneCameraHolder::updateCamera()
 	{	
 		*(this->cameraList[1]) = *(this->cameraList[2]);
 
-		this->cameraList[1]->setCameraRotation(this->cameraList[0]->getCameraRotation());
+		this->cameraList[1]->setCameraRotation(false);
+
+		this->cameraList[1]->width = this->cameraList[0]->width;
+		this->cameraList[1]->height = this->cameraList[0]->height;
+
 		this->currentCam = this->cameraList[1];
 
 		first = false;

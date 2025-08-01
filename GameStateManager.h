@@ -16,6 +16,6 @@ class GameStateManager
 		GameStateManager& operator=(const GameStateManager&) {}
 
 		static GameStateManager* sharedInstance;
-		GameState gameState = GameState::Pause;
+		GameState gameState = GameState::Edit;
 };
 

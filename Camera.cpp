@@ -16,8 +16,8 @@ Camera::Camera() : GameObject("Camera")
 
 Camera::Camera(std::string name) : GameObject(name)
 {
-	this->setPosition(Vector3D(0.0f, 0.0f, -2.0f)); // Default position)
-	this->localMatrix.setTranslation(Vector3D(0.0f, 0.0f, -2.0f), false);
+	this->setPosition(Vector3D(0.0f, 0.0f, -5.0f)); // Default position)
+	this->localMatrix.setTranslation(Vector3D(0.0f, 0.0f, -5.0f), false);
 	this->updateViewMatrix();
 	
 	InputSystem::getInstance()->addListener(this);
@@ -79,7 +79,6 @@ void Camera::update(float deltaTime)
 		else if (InputSystem::getInstance()->isKeyDown('E'))
 			m_upward = -1.0f;
 
-		static bool pressed = false;
 		if (InputSystem::get()->isKeyDown('X') && !pressed)
 		{
 			if (!this->cameraRotation)

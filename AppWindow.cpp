@@ -423,28 +423,47 @@ void AppWindow::onUpdate()
 	ImGui::Begin("Game State", nullptr, flags);
 	
 
-	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
+	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Edit)
 	{
-		ImGui::Text("Playing...");
-
-		if (ImGui::Button("Pause"))
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
 		{
-			GameStateManager::getInstance()->setGameState(GameStateManager::Pause);
+			ImGui::Text("Playing...");
+
+			if (ImGui::Button("Pause"))
+			{
+				GameStateManager::getInstance()->setGameState(GameStateManager::Pause);
+			}
+		}
+		else
+		{
+			ImGui::Text("Paused");
+
+			if (ImGui::Button("Play"))
+			{
+				GameStateManager::getInstance()->setGameState(GameStateManager::Play);
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Stop"))
+		{
+			GameStateManager::getInstance()->setGameState(GameStateManager::Edit);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Frame Step"))
+		{
+			GameStateManager::getInstance()->setGameState(GameStateManager::FrameStep);
 		}
 	}
 	else
 	{
-		ImGui::Text("Paused");
+		ImGui::Text("Edit Mode is Active");
+
 		if (ImGui::Button("Play"))
 		{
 			GameStateManager::getInstance()->setGameState(GameStateManager::Play);
 		}
 	}
-	ImGui::SameLine();
-	if (ImGui::Button("Frame Step"))
-	{
-		GameStateManager::getInstance()->setGameState(GameStateManager::FrameStep);
-	}
+
 	ImGui::End();
 
 	//Debug Log
@@ -452,25 +471,28 @@ void AppWindow::onUpdate()
 
 
 	// Main Menu Bar
-	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("Scene")) {
-			if (ImGui::MenuItem("Save"))
-			{
-				JSONManager::getInstance()->save();
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
+	{
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("Scene")) {
+				if (ImGui::MenuItem("Save"))
+				{
+					JSONManager::getInstance()->save();
+				}
+
+				if (ImGui::MenuItem("Load"))
+				{
+					JSONManager::getInstance()->load();
+				}
+				ImGui::EndMenu();
 			}
 
-			if (ImGui::MenuItem("Load"))
-			{
-				JSONManager::getInstance()->load();
-			}
-
-			ImGui::EndMenu();
+			ImGui::EndMainMenuBar();
 		}
 
-		ImGui::EndMainMenuBar();
+		GameObjectManager::getInstance()->getObjectSpawnUI();
 	}
-	if(GameStateManager::getInstance()->getGameState() != GameStateManager::Play)
-	GameObjectManager::getInstance()->getObjectSpawnUI();
+
 	
 
 	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
@@ -497,7 +519,7 @@ void AppWindow::onUpdate()
 	int height = rc.bottom - rc.top;
 	GraphicsEngine::get()->getDeviceContext()->setViewportSize(width, height);
 
-	//SceneCameraHolder::getInstance()->updateCamera();
+	SceneCameraHolder::getInstance()->updateCamera();
 	SceneCameraHolder::getInstance()->getCamera()->update(EngineTime::getDeltaTime());
 
 	/*
@@ -532,7 +554,8 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[2]->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
 
 
-	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+		|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
 
 	GameObjectManager::getInstance()->drawObjects(EngineTime::getDeltaTime(), width, height, this->m_vs, this->m_ps);

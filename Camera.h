@@ -35,6 +35,7 @@ class Camera : public GameObject, public InputListener
 		int width = 0;
 
 	private:
+		bool pressed = false;
 		bool cameraMovement = true;
 		bool cameraRotation = false;
 		float m_rot_x = 0.0f;
