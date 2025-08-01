@@ -9,8 +9,8 @@ public:
 	static void initialize(void* shaderByteCode, size_t sizeShader);
 	static void destroy();
 
-	void save();
-	void load();
+	void save(bool bg);
+	void load(bool bg);
 
 private:
 	JSONManager();

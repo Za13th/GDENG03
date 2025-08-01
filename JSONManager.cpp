@@ -32,7 +32,7 @@ void JSONManager::destroy()
 	}
 }
 
-void JSONManager::save()
+void JSONManager::save(bool bg)
 {
 	int total = 0;
 	json j;
@@ -218,16 +218,29 @@ void JSONManager::save()
 	}
 
 
-	DebugUIManager::getInstance()->Log("Exported to level.json");
-	std::ofstream o("level.json");
-	o << std::setw(4) << j << std::endl;
+	if (bg) {
+		std::ofstream o("bg.json");
+		o << std::setw(4) << j << std::endl;
+	}
+	else {
+		DebugUIManager::getInstance()->Log("Exported to level.json");
+		std::ofstream o("level.json");
+		o << std::setw(4) << j << std::endl;
+	}
 }
 
-void JSONManager::load()
+void JSONManager::load(bool bg)
 {
 	GameObjectManager::getInstance()->clearAll();
-	std::ifstream f("level.json");
-	json j = json::parse(f);
+	std::ifstream f("bg.json");
+	std::ifstream f2("level.json");
+	json j;
+	if (bg) {
+		j = json::parse(f);
+	}
+	else {
+		j = json::parse(f2);
+	}
 
 	for (int i = 0; i < j.size(); i++) {
 		Vector3D p(j[std::to_string(i)]["position"]["px"], j[std::to_string(i)]["position"]["py"], j[std::to_string(i)]["position"]["pz"]);

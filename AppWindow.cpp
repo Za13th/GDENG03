@@ -456,12 +456,12 @@ void AppWindow::onUpdate()
 		if (ImGui::BeginMenu("Scene")) {
 			if (ImGui::MenuItem("Save"))
 			{
-				JSONManager::getInstance()->save();
+				JSONManager::getInstance()->save(false);
 			}
 
 			if (ImGui::MenuItem("Load"))
 			{
-				JSONManager::getInstance()->load();
+				JSONManager::getInstance()->load(false);
 			}
 
 			ImGui::EndMenu();
