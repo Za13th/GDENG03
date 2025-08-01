@@ -5,7 +5,7 @@ class GameStateManager
 		static GameStateManager* getInstance();
 		static void destroy();
 
-		enum GameState {Pause = 0, Play = 1, FrameStep = 2};
+		enum GameState {Edit = -1, Pause = 0, Play = 1, FrameStep = 2};
 		GameState getGameState() { return gameState; }
 		void setGameState(GameState state) { gameState = state; }
 	
