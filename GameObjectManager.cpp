@@ -168,6 +168,16 @@ void GameObjectManager::removeGameObject(GameObject* gameObject)
 	}
 }
 
+void GameObjectManager::clearAll()
+{
+	cubes.clear();
+	planes.clear();
+	meshes.clear();
+	spheres.clear();
+	cylinders.clear();
+	capsules.clear();
+}
+
 void GameObjectManager::drawObjects(bool update, float deltaTime, int width, int height, VertexShader* vs, PixelShader* ps)
 {
 	for (int i = 0; i < cubes.size(); i++)
@@ -289,6 +299,18 @@ std::vector<GameObject*> GameObjectManager::getAllGameObjectsOfType(objType type
 	case Meshes:
 		for (auto& mesh : meshes)
 			objects.push_back(mesh);
+		break;
+	case Spheres:
+		for (auto& sphere : spheres)
+			objects.push_back(sphere);
+		break;
+	case Cylinders:
+		for (auto& cylinder : cylinders)
+			objects.push_back(cylinder);
+		break;
+	case Capsules:
+		for (auto& capsule : capsules)
+			objects.push_back(capsule);
 		break;
 	}
 
@@ -566,6 +588,131 @@ void GameObjectManager::spawnP6Capsule()
 	newPhysicsCapsule->setPosition(0, 0, 0);
 	newPhysicsCapsule->setScale(Vector3D(1.0f, 1.0f, 1.0f));
 	newPhysicsCapsule->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
+	newPhysicsCapsule->reconstructMatrix();
+	capsules.push_back(newPhysicsCapsule);
+	newPhysicsCapsule->attachComponent(new PhysicsComponent(newPhysicsCapsule->name + " P6 Component", newPhysicsCapsule));
+}
+
+
+
+
+
+
+
+
+
+
+
+//with data
+
+void GameObjectManager::spawnCube(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Cube* newCube = new Cube(*templateCube);
+	if (findGameObjectByName("Cube " + std::to_string(cubes.size() + 1)) != nullptr)
+		newCube->name = "Cube " + std::to_string(cubes.size() + 2);
+	else
+		newCube->name = "Cube " + std::to_string(cubes.size() + 1);
+
+	newCube->setPosition(pos.x, pos.y, pos.z);
+	newCube->setScale(scale);
+	newCube->setRotation(rot);
+
+	newCube->reconstructMatrix();
+	cubes.push_back(newCube);
+}
+
+void GameObjectManager::spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Plane* newPlane = new Plane(*templatePlane);
+	if (findGameObjectByName("Plane " + std::to_string(planes.size() + 1)) != nullptr)
+		newPlane->name = "Plane " + std::to_string(planes.size() + 2);
+	else
+		newPlane->name = "Plane " + std::to_string(planes.size() + 1);
+
+	newPlane->setPosition(pos.x, pos.y, pos.z);
+	newPlane->setScale(scale);
+	newPlane->setRotation(rot);
+
+	newPlane->reconstructMatrix();
+	planes.push_back(newPlane);
+}
+
+void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Cube* newPhysicsCube = new Cube(*templateCube);
+	if (findGameObjectByName("P6 Cube " + std::to_string(cubes.size() + 1)) != nullptr)
+		newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 2);
+	else
+		newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 1);
+
+	newPhysicsCube->setPosition(pos.x, pos.y, pos.z);
+	newPhysicsCube->setScale(scale);
+	newPhysicsCube->setRotation(rot);
+
+	newPhysicsCube->reconstructMatrix();
+	cubes.push_back(newPhysicsCube);
+
+	newPhysicsCube->attachComponent(new PhysicsComponent(newPhysicsCube->name + " P6 Component", newPhysicsCube));
+}
+
+void GameObjectManager::spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Plane* newPhysicsPlane = new Plane(*templatePlane);
+	if (findGameObjectByName("P6 Plane " + std::to_string(planes.size() + 1)) != nullptr)
+		newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 2);
+	else
+		newPhysicsPlane->name = "P6 Plane " + std::to_string(planes.size() + 1);
+
+	newPhysicsPlane->setPosition(pos.x, pos.y, pos.z);
+	newPhysicsPlane->setScale(scale);
+	newPhysicsPlane->setRotation(rot);
+
+	newPhysicsPlane->reconstructMatrix();
+	planes.push_back(newPhysicsPlane);
+
+	newPhysicsPlane->attachComponent(new PhysicsComponent(newPhysicsPlane->name + " P6 Component", newPhysicsPlane));
+}
+
+void GameObjectManager::spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Sphere* newPhysicsSphere = new Sphere(*templateSphere);
+	if (findGameObjectByName("P6 Sphere " + std::to_string(spheres.size() + 1)) != nullptr)
+		newPhysicsSphere->name = "P6 Sphere " + std::to_string(spheres.size() + 2);
+	else
+		newPhysicsSphere->name = "P6 Sphere " + std::to_string(spheres.size() + 1);
+	newPhysicsSphere->setPosition(pos.x, pos.y, pos.z);
+	newPhysicsSphere->setScale(scale);
+	newPhysicsSphere->setRotation(rot);
+	newPhysicsSphere->reconstructMatrix();
+	spheres.push_back(newPhysicsSphere);
+	newPhysicsSphere->attachComponent(new PhysicsComponent(newPhysicsSphere->name + " P6 Component", newPhysicsSphere));
+}
+
+void GameObjectManager::spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Cylinder* newPhysicsCylinder = new Cylinder(*templateCylinder);
+	if (findGameObjectByName("P6 Cylinder " + std::to_string(cylinders.size() + 1)) != nullptr)
+		newPhysicsCylinder->name = "P6 Cylinder " + std::to_string(cylinders.size() + 2);
+	else
+		newPhysicsCylinder->name = "P6 Cylinder " + std::to_string(cylinders.size() + 1);
+	newPhysicsCylinder->setPosition(pos.x, pos.y, pos.z);
+	newPhysicsCylinder->setScale(scale);
+	newPhysicsCylinder->setRotation(rot);
+	newPhysicsCylinder->reconstructMatrix();
+	cylinders.push_back(newPhysicsCylinder);
+	newPhysicsCylinder->attachComponent(new PhysicsComponent(newPhysicsCylinder->name + " P6 Component", newPhysicsCylinder));
+}
+
+void GameObjectManager::spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot)
+{
+	Capsule* newPhysicsCapsule = new Capsule(*templateCapsule);
+	if (findGameObjectByName("P6 Capsule " + std::to_string(capsules.size() + 1)) != nullptr)
+		newPhysicsCapsule->name = "P6 Capsule " + std::to_string(capsules.size() + 2);
+	else
+		newPhysicsCapsule->name = "P6 Capsule " + std::to_string(capsules.size() + 1);
+	newPhysicsCapsule->setPosition(pos.x, pos.y, pos.z);
+	newPhysicsCapsule->setScale(scale);
+	newPhysicsCapsule->setRotation(rot);
 	newPhysicsCapsule->reconstructMatrix();
 	capsules.push_back(newPhysicsCapsule);
 	newPhysicsCapsule->attachComponent(new PhysicsComponent(newPhysicsCapsule->name + " P6 Component", newPhysicsCapsule));

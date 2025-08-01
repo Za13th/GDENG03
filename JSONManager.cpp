@@ -2,6 +2,7 @@
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
 #include <fstream>
+#include <string>
 
 JSONManager* JSONManager::sharedInstance = nullptr;
 
@@ -33,21 +34,34 @@ void JSONManager::destroy()
 
 void JSONManager::save()
 {
+	int total = 0;
 	json j;
 	DebugUIManager::getInstance()->Log("Starting Export...");
 	std::vector<GameObject*> list = GameObjectManager::getInstance()->getAllGameObjectsOfType(GameObjectManager::Cubes);
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Cubes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
-
-			j["Game Object"] = {
+			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Cubes},
-				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
-				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
-				{"rotation", {list[i]->getLocalRotation().x, list[i]->getLocalRotation().y, list[i]->getLocalRotation().z}},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
 				{"components", list[i]->getAttachedComponentTypes()}
 			};
+			total++;
 		}
 	}
 
@@ -57,14 +71,27 @@ void JSONManager::save()
 		DebugUIManager::getInstance()->Log("Planes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
-			j["Game Object"] = {
+			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Planes},
-				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
-				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
-				{"rotation", {list[i]->getLocalRotation().x, list[i]->getLocalRotation().y, list[i]->getLocalRotation().z}},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
 				{"components", list[i]->getAttachedComponentTypes()}
 			};
+			total++;
 		}
 	}
 
@@ -74,18 +101,32 @@ void JSONManager::save()
 		DebugUIManager::getInstance()->Log("Meshes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
-			j["Game Object"] = {
+			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Meshes},
-				{"position", {list[i]->getLocalPosition().x, list[i]->getLocalPosition().y, list[i]->getLocalPosition().z}},
-				{"scale", {list[i]->getLocalScale().x, list[i]->getLocalScale().y, list[i]->getLocalScale().z}},
-				{"rotation", {list[i]->getLocalRotation().x, list[i]->getLocalRotation().y, list[i]->getLocalRotation().z}},
+				{"position", {
+					{"px", list[i]->getLocalPosition().x},
+					{"py", list[i]->getLocalPosition().y},
+					{"pz", list[i]->getLocalPosition().z}}
+				},
+				{"scale", {
+					{"sx", list[i]->getLocalScale().x},
+					{"sy", list[i]->getLocalScale().y},
+					{"sz",list[i]->getLocalScale().z}}
+				},
+				{"rotation", {
+					{"rx", list[i]->getLocalRotation().x},
+					{"ry", list[i]->getLocalRotation().y},
+					{"rz", list[i]->getLocalRotation().z}}
+				},
 				{"components", list[i]->getAttachedComponentTypes()},
 				{"texture", list[i]->textureLoc },
 				{"mesh", list[i]->meshLoc}
 			};
+			total++;
 		}
 	}
+
 
 	DebugUIManager::getInstance()->Log("Exported to level.json");
 	std::ofstream o("level.json");
@@ -94,6 +135,58 @@ void JSONManager::save()
 
 void JSONManager::load()
 {
+	GameObjectManager::getInstance()->clearAll();
+	std::ifstream f("level.json");
+	json j = json::parse(f);
+
+	for (int i = 0; i < j.size(); i++) {
+		Vector3D p(j[std::to_string(i)]["position"]["px"], j[std::to_string(i)]["position"]["py"], j[std::to_string(i)]["position"]["pz"]);
+		Vector3D s(j[std::to_string(i)]["scale"]["sx"], j[std::to_string(i)]["scale"]["sy"], j[std::to_string(i)]["scale"]["sz"]);
+		Vector3D r(j[std::to_string(i)]["rotation"]["rx"], j[std::to_string(i)]["rotation"]["ry"], j[std::to_string(i)]["rotation"]["rz"]);
+
+		std::cout << j[std::to_string(i)]["components"] << "\n";
+		std::vector<int> c;
+		for (auto& elem : j[std::to_string(i)]["components"])
+			c.push_back(elem);
+		bool hasPhys = false;
+		for (auto& i : c) {
+			if (i == 3) {
+				hasPhys = true;
+			}
+		}
+
+
+
+		if (j[std::to_string(i)]["objType"] == 0)
+		{
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cube(p, s, r);
+			else GameObjectManager::getInstance()->spawnCube(p, s, r);
+		}
+		else if (j[std::to_string(i)]["objType"] == 1)
+		{
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Plane(p, s, r);
+			else GameObjectManager::getInstance()->spawnPlane(p, s, r);
+		}
+		else if (j[std::to_string(i)]["objType"] == 2)
+		{
+			std::cout << "mesh";
+		}
+		else if (j[std::to_string(i)]["objType"] == 3)
+		{
+			//copy code here when non p6 exists
+			std::cout << "sphere";
+		}
+		else if (j[std::to_string(i)]["objType"] == 4)
+		{//copy code here when non p6 exists
+			std::cout << "cylinder";
+		}
+		else if (j[std::to_string(i)]["objType"] == 5)
+		{//copy code here when non p6 exists
+			std::cout << "capsule";
+		}
+
+
+	}
 }
 
 JSONManager::JSONManager()

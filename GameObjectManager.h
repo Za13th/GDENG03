@@ -10,13 +10,14 @@ class GameObjectManager
 {
 public:
 	typedef std::string String;
-	enum objType {Cubes = 0, Planes = 1, Meshes = 2};
+	enum objType {Cubes = 0, Planes = 1, Meshes = 2, Spheres = 3, Cylinders = 4, Capsules = 5};
 
 	static GameObjectManager* getInstance();
 	static void initialize(void* shaderByteCode, size_t sizeShader);
 	static void destroy();
 	void addGameObject(GameObject* gameObject);
 	void removeGameObject(GameObject* gameObject);
+	void clearAll();
 	void drawObjects(bool update, float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
 	GameObject* findGameObjectByName(const String& name);
 	std::vector<GameObject*> getAllGameObjects();
@@ -30,7 +31,16 @@ public:
 	void spawnP6Plane();
 	void spawnP6Sphere();
 	void spawnP6Cylinder();
-	void spawnP6Capsule();
+	void spawnP6Capsule();	
+	
+	void spawnCube(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, char meshPath[128], char texturePath[128]);
+	void spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot);
 
 private:
 	GameObjectManager();
