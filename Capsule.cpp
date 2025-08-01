@@ -26,7 +26,7 @@ Capsule::Capsule(std::string name, void* shaderByteCode, size_t sizeShader) : Ga
 {
 	this->objectType = GameObject::Capsule;
 	this->capsuleMesh = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\capsule.obj");
-	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\brick.png");
+	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\default.jpg");
 
 	constant cc;
 	cc.m_angle = 0;

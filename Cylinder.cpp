@@ -26,7 +26,7 @@ Cylinder::Cylinder(std::string name, void* shaderByteCode, size_t sizeShader) : 
 {
     this->objectType = GameObject::Cylinder;
     this->cylinderMesh = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\cylinder.obj");
-    this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\brick.png");
+	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\default.jpg");
 
     constant cc;
     cc.m_angle = 0;

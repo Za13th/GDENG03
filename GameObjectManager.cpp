@@ -382,6 +382,18 @@ void GameObjectManager::getObjectSpawnUI()
 			{
 				this->spawnPlane();
 			}
+			if (ImGui::MenuItem("Spawn Sphere"))
+			{
+				this->spawnSphere();
+			}
+			if (ImGui::MenuItem("Spawn Cylinder"))
+			{
+				this->spawnCylinder();
+			}
+			if (ImGui::MenuItem("Spawn Capsule"))
+			{
+				this->spawnCapsule();
+			}
 			if (ImGui::MenuItem("Spawn Physics Cube"))
 			{
 				this->spawnP6Cube();
@@ -512,6 +524,56 @@ void GameObjectManager::spawnPlane()
 	newPlane->reconstructMatrix();
 	planes.push_back(newPlane);
 }
+
+void GameObjectManager::spawnSphere()
+{
+	Sphere* newSphere = new Sphere(*templateSphere);
+	if (findGameObjectByName("Sphere " + std::to_string(spheres.size() + 1)) != nullptr)
+		newSphere->name = "Sphere " + std::to_string(spheres.size() + 2);
+	else
+		newSphere->name = "Sphere " + std::to_string(spheres.size() + 1);
+
+	newSphere->setPosition(0, 0, 0);
+	newSphere->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	newSphere->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
+
+	newSphere->reconstructMatrix();
+	spheres.push_back(newSphere);
+}
+
+void GameObjectManager::spawnCylinder()
+{
+	Cylinder* newCylinder = new Cylinder(*templateCylinder);
+	if (findGameObjectByName("Cylinder " + std::to_string(cylinders.size() + 1)) != nullptr)
+		newCylinder->name = "Cylinder " + std::to_string(cylinders.size() + 2);
+	else
+		newCylinder->name = "Cylinder " + std::to_string(cylinders.size() + 1);
+
+	newCylinder->setPosition(0, 0, 0);
+	newCylinder->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	newCylinder->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
+
+	newCylinder->reconstructMatrix();
+	cylinders.push_back(newCylinder);
+}
+
+void GameObjectManager::spawnCapsule()
+{
+	Capsule* newCapsule = new Capsule(*templateCapsule);
+	if (findGameObjectByName("Capsule " + std::to_string(capsules.size() + 1)) != nullptr)
+		newCapsule->name = "Capsule " + std::to_string(capsules.size() + 2);
+	else
+		newCapsule->name = "Capsule " + std::to_string(capsules.size() + 1);
+
+	newCapsule->setPosition(0, 0, 0);
+	newCapsule->setScale(Vector3D(1.0f, 1.0f, 1.0f));
+	newCapsule->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
+
+	newCapsule->reconstructMatrix();
+	capsules.push_back(newCapsule);
+}
+
+
 
 void GameObjectManager::spawnP6Cube()
 {

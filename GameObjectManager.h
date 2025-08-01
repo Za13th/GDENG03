@@ -27,6 +27,11 @@ public:
 
 	void spawnCube();
 	void spawnPlane();
+	void spawnSphere();
+	void spawnCylinder();
+	void spawnCapsule();
+
+
 	void spawnP6Cube();
 	void spawnP6Plane();
 	void spawnP6Sphere();

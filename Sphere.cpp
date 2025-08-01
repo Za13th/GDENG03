@@ -29,7 +29,7 @@ Sphere::Sphere(std::string name, void* shaderByteCode, size_t sizeShader) : Game
 {
     this->objectType = GameObject::Sphere;
 	this->sphereMesh = MeshManager::getInstance()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-    texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\brick.png");
+	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\default.jpg");
 
     constant cc;
     cc.m_angle = 0;
@@ -77,6 +77,9 @@ void Sphere::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 
 	temp.setTranslation(this->getLocalPosition());
 	cc.m_world *= temp;
+
+	cc.m_world.setScale(this->getLocalScale() * 0.5f);
+	cc.m_world *= this->localMatrix;
 
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();

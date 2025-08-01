@@ -27,7 +27,7 @@ struct constant
 Plane::Plane(std::string name, void* shaderByteCode, size_t sizeShader) : GameObject(name)
 {
 	this->objectType = GameObject::Plane;
-	texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\grass.jpg");
+	this->texture = TextureManager::getInstance()->createTextureFromFile(L"Assets\\Textures\\defaultSquare.jpg");
 
 	Vector3D position_list[] =
 	{

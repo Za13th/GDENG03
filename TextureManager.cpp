@@ -1,4 +1,6 @@
 #include "TextureManager.h"
+#include <iostream>
+#include <filesystem>
 
 TextureManager* TextureManager::sharedInstance = nullptr;
 
@@ -36,14 +38,22 @@ Texture* TextureManager::createTextureFromFile(const wchar_t* filePath)
 
 Resource* TextureManager::createResourceFromFileConcrete(const wchar_t* filePath)
 {
-	Texture* texture = nullptr;
-	try
+	if (!std::filesystem::exists(filePath))
+		return nullptr;
+
+	Texture* texture = (Texture*)(this->m_map_textures[filePath]);
+
+	if (!texture)
 	{
-		texture = new Texture(filePath);
-		m_map_textures[filePath] = texture; // Store the texture in the map
-		return texture;
+		try
+		{
+			texture = new Texture(filePath);
+			m_map_textures[filePath] = texture; // Store the texture in the map
+			return texture;
+		}
+		catch (...) {}
 	}
-	catch (...) {}
+
 
 	return texture; 
 }

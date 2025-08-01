@@ -1,4 +1,6 @@
 #include "MeshManager.h"
+#include <iostream>
+#include <filesystem>
 
 
 MeshManager* MeshManager::sharedInstance = nullptr;
@@ -47,14 +49,21 @@ Mesh* MeshManager::createMeshFromFile(const wchar_t* filePath, bool t, bool n)
 
 Resource* MeshManager::createResourceFromFileConcrete(const wchar_t* filePath)
 {
-	Mesh* mesh = nullptr;
-	try
+	if (!std::filesystem::exists(filePath))
+		return nullptr;
+
+	Mesh* mesh = (Mesh*)(this->m_map_meshes[filePath]);
+	if (!mesh)
 	{
-		mesh = new Mesh(filePath);
-		m_map_meshes[filePath] = mesh; // Store the Mesh in the map
-		return mesh;
+		try
+		{
+			mesh = new Mesh(filePath);
+			m_map_meshes[filePath] = mesh; // Store the Mesh in the map
+			return mesh;
+		}
+		catch (...) {}
 	}
-	catch (...) {}
+
 
 	return mesh;
 }
