@@ -6,6 +6,7 @@
 #include "Cylinder.h"
 #include "Capsule.h"
 #include "MeshObject.h"
+#include "GameStateManager.h"
 class GameObjectManager
 {
 public:
@@ -18,7 +19,7 @@ public:
 	void addGameObject(GameObject* gameObject);
 	void removeGameObject(GameObject* gameObject);
 	void clearAll();
-	void drawObjects(bool update, float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
+	void drawObjects(float deltaTime,int width, int height, VertexShader* vs, PixelShader* ps);
 	GameObject* findGameObjectByName(const String& name);
 	std::vector<GameObject*> getAllGameObjects();
 	std::vector<GameObject*> getAllGameObjectsOfType(objType type);
@@ -51,6 +52,10 @@ public:
 	void spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot);
 	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot);
 
+	void setCurrentObject(GameObject* g) { this->currentObject = g; }
+	GameObject* getCurrentObject() { return this->currentObject; }
+	bool inspectorWindowOpen = false;
+
 private:
 	GameObjectManager();
 	~GameObjectManager();
@@ -72,7 +77,8 @@ private:
 	std::vector<Capsule*> capsules;
 	std::vector<MeshObject*> meshes;
 
-
+	GameObject* currentObject = nullptr;
+	
 
 };
 

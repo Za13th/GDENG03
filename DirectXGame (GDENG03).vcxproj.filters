@@ -88,6 +88,12 @@
     <Filter Include="GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere">
       <UniqueIdentifier>{116112eb-028a-4471-9318-6eb77927b963}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects/Primitives\Capsule">
+      <UniqueIdentifier>{33cbfa47-f4f9-4d67-b089-ac1e21145cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects/Primitives\Cylinder">
+      <UniqueIdentifier>{117bc73e-14f3-41e6-af0e-97148815f008}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -201,14 +207,24 @@
     <ClCompile Include="BaseComponentSystem.cpp">
       <Filter>GameEngine\ComponentSystem</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="DebugUIManager.cpp" />
     <ClCompile Include="JSONManager.cpp" />
     <ClCompile Include="Sphere.cpp">
       <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere</Filter>
     </ClCompile>
-    <ClCompile Include="Cylinder.cpp" />
-    <ClCompile Include="Capsule.cpp" />
+    <ClCompile Include="TextureComponent.cpp">
+      <Filter>GameEngine\ComponentSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Capsule.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Capsule</Filter>
+    </ClCompile>
+    <ClCompile Include="Cylinder.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Cylinder</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -358,14 +374,24 @@
     <ClInclude Include="MyQuaternion.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="DebugUIManager.h" />
     <ClInclude Include="JSONManager.h" />
     <ClInclude Include="Sphere.h">
       <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Sphere</Filter>
     </ClInclude>
-    <ClInclude Include="Cylinder.h" />
-    <ClInclude Include="Capsule.h" />
+    <ClInclude Include="TextureComponent.h">
+      <Filter>GameEngine\ComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Capsule.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Capsule</Filter>
+    </ClInclude>
+    <ClInclude Include="Cylinder.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives\Cylinder</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

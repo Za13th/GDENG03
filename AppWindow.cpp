@@ -15,6 +15,7 @@
 #include "PhysicsSystem.h"
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
+#include "GameStateManager.h"
 #include "JSONManager.h"
 
 #include "imgui.h"
@@ -415,9 +416,6 @@ void AppWindow::onUpdate()
 
 
 	// === ENHANCED IMGUI INTERFACE ===
-
-	static bool pause = true;
-	static bool frameStep = false;
 	ImGuiWindowFlags flags = 0;
 
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
@@ -425,13 +423,13 @@ void AppWindow::onUpdate()
 	ImGui::Begin("Game State", nullptr, flags);
 	
 
-	if (pause == false)
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
 	{
 		ImGui::Text("Playing...");
 
 		if (ImGui::Button("Pause"))
 		{
-			pause = true;
+			GameStateManager::getInstance()->setGameState(GameStateManager::Pause);
 		}
 	}
 	else
@@ -439,14 +437,13 @@ void AppWindow::onUpdate()
 		ImGui::Text("Paused");
 		if (ImGui::Button("Play"))
 		{
-			pause = false;
+			GameStateManager::getInstance()->setGameState(GameStateManager::Play);
 		}
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Frame Step"))
 	{
-		pause = false;
-		frameStep = true;
+		GameStateManager::getInstance()->setGameState(GameStateManager::FrameStep);
 	}
 	ImGui::End();
 
@@ -455,7 +452,6 @@ void AppWindow::onUpdate()
 
 
 	// Main Menu Bar
-	GameObjectManager::getInstance()->getObjectSpawnUI();
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("Scene")) {
 			if (ImGui::MenuItem("Save"))
@@ -473,6 +469,8 @@ void AppWindow::onUpdate()
 
 		ImGui::EndMainMenuBar();
 	}
+	if(GameStateManager::getInstance()->getGameState() != GameStateManager::Play)
+	GameObjectManager::getInstance()->getObjectSpawnUI();
 	
 
 	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
@@ -499,6 +497,7 @@ void AppWindow::onUpdate()
 	int height = rc.bottom - rc.top;
 	GraphicsEngine::get()->getDeviceContext()->setViewportSize(width, height);
 
+	//SceneCameraHolder::getInstance()->updateCamera();
 	SceneCameraHolder::getInstance()->getCamera()->update(EngineTime::getDeltaTime());
 
 	/*
@@ -533,10 +532,10 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getDeviceContext()->drawIndexedTriangleList(this->m_mesh[2]->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
 
 
-	if (!pause)
+	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
 		BaseComponentSystem::getInstance()->getPhysicsSystem()->updateAllComponents();
 
-	GameObjectManager::getInstance()->drawObjects(!pause,EngineTime::getDeltaTime(), width, height, this->m_vs, this->m_ps);
+	GameObjectManager::getInstance()->drawObjects(EngineTime::getDeltaTime(), width, height, this->m_vs, this->m_ps);
 
 
 
@@ -545,11 +544,8 @@ void AppWindow::onUpdate()
 
 	m_swap_chain->present(true);
 
-	if (frameStep)
-	{
-		pause = true;
-		frameStep = false;
-	}
+	if (GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
+		GameStateManager::getInstance()->setGameState(GameStateManager::Pause);
 
 	if (InputSystem::get()->isKeyDown(VK_ESCAPE))
 	{

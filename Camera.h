@@ -29,6 +29,8 @@ class Camera : public GameObject, public InputListener
 
 		void draw(int width, int height, VertexShader* vs, PixelShader* ps) override {};
 
+		bool getCameraRotation() { return this->cameraRotation; }
+		void setCameraRotation(bool cr) { cameraRotation = cr; }
 		int height = 0;
 		int width = 0;
 

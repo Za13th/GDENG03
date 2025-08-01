@@ -1,9 +1,12 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <cstring>
 #include "GameObject.h"
 #include "PhysicsComponent.h"
+#include "TextureComponent.h"
 #include "BaseComponentSystem.h"
 #include "GameObjectManager.h"
+#include "DebugUIManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -87,7 +90,6 @@ Vector3D GameObject::getLocalRotation()
 
 void GameObject::getInspectorUI()
 {
-	;
 
 	if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -95,39 +97,134 @@ void GameObject::getInspectorUI()
 		ImGui::InputFloat3("Scale", &scale[0]);
 		ImGui::InputFloat3("Rotation", &rotation[0]);
 
-		if (ImGui::Button("Apply"))
+		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Play)
 		{
-			localPosition = Vector3D(position[0], position[1], position[2]);
-			localScale = Vector3D(scale[0], scale[1], scale[2]);
-			localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
-			this->reconstructMatrix();
-
-			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			if (ImGui::Button("Apply"))
 			{
-				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-				if (physicsComponent)
+				localPosition = Vector3D(position[0], position[1], position[2]);
+				localScale = Vector3D(scale[0], scale[1], scale[2]);
+				localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
+				this->reconstructMatrix();
+
+				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
-					physicsComponent->adjustRigidbody();
+					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+					if (physicsComponent)
+					{
+						physicsComponent->adjustRigidbody();
+					}
 				}
 			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Delete"))
-		{
-			if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+			ImGui::SameLine();
+			if (ImGui::Button("Delete"))
 			{
-				PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-				if (physicsComponent)
+				if (GameObjectManager::getInstance()->getCurrentObject() == this)
 				{
-					BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+					GameObjectManager::getInstance()->inspectorWindowOpen = false;
 				}
-			}
 
-			GameObjectManager::getInstance()->removeGameObject(this);
+				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+				{
+					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+					if (physicsComponent)
+					{
+						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+					}
+				}
+
+				GameObjectManager::getInstance()->removeGameObject(this);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("More Info"))
+			{
+				GameObjectManager::getInstance()->setCurrentObject(this);
+				GameObjectManager::getInstance()->inspectorWindowOpen = true;
+			}
 		}
 
 	}
+	
+}
 
+void GameObject::getInspectorUIPlus()
+{
+	String s = "Inspector: " + this->name;
+
+	static char texturePath[128] = "Assets\\Textures\\";
+	static char texturePathOut[128];
+	static Texture* loadedTexture = nullptr;
+
+	if (GameObjectManager::getInstance()->inspectorWindowOpen)
+	{
+		ImGui::Begin(s.c_str(), &GameObjectManager::getInstance()->inspectorWindowOpen, ImGuiWindowFlags_AlwaysAutoResize);
+
+		if (ImGui::CollapsingHeader("Texture Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (!this->findComponentByType(Component::Material, name + " TX Component"))
+			{
+				if (ImGui::Button("Add Texture Component"))
+				{
+					this->attachComponent(new TextureComponent(name + " TX Component", this));
+				}
+			}
+			else
+			{
+				static char buf2[128] = "";
+				ImGui::InputText("Texture File Name", buf2, 64);
+
+				if (ImGui::Button("Change Texture"))
+				{
+					strcat(texturePath, buf2);
+					size_t cSize2 = strlen(texturePath) + 1;
+					wchar_t* wc2 = new wchar_t[cSize2];
+					mbstowcs(wc2, texturePath, cSize2);
+					loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
+					strcpy(texturePathOut, texturePath);
+					strcpy(texturePath, "Assets\\Textures\\");
+
+					if (loadedTexture != nullptr)
+					{
+						((TextureComponent*)(this->findComponentByType(Component::Material, name + " TX Component")))->changeTexture(wc2);
+					}
+					else
+					{
+						DebugUIManager::getInstance()->Log("Texture Loading Failed!");
+					}
+
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Remove Component"))
+				{
+					this->detachComponent(this->findComponentByType(Component::Material, name + " TX Component"));
+				}
+
+			}
+		}
+		if (this->objectType != ObjectType::MeshObject && ImGui::CollapsingHeader("Physics Component", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (!this->findComponentByType(Component::Physics, name + " P6 Component"))
+			{
+				if (ImGui::Button("Add Physics Component"))
+				{
+					this->attachComponent(new PhysicsComponent(name + " P6 Component", this));
+				}
+			}
+			else
+			{
+				if (ImGui::Button("Remove Component"))
+				{
+					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+					if (physicsComponent)
+					{
+						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+					}
+						this->detachComponent(this->findComponentByType(Component::Physics, name + " P6 Component"));
+				}
+			}
+		}
+		ImGui::End();
+	}
+		
 
 }
 
