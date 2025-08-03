@@ -12,6 +12,7 @@ class PhysicsComponent : public Component
 		RigidBody* getRigidBody();
 		void adjustRigidbody();
 		
+		const wchar_t* getTexturePath();
 
 	private:
 		float mass = 1000; //in kilograms

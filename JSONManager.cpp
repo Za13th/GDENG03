@@ -41,6 +41,7 @@ void JSONManager::save(bool bg)
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Cubes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
+			std::wcout << list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Cubes},
@@ -59,7 +60,9 @@ void JSONManager::save(bool bg)
 					{"ry", list[i]->getLocalRotation().y},
 					{"rz", list[i]->getLocalRotation().z}}
 				},
-				{"components", list[i]->getAttachedComponentTypes()}
+				{"components", list[i]->getAttachedComponentTypes()},
+				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+				
 			};
 			total++;
 		}
@@ -89,7 +92,9 @@ void JSONManager::save(bool bg)
 					{"ry", list[i]->getLocalRotation().y},
 					{"rz", list[i]->getLocalRotation().z}}
 				},
-				{"components", list[i]->getAttachedComponentTypes()}
+				{"components", list[i]->getAttachedComponentTypes()},
+				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+
 			};
 			total++;
 		}
@@ -151,7 +156,9 @@ void JSONManager::save(bool bg)
 					{"ry", list[i]->getLocalRotation().y},
 					{"rz", list[i]->getLocalRotation().z}}
 				},
-				{"components", list[i]->getAttachedComponentTypes()}
+				{"components", list[i]->getAttachedComponentTypes()},
+				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+
 			};
 			total++;
 		}
@@ -181,7 +188,9 @@ void JSONManager::save(bool bg)
 					{"ry", list[i]->getLocalRotation().y},
 					{"rz", list[i]->getLocalRotation().z}}
 				},
-				{"components", list[i]->getAttachedComponentTypes()}
+				{"components", list[i]->getAttachedComponentTypes()},
+				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+
 			};
 			total++;
 		}
@@ -211,7 +220,9 @@ void JSONManager::save(bool bg)
 					{"ry", list[i]->getLocalRotation().y},
 					{"rz", list[i]->getLocalRotation().z}}
 				},
-				{"components", list[i]->getAttachedComponentTypes()}
+				{"components", list[i]->getAttachedComponentTypes()},
+				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+
 			};
 			total++;
 		}
@@ -251,9 +262,14 @@ void JSONManager::load(bool bg)
 		for (auto& elem : j[std::to_string(i)]["components"])
 			c.push_back(elem);
 		bool hasPhys = false;
+		bool hasMat = false;
 		for (auto& i : c) {
 			if (i == 3) {
 				hasPhys = true;
+			}
+
+			if (i == 4) {
+				hasMat = true;
 			}
 		}
 
@@ -261,13 +277,13 @@ void JSONManager::load(bool bg)
 
 		if (j[std::to_string(i)]["objType"] == 0)
 		{
-			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cube(p, s, r);
-			else GameObjectManager::getInstance()->spawnCube(p, s, r);
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cube(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
+			else GameObjectManager::getInstance()->spawnCube(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 1)
 		{
-			if (hasPhys) GameObjectManager::getInstance()->spawnP6Plane(p, s, r);
-			else GameObjectManager::getInstance()->spawnPlane(p, s, r);
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Plane(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
+			else GameObjectManager::getInstance()->spawnPlane(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 2)
 		{
@@ -275,18 +291,18 @@ void JSONManager::load(bool bg)
 		}
 		else if (j[std::to_string(i)]["objType"] == 3)
 		{
-			if (hasPhys) GameObjectManager::getInstance()->spawnP6Sphere(p, s, r);
-			else GameObjectManager::getInstance()->spawnSphere(p, s, r);
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Sphere(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
+			else GameObjectManager::getInstance()->spawnSphere(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 4)
 		{
-			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cylinder(p, s, r);
-			else GameObjectManager::getInstance()->spawnCylinder(p, s, r);
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Cylinder(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
+			else GameObjectManager::getInstance()->spawnCylinder(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 5)
 		{
-			if (hasPhys) GameObjectManager::getInstance()->spawnP6Capsule(p, s, r);
-			else GameObjectManager::getInstance()->spawnCapsule(p, s, r);
+			if (hasPhys) GameObjectManager::getInstance()->spawnP6Capsule(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
+			else GameObjectManager::getInstance()->spawnCapsule(p, s, r, hasMat, j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 
 

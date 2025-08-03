@@ -391,7 +391,7 @@ Component* GameObject::findComponentByType(Component::ComponentType type, std::s
 std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 {
 	std::vector<Component::ComponentType> list;
-	bool notset = false, script = false, renderer = false, input = false, physics = false;
+	bool notset = false, script = false, renderer = false, input = false, physics = false, material = false;
 	for (auto& component : components)
 	{
 		switch (component->getType()) {
@@ -410,6 +410,9 @@ std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 		case Component::Physics:
 			physics = true;
 			break;
+		case Component::Material:
+			material = true;
+			break;
 		}
 	}
 
@@ -418,6 +421,7 @@ std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 	if (renderer) list.push_back(Component::Renderer);
 	if (input) list.push_back(Component::Input);
 	if (physics) list.push_back(Component::Physics);
+	if (material) list.push_back(Component::Material);
 
 	return list;
 }

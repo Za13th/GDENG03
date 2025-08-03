@@ -158,6 +158,11 @@ void PhysicsComponent::adjustRigidbody()
 	this->owner->setLocalMatrix(matrix);
 }
 
+const wchar_t* PhysicsComponent::getTexturePath()
+{
+	return nullptr;
+}
+
 PhysicsComponent::~PhysicsComponent()
 {
 	BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(this);

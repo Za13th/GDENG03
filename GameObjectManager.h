@@ -39,18 +39,18 @@ public:
 	void spawnP6Cylinder();
 	void spawnP6Capsule();	
 	
-	void spawnCube(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnCube(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
 	void spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, const char meshPath[128], const char texturePath[128]);
-	void spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
 
-	void spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot);
-	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot);
+	void spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
+	void spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128]);
 
 	void setCurrentObject(GameObject* g) { this->currentObject = g; }
 	GameObject* getCurrentObject() { return this->currentObject; }

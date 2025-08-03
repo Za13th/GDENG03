@@ -19,6 +19,7 @@ public:
 	String getName();
 
 	virtual void perform(float deltaTime) = 0;
+	virtual const wchar_t* getTexturePath() = 0;
 
 protected:
 	GameObject* owner;
