@@ -6,7 +6,7 @@ class JSONManager
 {
 public:
 	static JSONManager* getInstance();
-	static void initialize(void* shaderByteCode, size_t sizeShader);
+	static void initialize();
 	static void destroy();
 
 	void save(bool bg);

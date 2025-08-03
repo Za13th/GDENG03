@@ -17,6 +17,7 @@
 #include "DebugUIManager.h"
 #include "GameStateManager.h"
 #include "JSONManager.h"
+#include "UndoRedoManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -462,6 +463,20 @@ void AppWindow::onUpdate()
 			if (ImGui::MenuItem("Load"))
 			{
 				JSONManager::getInstance()->load(false);
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit")) {
+			if (ImGui::MenuItem("Undo"))
+			{
+				UndoRedoManager::getInstance()->undo();
+			}
+
+			if (ImGui::MenuItem("Redo"))
+			{
+				UndoRedoManager::getInstance()->redo();
 			}
 
 			ImGui::EndMenu();
