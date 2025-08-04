@@ -68,19 +68,12 @@ void Capsule::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	capsuleScale.y *= 2 / 1.800000;
 	capsuleScale.z *= 1 / 0.899994;
 
-	cc.m_world.setScale(this->localScale); //to make spheres and cubes 1 to 1 in size
-
-	temp.setRotationZ(this->getLocalRotation().z);
-	cc.m_world *= temp;
-	temp.setRotationY(this->getLocalRotation().y);
-	cc.m_world *= temp;
-	temp.setRotationX(this->getLocalRotation().x);
-	cc.m_world *= temp;
-
-	temp.setTranslation(this->localPosition);
-	cc.m_world *= temp;
-
-	cc.m_world.setScale(capsuleScale);
+	cc.m_world.setScale(Vector3D(1 / 0.899994, 2 / 1.800000, 1 / 0.899994));
+	if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+	{
+		temp.setScale(this->getLocalScale());
+		cc.m_world *= temp;
+	}
 	cc.m_world *= this->localMatrix;
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();

@@ -172,27 +172,10 @@ void Plane::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	constant cc;
 	cc.m_angle = m_angle;
 
-	Matrix4x4 temp;
-
-	cc.m_world.setScale(this->getLocalScale());
-
-	temp.setRotationZ(this->getLocalRotation().z);
-	cc.m_world *= temp;
-	temp.setRotationY(this->getLocalRotation().y);
-	cc.m_world *= temp;
-	temp.setRotationX(this->getLocalRotation().x);
-	cc.m_world *= temp;
-
-	temp.setTranslation(this->getLocalPosition());
-	cc.m_world *= temp;
-
-	//temp.setTranslation(this->localMatrix.getTranslation());
-	//cc.m_world *= temp;
-
-
-
-	//cc.m_world.setScale(this->getLocalScale());
-	//cc.m_world *= this->localMatrix;
+	cc.m_world.setIdentity();
+	if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+		cc.m_world.setScale(this->getLocalScale());
+	cc.m_world *= this->localMatrix;
 
 
 	auto world_cam = SceneCameraHolder::getInstance()->getCamera()->getViewMatrix();
