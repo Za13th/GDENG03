@@ -17,6 +17,7 @@
 #include "DebugUIManager.h"
 #include "GameStateManager.h"
 #include "JSONManager.h"
+#include "UndoRedoManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -475,18 +476,30 @@ void AppWindow::onUpdate()
 	// Main Menu Bar
 	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
 	{
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu("Scene")) {
-				if (ImGui::MenuItem("Save"))
-				{
-					JSONManager::getInstance()->save(false);
-				}
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("Scene")) {
+			if (ImGui::MenuItem("Save"))
+			{
+				JSONManager::getInstance()->save(false);
+			}
 
-				if (ImGui::MenuItem("Load"))
-				{
-					JSONManager::getInstance()->load(false);
-				}
-				ImGui::EndMenu();
+			if (ImGui::MenuItem("Load"))
+			{
+				JSONManager::getInstance()->load(false);
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit")) {
+			if (ImGui::MenuItem("Undo"))
+			{
+				UndoRedoManager::getInstance()->undo();
+			}
+
+			if (ImGui::MenuItem("Redo"))
+			{
+				UndoRedoManager::getInstance()->redo();
 			}
 
 			ImGui::EndMainMenuBar();
@@ -494,7 +507,7 @@ void AppWindow::onUpdate()
 
 		GameObjectManager::getInstance()->getObjectSpawnUI();
 	}
-
+  }
 	
 
 	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)

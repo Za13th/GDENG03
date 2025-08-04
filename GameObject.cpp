@@ -7,6 +7,8 @@
 #include "BaseComponentSystem.h"
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
+#include "UndoRedoManager.h"
+#include "UndoRedoAction.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -90,8 +92,10 @@ Vector3D GameObject::getLocalRotation()
 
 void GameObject::getInspectorUI()
 {
-
-	if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	std::string displayName = name;
+	if (!this->active)
+		displayName = name + " (Disabled)";
+	if (ImGui::CollapsingHeader(displayName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::InputFloat3("Position", &position[0]);
 		ImGui::InputFloat3("Scale", &scale[0]);
@@ -101,8 +105,15 @@ void GameObject::getInspectorUI()
 		{
 			if (ImGui::Button("Apply"))
 			{
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Transforms, this,
+					localPosition, Vector3D(position[0], position[1], position[2]),
+					localRotation, Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0)),
+					localScale, Vector3D(scale[0], scale[1], scale[2]));
+
 				localPosition = Vector3D(position[0], position[1], position[2]);
 				localScale = Vector3D(scale[0], scale[1], scale[2]);
+				UndoRedoManager::getInstance()->addToHistory(act);
+
 				localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
 				this->reconstructMatrix();
 
@@ -123,17 +134,38 @@ void GameObject::getInspectorUI()
 					GameObjectManager::getInstance()->inspectorWindowOpen = false;
 				}
 
+				//undo redo
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Delete, this);
+				if (this->findComponentByType(Component::Material, this->name + " TX Component"))
+				{
+					act->hasTex = true;
+					act->texCom = static_cast<TextureComponent*>(this->findComponentByType(Component::Material, this->name + " TX Component"));
+				}
+
 				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
+					act->hasPhys = true;
 					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
 					if (physicsComponent)
 					{
 						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
 					}
 				}
-
+				UndoRedoManager::getInstance()->addToHistory(act);
 				GameObjectManager::getInstance()->removeGameObject(this);
 			}
+			ImGui::SameLine();
+			if (this->active)
+			{
+				if (ImGui::Button("Disable"))
+				{
+					this->toggleActive();
+				}
+			}
+			else if (ImGui::Button("Enable"))
+				{
+					this->toggleActive();
+				}
 			ImGui::SameLine();
 			if (ImGui::Button("More Info"))
 			{
@@ -391,7 +423,7 @@ Component* GameObject::findComponentByType(Component::ComponentType type, std::s
 std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 {
 	std::vector<Component::ComponentType> list;
-	bool notset = false, script = false, renderer = false, input = false, physics = false;
+	bool notset = false, script = false, renderer = false, input = false, physics = false, material = false;
 	for (auto& component : components)
 	{
 		switch (component->getType()) {
@@ -410,6 +442,9 @@ std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 		case Component::Physics:
 			physics = true;
 			break;
+		case Component::Material:
+			material = true;
+			break;
 		}
 	}
 
@@ -418,6 +453,7 @@ std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 	if (renderer) list.push_back(Component::Renderer);
 	if (input) list.push_back(Component::Input);
 	if (physics) list.push_back(Component::Physics);
+	if (material) list.push_back(Component::Material);
 
 	return list;
 }

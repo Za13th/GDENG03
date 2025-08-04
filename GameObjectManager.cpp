@@ -6,6 +6,8 @@
 #include "PhysicsComponent.h"
 #include "DebugUIManager.h"
 #include <iostream>
+#include "UndoRedoAction.h"
+#include "UndoRedoManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -196,6 +198,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			cubes[i]->update(deltaTime);
 		}
+		if(cubes[i]->isActive())
 		cubes[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < planes.size(); i++)
@@ -205,6 +208,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			planes[i]->update(deltaTime);
 		}
+		if (planes[i]->isActive())
 		planes[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < spheres.size(); i++)
@@ -214,6 +218,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			spheres[i]->update(deltaTime);
 		}
+		if (spheres[i]->isActive())
 		spheres[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < cylinders.size(); i++)
@@ -223,6 +228,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			cylinders[i]->update(deltaTime);
 		}
+		if (cylinders[i]->isActive())
 		cylinders[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < capsules.size(); i++)
@@ -232,6 +238,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			capsules[i]->update(deltaTime);
 		}
+		if (capsules[i]->isActive())
 		capsules[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < meshes.size(); i++)
@@ -241,6 +248,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			meshes[i]->update(deltaTime);
 		}
+		if (meshes[i]->isActive())
 		meshes[i]->draw(width, height, vs, ps);
 	}
 }
@@ -400,46 +408,68 @@ void GameObjectManager::getObjectSpawnUI()
 			if (ImGui::MenuItem("Spawn Cube"))
 			{
 				this->spawnCube();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cubes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Plane"))
 			{
 				this->spawnPlane();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, planes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Sphere"))
 			{
 				this->spawnSphere();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, spheres.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Cylinder"))
 			{
 				this->spawnCylinder();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cylinders.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Capsule"))
 			{
 				this->spawnCapsule();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, capsules.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Cube"))
 			{
 				this->spawnP6Cube();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cubes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Plane"))
 			{
 				this->spawnP6Plane();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, planes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Sphere"))
 			{
 				this->spawnP6Sphere();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, spheres.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Cylinder"))
 			{
 				this->spawnP6Cylinder();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cylinders.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Capsule"))
 			{
 				this->spawnP6Capsule();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, capsules.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Mesh"))
 			{
 				meshScreen = true;
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, meshes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			ImGui::EndMenu();
 		}
@@ -690,7 +720,7 @@ void GameObjectManager::spawnP6Capsule()
 
 //with data
 
-void GameObjectManager::spawnCube(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnCube(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Cube* newCube = new Cube(*templateCube);
 	if (findGameObjectByName("Cube " + std::to_string(cubes.size() + 1)) != nullptr)
@@ -704,9 +734,19 @@ void GameObjectManager::spawnCube(Vector3D pos, Vector3D scale, Vector3D rot)
 
 	newCube->reconstructMatrix();
 	cubes.push_back(newCube);
+
+	if (hasMat) {
+		newCube->attachComponent(new TextureComponent(newCube->name + " TX Component", newCube));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newCube->findComponentByType(Component::Material, newCube->name + " TX Component")))->changeTexture(wc);
+	}
 }
 
-void GameObjectManager::spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Plane* newPlane = new Plane(*templatePlane);
 	if (findGameObjectByName("Plane " + std::to_string(planes.size() + 1)) != nullptr)
@@ -720,6 +760,16 @@ void GameObjectManager::spawnPlane(Vector3D pos, Vector3D scale, Vector3D rot)
 
 	newPlane->reconstructMatrix();
 	planes.push_back(newPlane);
+
+	if (hasMat) {
+		newPlane->attachComponent(new TextureComponent(newPlane->name + " TX Component", newPlane));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPlane->findComponentByType(Component::Material, newPlane->name + " TX Component")))->changeTexture(wc);
+	}
 }
 
 void GameObjectManager::spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, const char meshPath[128], const char texturePath[128])
@@ -739,19 +789,25 @@ void GameObjectManager::spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, co
 	mbstowcs(wc2, texturePath, cSize2);
 	loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
 
-	MeshObject* m;
-	if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
-		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
-	else
-		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
-	m->setPosition(pos.x, pos.y, pos.z);
-	m->setScale(scale);
-	m->setRotation(rot);
+	if (loadedMesh != nullptr)
+	{
+		MeshObject* m;
+		if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
+			m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+		else
+			m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
+		m->setPosition(pos.x, pos.y, pos.z);
+		m->setScale(scale);
+		m->setRotation(rot);
 
-	this->meshes.push_back(m);
+		this->meshes.push_back(m);
+	}
+	else {
+		DebugUIManager::getInstance()->Log("mesh loading failed");
+	}
 }
 
-void GameObjectManager::spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Sphere* newSphere = new Sphere(*templateSphere);
 	if (findGameObjectByName("Sphere " + std::to_string(spheres.size() + 1)) != nullptr)
@@ -765,9 +821,19 @@ void GameObjectManager::spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot)
 
 	newSphere->reconstructMatrix();
 	spheres.push_back(newSphere);
+
+	if (hasMat) {
+		newSphere->attachComponent(new TextureComponent(newSphere->name + " TX Component", newSphere));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newSphere->findComponentByType(Component::Material, newSphere->name + " TX Component")))->changeTexture(wc);
+	}
 }
 
-void GameObjectManager::spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Cylinder* newCylinder = new Cylinder(*templateCylinder);
 	if (findGameObjectByName("Cylinder " + std::to_string(cylinders.size() + 1)) != nullptr)
@@ -781,9 +847,11 @@ void GameObjectManager::spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot
 
 	newCylinder->reconstructMatrix();
 	cylinders.push_back(newCylinder);
+
 }
 
-void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot)
+
+void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Capsule* newCapsule = new Capsule(*templateCapsule);
 	if (findGameObjectByName("Capsule " + std::to_string(capsules.size() + 1)) != nullptr)
@@ -799,7 +867,7 @@ void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot)
 	capsules.push_back(newCapsule);
 }
 
-void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Cube* newPhysicsCube = new Cube(*templateCube);
 	if (findGameObjectByName("P6 Cube " + std::to_string(cubes.size() + 1)) != nullptr)
@@ -814,10 +882,20 @@ void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot)
 	newPhysicsCube->reconstructMatrix();
 	cubes.push_back(newPhysicsCube);
 
+	if (hasMat) {
+		newPhysicsCube->attachComponent(new TextureComponent(newPhysicsCube->name + " TX Component", newPhysicsCube));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPhysicsCube->findComponentByType(Component::Material, newPhysicsCube->name + " TX Component")))->changeTexture(wc);
+	}
+
 	newPhysicsCube->attachComponent(new PhysicsComponent(newPhysicsCube->name + " P6 Component", newPhysicsCube));
 }
 
-void GameObjectManager::spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Plane* newPhysicsPlane = new Plane(*templatePlane);
 	if (findGameObjectByName("P6 Plane " + std::to_string(planes.size() + 1)) != nullptr)
@@ -832,10 +910,20 @@ void GameObjectManager::spawnP6Plane(Vector3D pos, Vector3D scale, Vector3D rot)
 	newPhysicsPlane->reconstructMatrix();
 	planes.push_back(newPhysicsPlane);
 
+	if (hasMat) {
+		newPhysicsPlane->attachComponent(new TextureComponent(newPhysicsPlane->name + " TX Component", newPhysicsPlane));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPhysicsPlane->findComponentByType(Component::Material, newPhysicsPlane->name + " TX Component")))->changeTexture(wc);
+	}
+
 	newPhysicsPlane->attachComponent(new PhysicsComponent(newPhysicsPlane->name + " P6 Component", newPhysicsPlane));
 }
 
-void GameObjectManager::spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Sphere* newPhysicsSphere = new Sphere(*templateSphere);
 	if (findGameObjectByName("P6 Sphere " + std::to_string(spheres.size() + 1)) != nullptr)
@@ -847,10 +935,21 @@ void GameObjectManager::spawnP6Sphere(Vector3D pos, Vector3D scale, Vector3D rot
 	newPhysicsSphere->setRotation(rot);
 	newPhysicsSphere->reconstructMatrix();
 	spheres.push_back(newPhysicsSphere);
+
+	if (hasMat) {
+		newPhysicsSphere->attachComponent(new TextureComponent(newPhysicsSphere->name + " TX Component", newPhysicsSphere));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPhysicsSphere->findComponentByType(Component::Material, newPhysicsSphere->name + " TX Component")))->changeTexture(wc);
+	}
+
 	newPhysicsSphere->attachComponent(new PhysicsComponent(newPhysicsSphere->name + " P6 Component", newPhysicsSphere));
 }
 
-void GameObjectManager::spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Cylinder* newPhysicsCylinder = new Cylinder(*templateCylinder);
 	if (findGameObjectByName("P6 Cylinder " + std::to_string(cylinders.size() + 1)) != nullptr)
@@ -862,10 +961,21 @@ void GameObjectManager::spawnP6Cylinder(Vector3D pos, Vector3D scale, Vector3D r
 	newPhysicsCylinder->setRotation(rot);
 	newPhysicsCylinder->reconstructMatrix();
 	cylinders.push_back(newPhysicsCylinder);
+
+	if (hasMat) {
+		newPhysicsCylinder->attachComponent(new TextureComponent(newPhysicsCylinder->name + " TX Component", newPhysicsCylinder));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPhysicsCylinder->findComponentByType(Component::Material, newPhysicsCylinder->name + " TX Component")))->changeTexture(wc);
+	}
+
 	newPhysicsCylinder->attachComponent(new PhysicsComponent(newPhysicsCylinder->name + " P6 Component", newPhysicsCylinder));
 }
 
-void GameObjectManager::spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot)
+void GameObjectManager::spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
 	Capsule* newPhysicsCapsule = new Capsule(*templateCapsule);
 	if (findGameObjectByName("P6 Capsule " + std::to_string(capsules.size() + 1)) != nullptr)
@@ -877,5 +987,16 @@ void GameObjectManager::spawnP6Capsule(Vector3D pos, Vector3D scale, Vector3D ro
 	newPhysicsCapsule->setRotation(rot);
 	newPhysicsCapsule->reconstructMatrix();
 	capsules.push_back(newPhysicsCapsule);
+
+	if (hasMat) {
+		newPhysicsCapsule->attachComponent(new TextureComponent(newPhysicsCapsule->name + " TX Component", newPhysicsCapsule));
+		static Texture* loadedTexture;
+		size_t cSize = strlen(texturePath) + 1;
+		wchar_t* wc = new wchar_t[cSize];
+		mbstowcs(wc, texturePath, cSize);
+		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
+		((TextureComponent*)(newPhysicsCapsule->findComponentByType(Component::Material, newPhysicsCapsule->name + " TX Component")))->changeTexture(wc);
+	}
+
 	newPhysicsCapsule->attachComponent(new PhysicsComponent(newPhysicsCapsule->name + " P6 Component", newPhysicsCapsule));
 }

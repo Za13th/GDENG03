@@ -40,6 +40,9 @@ public:
 	void setRotation(Vector3D rotation);
 	Vector3D getLocalRotation();
 
+	void toggleActive() { if (this->active == false) active = true;  else if (this->active == true) active = false;}
+	bool isActive() { return this->active; }
+
 	void getInspectorUI();
 	void getInspectorUIPlus();
 	void reconstructMatrix();
@@ -80,6 +83,7 @@ protected:
 	ComponentList components;
 
 	bool overrideMatrix = false;
+	bool active = true;
 
 	virtual void awake() {}
 
