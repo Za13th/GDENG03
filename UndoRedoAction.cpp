@@ -1,8 +1,8 @@
 #include "UndoRedoAction.h"
 
-bool UndoRedoAction::getType()
+UndoRedoAction::actType UndoRedoAction::getType()
 {
-    return isTransform;
+    return type;
 }
 
 GameObject* UndoRedoAction::getObj()
@@ -44,9 +44,9 @@ UndoRedoAction::UndoRedoAction()
 {
 }
 
-UndoRedoAction::UndoRedoAction(bool isT, GameObject* obj, Vector3D oldPos, Vector3D newPos, Vector3D oldRot, Vector3D newRot, Vector3D oldSca, Vector3D newSca)
+UndoRedoAction::UndoRedoAction(actType typ, GameObject* obj, Vector3D oldPos, Vector3D newPos, Vector3D oldRot, Vector3D newRot, Vector3D oldSca, Vector3D newSca)
 {
-    this->isTransform = isT;
+    this->type = typ;
     this->cloneObj = obj;
 
     this->oldPos = oldPos;
@@ -59,9 +59,9 @@ UndoRedoAction::UndoRedoAction(bool isT, GameObject* obj, Vector3D oldPos, Vecto
     this->newSca = newSca;
 }
 
-UndoRedoAction::UndoRedoAction(bool isT, GameObject* obj)
+UndoRedoAction::UndoRedoAction(actType typ, GameObject* obj)
 {
-    this->isTransform = isT;
+    this->type = typ;
     this->cloneObj = obj;
 }
 

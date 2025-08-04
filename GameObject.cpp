@@ -103,7 +103,7 @@ void GameObject::getInspectorUI()
 		{
 			if (ImGui::Button("Apply"))
 			{
-				UndoRedoAction* act = new UndoRedoAction(true, this,
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Transforms, this,
 					localPosition, Vector3D(position[0], position[1], position[2]),
 					localRotation, Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0)),
 					localScale, Vector3D(scale[0], scale[1], scale[2]));
