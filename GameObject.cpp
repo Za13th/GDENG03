@@ -92,8 +92,10 @@ Vector3D GameObject::getLocalRotation()
 
 void GameObject::getInspectorUI()
 {
-
-	if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	std::string displayName = name;
+	if (!this->active)
+		displayName = name + " (Disabled)";
+	if (ImGui::CollapsingHeader(displayName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::InputFloat3("Position", &position[0]);
 		ImGui::InputFloat3("Scale", &scale[0]);
@@ -152,6 +154,18 @@ void GameObject::getInspectorUI()
 				UndoRedoManager::getInstance()->addToHistory(act);
 				GameObjectManager::getInstance()->removeGameObject(this);
 			}
+			ImGui::SameLine();
+			if (this->active)
+			{
+				if (ImGui::Button("Disable"))
+				{
+					this->toggleActive();
+				}
+			}
+			else if (ImGui::Button("Enable"))
+				{
+					this->toggleActive();
+				}
 			ImGui::SameLine();
 			if (ImGui::Button("More Info"))
 			{

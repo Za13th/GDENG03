@@ -189,6 +189,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			cubes[i]->update(deltaTime);
 		}
+		if(cubes[i]->isActive())
 		cubes[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < planes.size(); i++)
@@ -197,6 +198,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			planes[i]->update(deltaTime);
 		}
+		if (planes[i]->isActive())
 		planes[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < spheres.size(); i++)
@@ -205,6 +207,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			spheres[i]->update(deltaTime);
 		}
+		if (spheres[i]->isActive())
 		spheres[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < cylinders.size(); i++)
@@ -213,6 +216,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			cylinders[i]->update(deltaTime);
 		}
+		if (cylinders[i]->isActive())
 		cylinders[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < capsules.size(); i++)
@@ -221,6 +225,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			capsules[i]->update(deltaTime);
 		}
+		if (capsules[i]->isActive())
 		capsules[i]->draw(width, height, vs, ps);
 	}
 	for (int i = 0; i < meshes.size(); i++)
@@ -229,6 +234,7 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 		{
 			meshes[i]->update(deltaTime);
 		}
+		if (meshes[i]->isActive())
 		meshes[i]->draw(width, height, vs, ps);
 	}
 }
