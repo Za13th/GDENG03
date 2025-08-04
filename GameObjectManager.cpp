@@ -183,9 +183,18 @@ void GameObjectManager::clearAll()
 
 void GameObjectManager::drawObjects(float deltaTime, int width, int height, VertexShader* vs, PixelShader* ps)
 {
+	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Edit)
+	{
+		inspectorWindowOpen = false;
+		meshScreen = false;
+	}
+
+	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
+
 	for (int i = 0; i < cubes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			cubes[i]->update(deltaTime);
 		}
@@ -194,7 +203,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < planes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			planes[i]->update(deltaTime);
 		}
@@ -203,7 +213,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < spheres.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			spheres[i]->update(deltaTime);
 		}
@@ -212,7 +223,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < cylinders.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			cylinders[i]->update(deltaTime);
 		}
@@ -221,7 +233,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < capsules.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			capsules[i]->update(deltaTime);
 		}
@@ -230,7 +243,8 @@ void GameObjectManager::drawObjects(float deltaTime, int width, int height, Vert
 	}
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		if (GameStateManager::getInstance()->getGameState() != GameStateManager::Pause)
+		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play
+			|| GameStateManager::getInstance()->getGameState() == GameStateManager::FrameStep)
 		{
 			meshes[i]->update(deltaTime);
 		}
@@ -529,13 +543,6 @@ void GameObjectManager::getObjectSpawnUI()
 			ImGui::End();
 		}
 	}
-	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Play)
-	{
-		inspectorWindowOpen = false;
-		meshScreen = false;
-	}
-
-	SceneCameraHolder::getInstance()->getCamera()->setCameraMovement(!meshScreen && !inspectorWindowOpen);
 }
 
 void GameObjectManager::spawnCube()
@@ -841,16 +848,8 @@ void GameObjectManager::spawnCylinder(Vector3D pos, Vector3D scale, Vector3D rot
 	newCylinder->reconstructMatrix();
 	cylinders.push_back(newCylinder);
 
-	if (hasMat) {
-		newCylinder->attachComponent(new TextureComponent(newCylinder->name + " TX Component", newCylinder));
-		static Texture* loadedTexture;
-		size_t cSize = strlen(texturePath) + 1;
-		wchar_t* wc = new wchar_t[cSize];
-		mbstowcs(wc, texturePath, cSize);
-		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
-		((TextureComponent*)(newCylinder->findComponentByType(Component::Material, newCylinder->name + " TX Component")))->changeTexture(wc);
-	}
 }
+
 
 void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
 {
@@ -866,16 +865,6 @@ void GameObjectManager::spawnCapsule(Vector3D pos, Vector3D scale, Vector3D rot,
 
 	newCapsule->reconstructMatrix();
 	capsules.push_back(newCapsule);
-
-	if (hasMat) {
-		newCapsule->attachComponent(new TextureComponent(newCapsule->name + " TX Component", newCapsule));
-		static Texture* loadedTexture;
-		size_t cSize = strlen(texturePath) + 1;
-		wchar_t* wc = new wchar_t[cSize];
-		mbstowcs(wc, texturePath, cSize);
-		loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc);
-		((TextureComponent*)(newCapsule->findComponentByType(Component::Material, newCapsule->name + " TX Component")))->changeTexture(wc);
-	}
 }
 
 void GameObjectManager::spawnP6Cube(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])

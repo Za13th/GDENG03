@@ -21,6 +21,7 @@ class PhysicsSystem
 		void registerComponent(PhysicsComponent* component);
 		void unregisterComponent(PhysicsComponent* component);
 		void unregisterComponentByName(const String& name);
+		void unregisterAllComponents();
 		PhysicsComponent* findComponentByName(const String& name);
 		ComponentList getAllComponents();
 
