@@ -40,7 +40,7 @@ public:
 	void setRotation(Vector3D rotation);
 	Vector3D getLocalRotation();
 
-	void toggleActive() { if (this->active == false) active = true;  else if (this->active == true) active = false;}
+	void setActive(bool b) { this->active = b; for (int i = 0; i < children.size(); i++) children[i]->setActive(b); }
 	bool isActive() { return this->active; }
 
 	void getInspectorUI();
@@ -49,6 +49,8 @@ public:
 	void reconstructVectors();
 
 	void setLocalMatrix(float* matrix);
+	Matrix4x4 getLocalMatrix() { return this->localMatrix; }
+	Matrix4x4 getWorldMatrix();
 	float* getPhysicsLocalMatrix();
 
 	void attachComponent(Component* component);
@@ -59,6 +61,15 @@ public:
 	Component* findComponentByType(Component::ComponentType type, std::string name);
 	ComponentList getComponentsOfType(Component::ComponentType type) {}
 	std::vector<Component::ComponentType> getAttachedComponentTypes();
+
+	GameObject* getParent() { return this->parent; }
+	void makeParent(GameObject* parentObject);
+	std::vector<GameObject*> getChildren() { return this->children; }
+	void addChild(GameObject* childObject);
+	void removeChild(GameObject* childObject);
+	bool isChild(GameObject* childObject);
+
+	void deleteObject();
 
 	std::string name;
 	ObjectType objectType;
@@ -86,6 +97,9 @@ protected:
 	bool active = true;
 
 	virtual void awake() {}
+
+	GameObject* parent = nullptr;
+	std::vector<GameObject*> children = {};
 
 };
 

@@ -225,6 +225,9 @@
       <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives</Filter>
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="UndoRedoAction.cpp" />
+    <ClCompile Include="UndoRedoManager.cpp" />
+    <ClCompile Include="ObjectParentingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppWindow.h">
@@ -392,6 +395,9 @@
       <Filter>GameEngine\GraphicsEngine\GameObjects/Primitives</Filter>
     </ClInclude>
     <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="UndoRedoAction.h" />
+    <ClInclude Include="UndoRedoManager.h" />
+    <ClInclude Include="ObjectParentingManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

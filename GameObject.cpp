@@ -9,6 +9,7 @@
 #include "DebugUIManager.h"
 #include "UndoRedoManager.h"
 #include "UndoRedoAction.h"
+#include "ObjectParentingManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -103,75 +104,90 @@ void GameObject::getInspectorUI()
 
 		if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
 		{
-			if (ImGui::Button("Apply"))
+			if (!ObjectParentingManager::getInstance()->isParenting())
 			{
-				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Transforms, this,
-					localPosition, Vector3D(position[0], position[1], position[2]),
-					localRotation, Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0)),
-					localScale, Vector3D(scale[0], scale[1], scale[2]));
-
-				localPosition = Vector3D(position[0], position[1], position[2]);
-				localScale = Vector3D(scale[0], scale[1], scale[2]);
-				UndoRedoManager::getInstance()->addToHistory(act);
-
-				localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
-				this->reconstructMatrix();
-
-				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+				if (ImGui::Button("Apply"))
 				{
-					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-					if (physicsComponent)
+					UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Transforms, this,
+						localPosition, Vector3D(position[0], position[1], position[2]),
+						localRotation, Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0)),
+						localScale, Vector3D(scale[0], scale[1], scale[2]));
+
+					localPosition = Vector3D(position[0], position[1], position[2]);
+					localScale = Vector3D(scale[0], scale[1], scale[2]);
+					UndoRedoManager::getInstance()->addToHistory(act);
+
+					localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
+					this->reconstructMatrix();
+
+					if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 					{
-						physicsComponent->adjustRigidbody();
+						PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+						if (physicsComponent)
+						{
+							physicsComponent->adjustRigidbody();
+						}
 					}
 				}
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Delete"))
-			{
-				if (GameObjectManager::getInstance()->getCurrentObject() == this)
+				ImGui::SameLine();
+				if (ImGui::Button("Delete"))
 				{
-					GameObjectManager::getInstance()->inspectorWindowOpen = false;
-				}
+					if (this->parent)
+						this->parent->removeChild(this);
 
-				//undo redo
-				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Delete, this);
-				if (this->findComponentByType(Component::Material, this->name + " TX Component"))
-				{
-					act->hasTex = true;
-					act->texCom = static_cast<TextureComponent*>(this->findComponentByType(Component::Material, this->name + " TX Component"));
+					this->deleteObject();
 				}
-
-				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+				ImGui::SameLine();
+				if (this->active)
 				{
-					act->hasPhys = true;
-					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
-					if (physicsComponent)
+					if (ImGui::Button("Disable"))
 					{
-						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+						this->setActive(false);
 					}
 				}
-				UndoRedoManager::getInstance()->addToHistory(act);
-				GameObjectManager::getInstance()->removeGameObject(this);
-			}
-			ImGui::SameLine();
-			if (this->active)
-			{
-				if (ImGui::Button("Disable"))
+				else if (ImGui::Button("Enable"))
 				{
-					this->toggleActive();
+					if (!this->parent || this->parent->isActive())
+					{
+						this->setActive(true);
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("More Info"))
+				{
+					GameObjectManager::getInstance()->setCurrentObject(this);
+					GameObjectManager::getInstance()->inspectorWindowOpen = true;
+				}
+				if (ImGui::Button("Make Parent"))
+				{
+					ObjectParentingManager::getInstance()->setParenting(true);
+					ObjectParentingManager::getInstance()->setObject(this);
 				}
 			}
-			else if (ImGui::Button("Enable"))
-				{
-					this->toggleActive();
-				}
-			ImGui::SameLine();
-			if (ImGui::Button("More Info"))
+			else
 			{
-				GameObjectManager::getInstance()->setCurrentObject(this);
-				GameObjectManager::getInstance()->inspectorWindowOpen = true;
+				if (ObjectParentingManager::getInstance()->getObject() == this && ImGui::Button("Stop"))
+				{
+					ObjectParentingManager::getInstance()->setParenting(false);
+					ObjectParentingManager::getInstance()->setObject(nullptr);
+				}
+				else if (ObjectParentingManager::getInstance()->getObject() != this)
+				{
+					if (!ObjectParentingManager::getInstance()->getObject()->isChild(this) && !this->parent 
+						&& !this->isChild(ObjectParentingManager::getInstance()->getObject()) && ImGui::Button("Make Child"))
+					{
+						ObjectParentingManager::getInstance()->getObject()->addChild(this);
+						this->makeParent(ObjectParentingManager::getInstance()->getObject());
+					}
+					else if (ObjectParentingManager::getInstance()->getObject()->isChild(this) && ImGui::Button("Remove Child"))
+					{
+						ObjectParentingManager::getInstance()->getObject()->removeChild(this);
+						this->makeParent(nullptr);
+					}
+				}
+
 			}
+			
 		}
 
 	}
@@ -254,6 +270,26 @@ void GameObject::getInspectorUIPlus()
 				}
 			}
 		}
+		if (ImGui::CollapsingHeader("Object Parenting", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Text("Parent: ");
+			ImGui::SameLine();
+			if (!this->parent)
+				ImGui::Text("None");
+			else
+				ImGui::Text(this->parent->name.c_str());
+
+			ImGui::Text("Children: ");
+			if (this->children.size() == 0)
+				ImGui::Text("None");
+			else
+				for (int i = 0; i < children.size(); i++)
+				{
+					ImGui::Text(children[i]->name.c_str());
+				}
+
+		}
+
 		ImGui::End();
 	}
 		
@@ -288,9 +324,21 @@ void GameObject::reconstructVectors()
 		y = { 0,1,0 },
 		z = { 0,0,1 };
 
-	this->localRotation.x = std::acosf(this->localMatrix.getXDirection().dot(x));
-	this->localRotation.y = std::acosf(this->localMatrix.getYDirection().dot(y));
-	this->localRotation.z = std::acosf(this->localMatrix.getZDirection().dot(z));
+	auto x3 = this->localMatrix.getXDirection(); x3.normalize();
+	auto y3 = this->localMatrix.getYDirection(); y3.normalize();
+	auto z3 = this->localMatrix.getZDirection(); z3.normalize();
+
+	this->localRotation.x = std::acosf(std::clamp(x3.dot(x), -1.0f, 1.0f));
+	this->localRotation.y = std::acosf(std::clamp(y3.dot(y), -1.0f, 1.0f));
+	this->localRotation.z = std::acosf(std::clamp(z3.dot(z), -1.0f, 1.0f));
+
+	this->position[0] = localPosition.x;
+	this->position[1] = localPosition.y;
+	this->position[2] = localPosition.z;
+
+	this->rotation[0] = localRotation.x * (180.0 / M_PI);
+	this->rotation[1] = localRotation.y * (180.0 / M_PI);
+	this->rotation[2] = localRotation.z * (180.0 / M_PI);
 
 
 }
@@ -320,6 +368,17 @@ void GameObject::setLocalMatrix(float* matrix)
 
 
 	this->reconstructVectors();
+}
+
+Matrix4x4 GameObject::getWorldMatrix()
+{
+	if (!this->parent) {
+		return this->localMatrix;
+	}
+
+	Matrix4x4 parentMatrix = this->parent->getWorldMatrix();
+	parentMatrix*= this->localMatrix;
+	return parentMatrix;
 }
 
 float* GameObject::getPhysicsLocalMatrix()
@@ -456,5 +515,128 @@ std::vector<Component::ComponentType> GameObject::getAttachedComponentTypes()
 	if (material) list.push_back(Component::Material);
 
 	return list;
+}
+
+void GameObject::makeParent(GameObject* parentObject)
+{
+	if (parentObject != nullptr)
+	{
+		this->setPosition(this->localPosition - (parentObject->getLocalPosition() / parentObject->getLocalScale()));
+
+		Matrix4x4 childMatrix, parentMatrix, temp; childMatrix.setIdentity(); parentMatrix.setIdentity();
+
+
+		temp.setRotationZ(localRotation.z);
+		childMatrix *= temp;
+		temp.setRotationY(localRotation.y);
+		childMatrix *= temp;
+		temp.setRotationX(localRotation.x);
+		childMatrix *= temp;
+
+		temp.setRotationZ(parentObject->getLocalRotation().z);
+		parentMatrix *= temp;
+		temp.setRotationY(parentObject->getLocalRotation().y);
+		parentMatrix *= temp;
+		temp.setRotationX(parentObject->getLocalRotation().x);
+		parentMatrix *= temp;
+
+		parentMatrix.inverse();
+		parentMatrix *= childMatrix;
+
+		Vector3D
+			x = { 1,0,0 },
+			y = { 0,1,0 },
+			z = { 0,0,1 };
+
+		auto x3 = parentMatrix.getXDirection(); x3.normalize();
+		auto y3 = parentMatrix.getYDirection(); y3.normalize();
+		auto z3 = parentMatrix.getZDirection(); z3.normalize();
+
+		auto a = std::acosf(std::clamp(x3.dot(x), -1.0f, 1.0f));
+		auto b = std::acosf(std::clamp(y3.dot(y), -1.0f, 1.0f));
+		auto c = std::acosf(std::clamp(z3.dot(z), -1.0f, 1.0f));
+
+		this->setRotation(Vector3D(a,b,c));
+
+		this->setScale(this->localScale / parentObject->getLocalScale());
+
+		this->reconstructMatrix();
+	}
+	else
+	{
+		auto s = this->getParent()->getLocalScale();
+		this->getParent()->setScale(Vector3D(1));
+		this->localMatrix = this->getWorldMatrix();
+		this->getParent()->setScale(s);
+		this->setScale(this->localScale * this->parent->getLocalScale());
+		this->reconstructVectors();
+	}
+
+	this->parent = parentObject;
+
+}
+
+void GameObject::addChild(GameObject* childObject)
+{
+	this->children.push_back(childObject);
+}
+
+void GameObject::removeChild(GameObject* childObject)
+{
+	for (int i = 0; i < children.size(); i++)
+	{
+		if (children[i] == childObject)
+		{
+			children.erase(children.begin() + i);
+		}
+	}
+}
+
+bool GameObject::isChild(GameObject* childObject)
+{
+	for (int i = 0; i < children.size(); i++)
+	{
+		if (children[i] == childObject)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void GameObject::deleteObject()
+{
+	std::cout << "Deleting " << this->name << "\n";
+
+	if (GameObjectManager::getInstance()->getCurrentObject() == this)
+	{
+		GameObjectManager::getInstance()->inspectorWindowOpen = false;
+	}
+
+	//undo redo
+	UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Delete, this);
+	if (this->findComponentByType(Component::Material, this->name + " TX Component"))
+	{
+		act->hasTex = true;
+		act->texCom = static_cast<TextureComponent*>(this->findComponentByType(Component::Material, this->name + " TX Component"));
+	}
+
+	if (this->findComponentByType(Component::Physics, name + " P6 Component"))
+	{
+		act->hasPhys = true;
+		PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
+		if (physicsComponent)
+		{
+			BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+		}
+	}
+	UndoRedoManager::getInstance()->addToHistory(act);
+	GameObjectManager::getInstance()->removeGameObject(this);
+
+	for (int i = 0; i < children.size(); i++)
+	{
+		this->children[i]->deleteObject();
+	}
 }
 

@@ -143,7 +143,6 @@ void Cube::update(float deltaTime)
 {
 	m_angle += deltaTime;
 
-
 	this->position[0] = this->getLocalPosition().x;
 	this->position[1] = this->getLocalPosition().y;
 	this->position[2] = this->getLocalPosition().z;
@@ -168,7 +167,12 @@ void Cube::draw(int width, int height, VertexShader* vs, PixelShader* ps)
 	constant cc;
 	cc.m_angle = m_angle;
 
-	cc.m_world.setIdentity();
+
+	if (!this->parent)
+		cc.m_world.setIdentity();
+	else
+		cc.m_world = this->parent->getWorldMatrix();
+
 	if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 	cc.m_world.setScale(this->getLocalScale());
 	cc.m_world *= this->localMatrix;

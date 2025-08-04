@@ -11,6 +11,54 @@ class Matrix4x4
 
 		Matrix4x4(){}
 
+
+		static Matrix4x4 fromEulerAngles(float pitch, float yaw, float roll) {
+			Matrix4x4 rotationMatrix;
+			rotationMatrix.setIdentity();
+
+			Matrix4x4 Rx;
+			Rx.setIdentity();
+			Rx.m[1][1] = std::cos(pitch);
+			Rx.m[1][2] = -std::sin(pitch);
+			Rx.m[2][1] = std::sin(pitch);
+			Rx.m[2][2] = std::cos(pitch);
+
+			// Rotation about Y-axis (yaw)
+			Matrix4x4 Ry;
+			Ry.setIdentity();
+			Ry.m[0][0] = std::cos(yaw);
+			Ry.m[0][2] = std::sin(yaw);
+			Ry.m[2][0] = -std::sin(yaw);
+			Ry.m[2][2] = std::cos(yaw);
+
+			// Rotation about Z-axis (roll)
+			Matrix4x4 Rz;
+			Rz.setIdentity();
+			Rz.m[0][0] = std::cos(roll);
+			Rz.m[0][1] = -std::sin(roll);
+			Rz.m[1][0] = std::sin(roll);
+			Rz.m[1][1] = std::cos(roll);
+
+			// Combining the rotations (Z * Y * X)
+			rotationMatrix = Rz * Ry * Rx;
+
+			return rotationMatrix;
+		}
+
+		Matrix4x4 operator*(const Matrix4x4& other) const
+		{
+			Matrix4x4 result;
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					result.m[i][j] = 0;
+					for (int k = 0; k < 4; ++k) {
+						result.m[i][j] += m[i][k] * other.m[k][j];
+					}
+				}
+			}
+			return result;
+		}
+
 		void setIdentity()
 		{
 			for (int i = 0; i < 4; ++i)

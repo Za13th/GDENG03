@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#include "GameObject.h"
 #include "EngineTime.h"
 #include <iostream>
 
@@ -93,6 +94,7 @@ void PhysicsSystem::updateAllComponents()
 
 	for (int i = 0; i < this->componentList.size(); i++)
 	{
+		if(this->componentList[i]->getOwner()->isActive())
 		this->componentList[i]->perform(timeStep);
 	}
 
