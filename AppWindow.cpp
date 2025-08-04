@@ -422,7 +422,7 @@ void AppWindow::onUpdate()
 	flags |= ImGuiWindowFlags_AlwaysAutoResize;
 
 	ImGui::Begin("Game State", nullptr, flags);
-	
+
 
 	if (GameStateManager::getInstance()->getGameState() != GameStateManager::Edit)
 	{
@@ -476,42 +476,44 @@ void AppWindow::onUpdate()
 	// Main Menu Bar
 	if (GameStateManager::getInstance()->getGameState() == GameStateManager::Edit)
 	{
-	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("Scene")) {
-			if (ImGui::MenuItem("Save"))
-			{
-				JSONManager::getInstance()->save(false);
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("Scene")) {
+				if (ImGui::MenuItem("Save"))
+				{
+					JSONManager::getInstance()->save(false);
+				}
+
+				if (ImGui::MenuItem("Load"))
+				{
+					JSONManager::getInstance()->load(false);
+				}
+
+				ImGui::EndMenu();
 			}
 
-			if (ImGui::MenuItem("Load"))
-			{
-				JSONManager::getInstance()->load(false);
+			if (ImGui::BeginMenu("Edit")) {
+				if (ImGui::MenuItem("Undo"))
+				{
+					UndoRedoManager::getInstance()->undo();
+				}
+
+				if (ImGui::MenuItem("Redo"))
+				{
+					UndoRedoManager::getInstance()->redo();
+				}
+
+				ImGui::EndMenu();
 			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Edit")) {
-			if (ImGui::MenuItem("Undo"))
-			{
-				UndoRedoManager::getInstance()->undo();
-			}
-
-			if (ImGui::MenuItem("Redo"))
-			{
-				UndoRedoManager::getInstance()->redo();
-			}
-
 			ImGui::EndMainMenuBar();
 		}
 
 		GameObjectManager::getInstance()->getObjectSpawnUI();
 	}
-  }
 	
 
-	if(GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
-	GameObjectManager::getInstance()->getInspectorUI();
+
+	if (GameObjectManager::getInstance()->getAllGameObjects().size() > 0)
+		GameObjectManager::getInstance()->getInspectorUI();
 
 
 
