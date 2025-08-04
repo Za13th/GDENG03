@@ -42,7 +42,13 @@ void JSONManager::save(bool bg)
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Cubes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
-			std::wcout << list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+
+			const wchar_t* path = L"null";
+			if (list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")) {
+				path = list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+			}
+
+
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Cubes},
@@ -62,8 +68,8 @@ void JSONManager::save(bool bg)
 					{"rz", list[i]->getLocalRotation().z}}
 				},
 				{"components", list[i]->getAttachedComponentTypes()},
-				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
-				
+				{"texture", path}
+
 			};
 			total++;
 		}
@@ -74,6 +80,11 @@ void JSONManager::save(bool bg)
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Planes found, exporting");
 		for (int i = 0; i < list.size(); i++) {
+
+			const wchar_t* path = L"null";
+			if (list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")) {
+				path = list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+			}
 
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
@@ -94,7 +105,7 @@ void JSONManager::save(bool bg)
 					{"rz", list[i]->getLocalRotation().z}}
 				},
 				{"components", list[i]->getAttachedComponentTypes()},
-				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+				{"texture", path}
 
 			};
 			total++;
@@ -139,6 +150,11 @@ void JSONManager::save(bool bg)
 		DebugUIManager::getInstance()->Log("Spheres found, exporting");
 		for (int i = 0; i < list.size(); i++) {
 
+			const wchar_t* path = L"null";
+			if (list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")) {
+				path = list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+			}
+
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
 				{"objType", GameObjectManager::Spheres},
@@ -158,7 +174,7 @@ void JSONManager::save(bool bg)
 					{"rz", list[i]->getLocalRotation().z}}
 				},
 				{"components", list[i]->getAttachedComponentTypes()},
-				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+				{"texture", path}
 			};
 			total++;
 		}
@@ -169,6 +185,11 @@ void JSONManager::save(bool bg)
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Cylinders found, exporting");
 		for (int i = 0; i < list.size(); i++) {
+
+			const wchar_t* path = L"null";
+			if (list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")) {
+				path = list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+			}
 
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
@@ -189,7 +210,7 @@ void JSONManager::save(bool bg)
 					{"rz", list[i]->getLocalRotation().z}}
 				},
 				{"components", list[i]->getAttachedComponentTypes()},
-				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+				{"texture", path}
 			};
 			total++;
 		}
@@ -200,6 +221,11 @@ void JSONManager::save(bool bg)
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Capsules found, exporting");
 		for (int i = 0; i < list.size(); i++) {
+
+			const wchar_t* path = L"null";
+			if (list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")) {
+				path = list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath();
+			}
 
 			j[std::to_string(total)] = {
 				{"name", list[i]->name},
@@ -220,7 +246,7 @@ void JSONManager::save(bool bg)
 					{"rz", list[i]->getLocalRotation().z}}
 				},
 				{"components", list[i]->getAttachedComponentTypes()},
-				{"texture", list[i]->findComponentByType(Component::Material, list[i]->name + " TX Component")->getTexturePath()}
+				{"texture", path}
 			};
 			total++;
 		}
@@ -265,6 +291,7 @@ void JSONManager::load(bool bg)
 			c.push_back(elem);
 		bool hasPhys = false;
 		bool hasMat = false;
+		std::cout << hasMat;
 		for (auto& i : c) {
 			if (i == 3) {
 				hasPhys = true;
