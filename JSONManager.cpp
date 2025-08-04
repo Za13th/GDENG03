@@ -15,7 +15,7 @@ JSONManager* JSONManager::getInstance()
 	return sharedInstance;
 }
 
-void JSONManager::initialize(void* shaderByteCode, size_t sizeShader)
+void JSONManager::initialize()
 {
 	if (!sharedInstance)
 	{

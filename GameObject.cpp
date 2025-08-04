@@ -7,6 +7,8 @@
 #include "BaseComponentSystem.h"
 #include "GameObjectManager.h"
 #include "DebugUIManager.h"
+#include "UndoRedoManager.h"
+#include "UndoRedoAction.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -101,8 +103,15 @@ void GameObject::getInspectorUI()
 		{
 			if (ImGui::Button("Apply"))
 			{
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Transforms, this,
+					localPosition, Vector3D(position[0], position[1], position[2]),
+					localRotation, Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0)),
+					localScale, Vector3D(scale[0], scale[1], scale[2]));
+
 				localPosition = Vector3D(position[0], position[1], position[2]);
 				localScale = Vector3D(scale[0], scale[1], scale[2]);
+				UndoRedoManager::getInstance()->addToHistory(act);
+
 				localRotation = Vector3D(rotation[0] * (M_PI / 180.0), rotation[1] * (M_PI / 180.0), rotation[2] * (M_PI / 180.0));
 				this->reconstructMatrix();
 
@@ -123,15 +132,24 @@ void GameObject::getInspectorUI()
 					GameObjectManager::getInstance()->inspectorWindowOpen = false;
 				}
 
+				//undo redo
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Delete, this);
+				if (this->findComponentByType(Component::Material, this->name + " TX Component"))
+				{
+					act->hasTex = true;
+					act->texCom = static_cast<TextureComponent*>(this->findComponentByType(Component::Material, this->name + " TX Component"));
+				}
+
 				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
+					act->hasPhys = true;
 					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
 					if (physicsComponent)
 					{
 						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
 					}
 				}
-
+				UndoRedoManager::getInstance()->addToHistory(act);
 				GameObjectManager::getInstance()->removeGameObject(this);
 			}
 			ImGui::SameLine();

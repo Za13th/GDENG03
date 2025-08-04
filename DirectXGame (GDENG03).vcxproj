@@ -176,6 +176,8 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureComponent.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="UndoRedoAction.cpp" />
+    <ClCompile Include="UndoRedoManager.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -231,6 +233,8 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureComponent.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="UndoRedoAction.h" />
+    <ClInclude Include="UndoRedoManager.h" />
     <ClInclude Include="Vector2D.h" />
     <ClInclude Include="Vector3D.h" />
     <ClInclude Include="Vector4D.h" />

@@ -6,6 +6,8 @@
 #include "PhysicsComponent.h"
 #include "DebugUIManager.h"
 #include <iostream>
+#include "UndoRedoAction.h"
+#include "UndoRedoManager.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -386,46 +388,68 @@ void GameObjectManager::getObjectSpawnUI()
 			if (ImGui::MenuItem("Spawn Cube"))
 			{
 				this->spawnCube();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cubes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Plane"))
 			{
 				this->spawnPlane();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, planes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Sphere"))
 			{
 				this->spawnSphere();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, spheres.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Cylinder"))
 			{
 				this->spawnCylinder();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cylinders.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Capsule"))
 			{
 				this->spawnCapsule();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, capsules.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Cube"))
 			{
 				this->spawnP6Cube();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cubes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Plane"))
 			{
 				this->spawnP6Plane();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, planes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Sphere"))
 			{
 				this->spawnP6Sphere();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, spheres.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Cylinder"))
 			{
 				this->spawnP6Cylinder();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, cylinders.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Physics Capsule"))
 			{
 				this->spawnP6Capsule();
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, capsules.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			if (ImGui::MenuItem("Spawn Mesh"))
 			{
 				meshScreen = true;
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, meshes.back());
+				UndoRedoManager::getInstance()->addToHistory(act);
 			}
 			ImGui::EndMenu();
 		}
@@ -752,16 +776,22 @@ void GameObjectManager::spawnMesh(Vector3D pos, Vector3D scale, Vector3D rot, co
 	mbstowcs(wc2, texturePath, cSize2);
 	loadedTexture = TextureManager::getInstance()->createTextureFromFile(wc2);
 
-	MeshObject* m;
-	if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
-		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
-	else
-		m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
-	m->setPosition(pos.x, pos.y, pos.z);
-	m->setScale(scale);
-	m->setRotation(rot);
+	if (loadedMesh != nullptr)
+	{
+		MeshObject* m;
+		if (findGameObjectByName("Mesh " + std::to_string(this->meshes.size() + 1)) == nullptr)
+			m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 1), loadedMesh, loadedTexture);
+		else
+			m = new MeshObject("Mesh " + std::to_string(this->meshes.size() + 2), loadedMesh, loadedTexture);
+		m->setPosition(pos.x, pos.y, pos.z);
+		m->setScale(scale);
+		m->setRotation(rot);
 
-	this->meshes.push_back(m);
+		this->meshes.push_back(m);
+	}
+	else {
+		DebugUIManager::getInstance()->Log("mesh loading failed");
+	}
 }
 
 void GameObjectManager::spawnSphere(Vector3D pos, Vector3D scale, Vector3D rot, bool hasMat, const char texturePath[128])
