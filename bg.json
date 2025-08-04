@@ -1,1 +1,94 @@
-null
+{
+    "0": {
+        "components": [
+            3
+        ],
+        "name": "P6 Plane 1",
+        "objType": 1,
+        "position": {
+            "px": 0.0,
+            "py": -5.0,
+            "pz": 0.0
+        },
+        "rotation": {
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.0
+        },
+        "scale": {
+            "sx": 1.0,
+            "sy": 1.0,
+            "sz": 1.0
+        },
+        "texture": "null"
+    },
+    "1": {
+        "components": [
+            3
+        ],
+        "name": "P6 Sphere 1",
+        "objType": 3,
+        "position": {
+            "px": 0.0,
+            "py": 0.0,
+            "pz": 0.0
+        },
+        "rotation": {
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.0
+        },
+        "scale": {
+            "sx": 1.0,
+            "sy": 1.0,
+            "sz": 1.0
+        },
+        "texture": "null"
+    },
+    "2": {
+        "components": [
+            3
+        ],
+        "name": "P6 Sphere 2",
+        "objType": 3,
+        "position": {
+            "px": 0.0,
+            "py": 0.0,
+            "pz": 0.0
+        },
+        "rotation": {
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.0
+        },
+        "scale": {
+            "sx": 1.0,
+            "sy": 1.0,
+            "sz": 1.0
+        },
+        "texture": "null"
+    },
+    "3": {
+        "components": [
+            3
+        ],
+        "name": "P6 Capsule 1",
+        "objType": 5,
+        "position": {
+            "px": 0.0,
+            "py": 0.0,
+            "pz": 0.0
+        },
+        "rotation": {
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.0
+        },
+        "scale": {
+            "sx": 1.0,
+            "sy": 1.0,
+            "sz": 1.0
+        },
+        "texture": "null"
+    }
+}

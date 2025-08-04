@@ -468,8 +468,7 @@ void GameObjectManager::getObjectSpawnUI()
 			if (ImGui::MenuItem("Spawn Mesh"))
 			{
 				meshScreen = true;
-				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, meshes.back());
-				UndoRedoManager::getInstance()->addToHistory(act);
+				
 			}
 			ImGui::EndMenu();
 		}
@@ -536,6 +535,9 @@ void GameObjectManager::getObjectSpawnUI()
 					m->meshLoc = meshPathOut;
 					m->textureLoc = texturePathOut;
 					this->meshes.push_back(m);
+
+					UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Spawn, meshes.back());
+					UndoRedoManager::getInstance()->addToHistory(act);
 				}
 				else
 					DebugUIManager::getInstance()->Log("Mesh Loading Failed!");
