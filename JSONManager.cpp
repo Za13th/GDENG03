@@ -316,7 +316,7 @@ void JSONManager::load(bool bg)
 		}
 		else if (j[std::to_string(i)]["objType"] == 2)
 		{
-			GameObjectManager::getInstance()->spawnMesh(p, s, r, j[std::to_string(i)]["texture"].get<std::string>().c_str(), j[std::to_string(i)]["mesh"].get<std::string>().c_str());
+			GameObjectManager::getInstance()->spawnMesh(p, s, r, j[std::to_string(i)]["mesh"].get<std::string>().c_str(), j[std::to_string(i)]["texture"].get<std::string>().c_str());
 		}
 		else if (j[std::to_string(i)]["objType"] == 3)
 		{
