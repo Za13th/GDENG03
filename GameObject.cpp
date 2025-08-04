@@ -132,15 +132,24 @@ void GameObject::getInspectorUI()
 					GameObjectManager::getInstance()->inspectorWindowOpen = false;
 				}
 
+				//undo redo
+				UndoRedoAction* act = new UndoRedoAction(UndoRedoAction::Delete, this);
+				if (this->findComponentByType(Component::Material, this->name + " TX Component"))
+				{
+					act->hasTex = true;
+					act->texCom = static_cast<TextureComponent*>(this->findComponentByType(Component::Material, this->name + " TX Component"));
+				}
+
 				if (this->findComponentByType(Component::Physics, name + " P6 Component"))
 				{
+					act->hasPhys = true;
 					PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(this->findComponentByType(Component::Physics, name + " P6 Component"));
 					if (physicsComponent)
 					{
 						BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
 					}
 				}
-
+				UndoRedoManager::getInstance()->addToHistory(act);
 				GameObjectManager::getInstance()->removeGameObject(this);
 			}
 			ImGui::SameLine();

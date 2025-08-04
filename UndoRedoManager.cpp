@@ -87,6 +87,18 @@ void UndoRedoManager::undo()
 
 			GameObjectManager::getInstance()->removeGameObject(history[current]->getObj());
 		}
+		else if (history[current]->getType() == UndoRedoAction::Delete) {
+			GameObjectManager::getInstance()->addGameObject(history[current]->getObj());
+			history[current]->getObj()->reconstructMatrix();
+
+			if (history[current]->hasPhys)
+				history[current]->getObj()->attachComponent(new PhysicsComponent(history[current]->getObj()->name + " P6 Component", history[current]->getObj()));
+			if (history[current]->hasTex)
+			{
+				history[current]->getObj()->attachComponent(history[current]->texCom);
+			}
+
+		}
 
 		current--;
 	}
@@ -120,6 +132,24 @@ void UndoRedoManager::redo()
 			{
 				history[current]->getObj()->attachComponent(history[current]->texCom);
 			}
+		}
+		else if (history[current]->getType() == UndoRedoAction::Delete)
+		{
+			PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(history[current]->getObj()->findComponentByType(Component::Physics, history[current]->getObj()->name + " P6 Component"));
+			if (physicsComponent)
+			{
+				history[current]->hasPhys = true;
+				BaseComponentSystem::getInstance()->getPhysicsSystem()->unregisterComponent(physicsComponent);
+
+			}
+			if (history[current]->getObj()->findComponentByType(Component::Material, history[current]->getObj()->name + " TX Component"))
+			{
+				history[current]->hasTex = true;
+				history[current]->texCom = static_cast<TextureComponent*>(history[current]->getObj()->findComponentByType(Component::Material, history[current]->getObj()->name + " TX Component"));
+			}
+
+			GameObjectManager::getInstance()->removeGameObject(history[current]->getObj());
+
 		}
 	}
 
