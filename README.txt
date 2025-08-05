@@ -1,6 +1,6 @@
 Simply run the "DirectXGame (GDENG03).exe" file inside "BuiltExecutable.zip", or if you prefer, alternatively build the executable using Visual Studio on your own machine using this repository. The entry class file is "main.cpp".
 
-- Jayvee Russel A. Torreno
+- Scene Editor Group 5 (Nathaniel Ryan Blancaflor Agasen and Jayvee Russel A. Torreno)
 
 Controls:
 WASD to move based on camera rotation.
