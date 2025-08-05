@@ -468,7 +468,10 @@ void GameObjectManager::getObjectSpawnUI()
 			if (ImGui::MenuItem("Spawn Mesh"))
 			{
 				meshScreen = true;
-				
+			}
+			if (ImGui::MenuItem("Spawn 100 Physics Cubes!"))
+			{
+				this->spawnP6Cube100();
 			}
 			ImGui::EndMenu();
 		}
@@ -708,6 +711,29 @@ void GameObjectManager::spawnP6Capsule()
 	newPhysicsCapsule->reconstructMatrix();
 	capsules.push_back(newPhysicsCapsule);
 	newPhysicsCapsule->attachComponent(new PhysicsComponent(newPhysicsCapsule->name + " P6 Component", newPhysicsCapsule));
+}
+
+void GameObjectManager::spawnP6Cube100()
+{
+	for (int i = 0; i < 10; i++)
+	for (int j = 0; j < 10; j++)
+	{
+		Cube* newPhysicsCube = new Cube(*templateCube);
+		if (findGameObjectByName("P6 Cube " + std::to_string(cubes.size() + 1)) != nullptr)
+			newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 2);
+		else
+			newPhysicsCube->name = "P6 Cube " + std::to_string(cubes.size() + 1);
+
+		newPhysicsCube->setPosition((i - 5) * 1.25, 1, (j - 5) * 1.25);
+		newPhysicsCube->setScale(Vector3D(1, 1, 1));
+		newPhysicsCube->setRotation(Vector3D(0.0f, 0.0f, 0.0f));
+
+		newPhysicsCube->reconstructMatrix();
+		cubes.push_back(newPhysicsCube);
+
+		newPhysicsCube->attachComponent(new PhysicsComponent(newPhysicsCube->name + " P6 Component", newPhysicsCube));
+	}
+
 }
 
 

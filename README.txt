@@ -6,8 +6,5 @@ Controls:
 WASD to move based on camera rotation.
 Q/E to move up or down.
 X to lock/unlock the mouse to camera rotation.
-Z/C to decrease/increase fog_start.
-V/B to decrease/increase fog_end.
-N/M to decrease/increase fog_density. (Don't forget to toggle it in the pixel shader.)
 Press Esc to close the program.
 

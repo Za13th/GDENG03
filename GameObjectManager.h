@@ -34,6 +34,7 @@ public:
 
 
 	void spawnP6Cube();
+	void spawnP6Cube100();
 	void spawnP6Plane();
 	void spawnP6Sphere();
 	void spawnP6Cylinder();
