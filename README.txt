@@ -1,4 +1,4 @@
-Simply run the "DirectXGame (GDENG03).exe" file inside "BuiltExecutable.zip", or if you prefer, alternatively build the executable using Visual Studio on your own machine using this repository. The entry class file is "main.cpp".
+Simply run the "DirectXGame (GDENG03).exe" file inside "BuiltExecutable.zip", or if you prefer, alternatively build the executable using Visual Studio on your own machine using this repository. Reimport the assets inside the Assets.zip if necessary. The entry class file is "main.cpp".
 
 - Scene Editor Group 5 (Nathaniel Ryan Blancaflor Agasen and Jayvee Russel A. Torreno)
 
