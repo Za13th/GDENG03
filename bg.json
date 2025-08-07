@@ -1,86 +1,46 @@
 {
-    "0": {
-        "components": [],
-        "name": "Cube 1",
-        "objType": 0,
-        "position": {
-            "px": 0.0,
-            "py": 0.5,
-            "pz": 0.0
+    "gameObjects": [
+        {
+            "components": [],
+            "name": "Cube 1",
+            "objType": 0,
+            "position": {
+                "px": 0.0,
+                "py": 0.0,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 1.0,
+                "sy": 1.0,
+                "sz": 1.0
+            },
+            "texture": "null"
         },
-        "rotation": {
-            "rx": 0.0,
-            "ry": 0.0,
-            "rz": 0.0
-        },
-        "scale": {
-            "sx": 3.0,
-            "sy": 1.0,
-            "sz": 1.0
-        },
-        "texture": "null"
-    },
-    "1": {
-        "components": [],
-        "name": "Cube 2",
-        "objType": 0,
-        "position": {
-            "px": 0.0,
-            "py": 2.5,
-            "pz": 1.25
-        },
-        "rotation": {
-            "rx": 0.0,
-            "ry": 0.0,
-            "rz": 0.0
-        },
-        "scale": {
-            "sx": 0.25,
-            "sy": 4.0,
-            "sz": 0.25
-        },
-        "texture": "null"
-    },
-    "2": {
-        "components": [],
-        "name": "Cube 3",
-        "objType": 0,
-        "position": {
-            "px": 0.0,
-            "py": 3.0,
-            "pz": 1.25
-        },
-        "rotation": {
-            "rx": 0.0,
-            "ry": 0.0,
-            "rz": 0.0
-        },
-        "scale": {
-            "sx": 2.0,
-            "sy": 0.25,
-            "sz": 0.25
-        },
-        "texture": "null"
-    },
-    "3": {
-        "components": [],
-        "name": "Plane 1",
-        "objType": 1,
-        "position": {
-            "px": 0.0,
-            "py": 0.0,
-            "pz": 0.0
-        },
-        "rotation": {
-            "rx": 0.0,
-            "ry": 0.0,
-            "rz": 0.0
-        },
-        "scale": {
-            "sx": 5.0,
-            "sy": 1.0,
-            "sz": 5.0
-        },
-        "texture": "null"
-    }
+        {
+            "components": [],
+            "name": "Plane 1",
+            "objType": 1,
+            "position": {
+                "px": 0.0,
+                "py": -2.0,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 1.0,
+                "sy": 1.0,
+                "sz": 1.0
+            },
+            "texture": "null"
+        }
+    ]
 }
