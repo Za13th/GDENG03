@@ -148,6 +148,7 @@ void JSONManager::save(bool bg)
 	list = GameObjectManager::getInstance()->getAllGameObjectsOfType(GameObjectManager::Spheres);
 	if (list.size() > 0) {
 		DebugUIManager::getInstance()->Log("Spheres found, exporting");
+
 		for (int i = 0; i < list.size(); i++) {
 
 			const wchar_t* path = L"null";
@@ -252,7 +253,7 @@ void JSONManager::save(bool bg)
 		}
 	}
 
-
+	j["total"] = total;
 
 	if (bg) {
 		std::ofstream o("bg.json");
