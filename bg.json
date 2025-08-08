@@ -1,11 +1,11 @@
 {
-    "gameObjects": [
+    "GameObjects": [
         {
             "components": [],
             "name": "Cube 1",
             "objType": 0,
             "position": {
-                "px": 0.0,
+                "px": -2.0,
                 "py": 0.0,
                 "pz": 0.0
             },
@@ -22,12 +22,37 @@
             "texture": "null"
         },
         {
-            "components": [],
-            "name": "Plane 1",
+            "components": [
+                3
+            ],
+            "name": "P6 Cube 2",
+            "objType": 0,
+            "position": {
+                "px": 2.0,
+                "py": 0.0,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": -54.7356299517702,
+                "ry": 30.000007665015225,
+                "rz": 35.264396458370065
+            },
+            "scale": {
+                "sx": 1.0,
+                "sy": 1.0,
+                "sz": 1.0
+            },
+            "texture": "null"
+        },
+        {
+            "components": [
+                3
+            ],
+            "name": "P6 Plane 1",
             "objType": 1,
             "position": {
                 "px": 0.0,
-                "py": -2.0,
+                "py": -5.0,
                 "pz": 0.0
             },
             "rotation": {

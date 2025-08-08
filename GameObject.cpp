@@ -83,6 +83,10 @@ void GameObject::setRotation(float x, float y, float z)
 void GameObject::setRotation(Vector3D rotation)
 {
 	localRotation = rotation;
+
+	this->rotation[0] = localRotation.x * (180.0 / M_PI);
+	this->rotation[1] = localRotation.y * (180.0 / M_PI);
+	this->rotation[2] = localRotation.z * (180.0 / M_PI);
 }
 
 Vector3D GameObject::getLocalRotation()
@@ -288,9 +292,13 @@ void GameObject::reconstructVectors()
 		y = { 0,1,0 },
 		z = { 0,0,1 };
 
-	this->localRotation.x = std::acosf(this->localMatrix.getXDirection().dot(x));
-	this->localRotation.y = std::acosf(this->localMatrix.getYDirection().dot(y));
-	this->localRotation.z = std::acosf(this->localMatrix.getZDirection().dot(z));
+	this->localRotation.x = std::atan2(this->localMatrix.getZDirection().y, this->localMatrix.getZDirection().z);
+	this->localRotation.y = std::atan2(this->localMatrix.getZDirection().x, std::sqrt(this->localMatrix.getZDirection().y * this->localMatrix.getZDirection().y + this->localMatrix.getZDirection().z * this->localMatrix.getZDirection().z));
+	this->localRotation.z = std::atan2(this->localMatrix.getYDirection().x, this->localMatrix.getXDirection().x);
+
+	this->rotation[0] = localRotation.x * (180.0 / M_PI);
+	this->rotation[1] = localRotation.y * (180.0 / M_PI);
+	this->rotation[2] = localRotation.z * (180.0 / M_PI);
 
 
 }

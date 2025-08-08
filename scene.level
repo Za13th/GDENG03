@@ -1,0 +1,130 @@
+{
+    "GameObjects": [
+        {
+            "components": [],
+            "name": "Cube 1",
+            "objType": 0,
+            "position": {
+                "px": 5.0,
+                "py": 3.75,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 0.20000000298023224,
+                "sy": 7.5,
+                "sz": 9.899999618530273
+            },
+            "texture": "null"
+        },
+        {
+            "components": [],
+            "name": "Cube 2",
+            "objType": 0,
+            "position": {
+                "px": 0.0,
+                "py": 3.75,
+                "pz": 5.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 9.899999618530273,
+                "sy": 7.5,
+                "sz": 0.20000000298023224
+            },
+            "texture": "null"
+        },
+        {
+            "components": [],
+            "name": "Cube 3",
+            "objType": 0,
+            "position": {
+                "px": -5.0,
+                "py": 2.5,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 0.20000000298023224,
+                "sy": 5.0,
+                "sz": 9.899999618530273
+            },
+            "texture": "null"
+        },
+        {
+            "components": [],
+            "name": "Cube 4",
+            "objType": 0,
+            "position": {
+                "px": 0.0,
+                "py": 2.5,
+                "pz": -5.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 9.899999618530273,
+                "sy": 5.0,
+                "sz": 0.20000000298023224
+            },
+            "texture": "null"
+        },
+        {
+            "components": [],
+            "name": "Plane 1",
+            "objType": 1,
+            "position": {
+                "px": 0.0,
+                "py": 0.0,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 5.0,
+                "sy": 1.0,
+                "sz": 15.0
+            },
+            "texture": "null"
+        },
+        {
+            "components": [],
+            "name": "Capsule 1",
+            "objType": 5,
+            "position": {
+                "px": 0.0,
+                "py": 3.0,
+                "pz": 0.0
+            },
+            "rotation": {
+                "rx": 0.0,
+                "ry": 0.0,
+                "rz": 0.0
+            },
+            "scale": {
+                "sx": 1.0,
+                "sy": 1.0,
+                "sz": 1.0
+            },
+            "texture": "null"
+        }
+    ]
+}

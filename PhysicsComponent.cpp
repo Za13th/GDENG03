@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "PhysicsComponent.h"
 #include "BaseComponentSystem.h"
 #include "GameObject.h"
@@ -17,6 +20,7 @@ PhysicsComponent::PhysicsComponent(String name, GameObject* owner) : Component(n
 	Transform transform;
 	transform.setToIdentity();
 	transform.setOrientation(Quaternion::fromEulerAngles(rot.x, rot.y, rot.z));
+	//transform.setOrientation(Quaternion::fromEulerAngles(rot.x * (180.0 / M_PI), rot.y * (180.0 / M_PI), rot.z * (180.0 / M_PI)));
 	transform.setPosition(Vector3(pos.x, pos.y, pos.z));
 	//transform.setFromOpenGL(this->owner->getPhysicsLocalMatrix());
 	this->rigidBody = physicsWorld->createRigidBody(transform);
@@ -93,7 +97,8 @@ void PhysicsComponent::adjustRigidbody()
 
 	Transform transform;
 	transform.setToIdentity();
-	transform.setOrientation(Quaternion::fromEulerAngles(rot.x, rot.y, rot.z));
+	transform.setOrientation(Quaternion::fromEulerAngles(rot.x , rot.y , rot.z ));
+	//transform.setOrientation(Quaternion::fromEulerAngles(rot.x * (180.0 / M_PI), rot.y * (180.0 / M_PI), rot.z * (180.0 / M_PI)));
 	transform.setPosition(Vector3(pos.x, pos.y, pos.z));
 	this->rigidBody = physicsWorld->createRigidBody(transform);
 
@@ -154,7 +159,6 @@ void PhysicsComponent::adjustRigidbody()
 	float matrix[16];
 
 	transform.getOpenGLMatrix(matrix);
-
 	this->owner->setLocalMatrix(matrix);
 }
 
